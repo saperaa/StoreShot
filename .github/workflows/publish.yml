@@ -1,0 +1,40 @@
+name: Publish to npm
+
+# Tokenless publishing via npm trusted publishing (OIDC): the registry
+# authenticates this workflow from the trusted-publisher connection
+# configured on the package — no npm tokens stored anywhere.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # required for the OIDC identity npm verifies
+
+jobs:
+  publish:
+    name: Build, verify, publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      # Trusted publishing needs npm >= 11.15.
+      - name: Use npm with trusted publishing support
+        run: npm install -g npm@11
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install rendering browser (tests render real frames)
+        run: npx playwright-core install chromium
+
+      # prepublishOnly runs the whole gate: lint, typecheck, schema, tests.
+      - name: Publish with provenance
+        run: npm publish --provenance
