@@ -1,0 +1,14 @@
+{
+  "generatedAt": "2026-10-10",
+  "version": "0.5.0",
+  "source": "scripts/gen-launch-content.mjs",
+  "files": [
+    "show-hn",
+    "reddit-ios",
+    "reddit-android",
+    "linkedin",
+    "x-thread",
+    "github-discussion",
+    "devto-outline"
+  ]
+}

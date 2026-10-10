@@ -1,0 +1,32 @@
+name: Draft release
+
+# When the version in package.json changes on master, turn that version's
+# CHANGELOG section into a DRAFT GitHub release. Publishing the draft (a
+# human decision) triggers publish.yml, which runs the full gate and ships
+# to npm via trusted publishing. Nothing auto-publishes here.
+on:
+  push:
+    branches: [master]
+    paths: ["package.json", "CHANGELOG.md"]
+
+permissions:
+  contents: write # create draft releases
+
+concurrency:
+  group: draft-release
+  cancel-in-progress: true
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Draft release from CHANGELOG (if the version is new)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/draft-release.mjs

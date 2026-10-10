@@ -72,7 +72,17 @@ Linux Chromium, so baselines are platform-suffixed (`gradient-ar-win32.png`).
 `CHANGELOG.md` follows [Keep a Changelog](https://keepachangelog.com/) and
 versions follow SemVer. Publishing (maintainers): `npm run prepublishOnly`
 runs lint, typecheck, schema generation and the full test suite; the npm
-package is `storeshot-cli`.
+package is `storeshot-cli`. Pushing a new version + CHANGELOG section to
+master drafts a GitHub release automatically — publishing that draft runs
+the full gate in CI and ships to npm via trusted publishing.
+
+## Helping the project grow
+
+Word of mouth is the only marketing. docs/launch/checklist.md has the
+prioritized, rules-respecting plan and per-platform drafts (regenerate with
+`node scripts/gen-launch-content.mjs` — always from real features and real
+output images). Sharing a store listing you made with StoreShot in
+Discussions is the single most useful thing a user can do.
 
 ## Reporting bugs
 

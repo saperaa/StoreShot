@@ -163,15 +163,29 @@ Exit codes `0/1/2`; `validate --json` for pipelines; network requests are blocke
 
 Schema violations · missing/corrupt/unsupported/low-res sources · font fallbacks · missing translations (per screenshot, locale, field) · unknown templates, profiles and settings · custom-size rule violations · low title/background contrast · **rendered text overflow per locale × screenshot × export size**. It cannot judge taste or store policy — those stay yours.
 
+## FAQ
+
+**How is this different from fastlane frameit?** frameit frames one screenshot at a time with Ruby + ImageMagick and struggles with RTL text shaping; StoreShot renders whole listings — every locale and profile from one JSON config — through Chromium's text engine, so Arabic ligatures, bidi and mixed Arabic/English copy are correct by construction. It also validates geometry (clipped text fails the build) and covers Apple's newer creative assets and Play feature graphics as first-class profiles.
+
+**Does it upload my screenshots anywhere?** No. Rendering is local with Chromium; the sandbox blocks all network requests. Nothing leaves your machine — that's a design constraint, not a setting.
+
+**Does it work with Flutter / React Native / native apps?** Any app that can produce a PNG screenshot. The tool never inspects or modifies your app UI — it composes marketing around your real screenshots.
+
+**Can I use my own fonts, colors and device frames?** Yes — brand colors, text and muted tones per config; per-screenshot `fit` and `focalPoint` cropping; templates with their own device presentation settings. Bundled fonts (IBM Plex Sans, IBM Plex Sans Arabic, Fraunces) are SIL OFL and redistributable.
+
+**Will my text get cut off in another language?** The engine measures rendered text in the browser after fonts load, per locale × screenshot × export size, and fails with the exact field name if anything would clip the canvas, touch an edge, or overlap the device. Long Arabic headlines get their own layout budgets.
+
+**Which store formats are supported?** App Store: iPhone 6.3"/6.1" portrait + landscape, 21:9 headers, 16:9 universal, 3:2 search creatives, 6.3" poster frames. Google Play: phone/tablet screenshots and the 1024×500 feature graphic. Dimensions are verified against the stores' published specs (see [docs/store-profiles.md](docs/store-profiles.md)).
+
 ## Development
 
 ```bash
 npm install && npm run build && npx playwright-core install chromium
-npm test              # 120 tests: unit + integration + visual regression
+npm test              # unit + integration + visual regression
 npm run test:visual:update   # refresh per-platform baselines deliberately
 ```
 
-PRs welcome — new templates, verified store profiles, and Arabic/RTL edge cases above all. See [`CONTRIBUTING.md`](CONTRIBUTING.md) and the [template guide](docs/templates.md).
+PRs welcome — new templates, verified store profiles, and Arabic/RTL edge cases above all. See [`CONTRIBUTING.md`](CONTRIBUTING.md), the [template guide](docs/templates.md), and [Discussions](https://github.com/saperaa/StoreShot/discussions) for questions and showcase posts.
 
 ## License
 
