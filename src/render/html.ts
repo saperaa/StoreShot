@@ -63,6 +63,12 @@ img {
 .t-text {
   display: inline-block;
 }
+/* Every template root paints the full canvas, whatever its variant class. */
+.shot {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
 `;
 
 export function fontStack(dir: TextDirection): string {
