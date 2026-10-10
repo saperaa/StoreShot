@@ -18,7 +18,24 @@ const cli = path.join(root, "dist", "cli.js");
 const gallery = path.join(root, "docs", "gallery");
 const screens = path.join(root, "starter", "screens");
 
-fs.rmSync(gallery, { recursive: true, force: true });
+// Clean ONLY the directories this script rebuilds. A blanket gallery wipe
+// once deleted showcases it does not own (families/, cinematic-3d/,
+// campaign-cinematic/) right out of the committed tree.
+const OWNED_DIRS = [
+  "cinematic",
+  "editorial",
+  "swiss",
+  "campaign",
+  "immersive",
+  "showcase",
+  "discovery",
+  "themes",
+  "landscape",
+  "google-play",
+];
+for (const dir of OWNED_DIRS) {
+  fs.rmSync(path.join(gallery, dir), { recursive: true, force: true });
+}
 fs.mkdirSync(gallery, { recursive: true });
 
 const base = {
