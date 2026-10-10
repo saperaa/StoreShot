@@ -31,7 +31,7 @@ The complete five-frame listing — value proposition → feature → differenti
 
 - **One config, every asset.** Screenshots × locales × device sizes from a single `storeshot.config.json` — same pixels every run.
 - **Local & free forever.** Renders offline with Chromium. No SaaS subscription, no uploads of your unreleased app, no API keys.
-- **Real design, not frames around rectangles.** Seven art-directed templates with realistic device rendering and sequence-aware layouts.
+- **Real design, not frames around rectangles.** Eleven art-directed templates across six design families, with realistic device rendering and sequence-aware layouts.
 - **Arabic/RTL done right.** Connected letterforms, mirrored compositions, mixed Arabic/English text — through Chromium's text engine, never string reversal.
 - **Fails before you ship bad assets.** Validates config, translations, exact store dimensions, and rendered text fit — with browser-measured geometry checks.
 
