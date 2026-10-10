@@ -57,18 +57,19 @@ describe("template registry", () => {
     expect(templateIds()).toEqual([
       "editorial",
       "cinematic",
+      "cinematic-3d",
       "swiss",
       "campaign",
       "immersive",
       "showcase",
       "discovery",
     ]);
-    expect(listTemplates().length).toBe(7);
+    expect(listTemplates().length).toBe(8);
   });
 
   it("every template has metadata, settings and a render function", () => {
     for (const template of listTemplates()) {
-      expect(template.id).toMatch(/^[a-z-]+$/);
+      expect(template.id).toMatch(/^[a-z0-9-]+$/);
       expect(template.name.length).toBeGreaterThan(2);
       expect(typeof template.render).toBe("function");
       expect(template.settings.length).toBeGreaterThanOrEqual(3);

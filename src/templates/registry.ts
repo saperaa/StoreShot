@@ -1,6 +1,7 @@
 import type { TemplateDefinition } from "./types.js";
 import { editorialTemplate } from "./editorial.js";
 import { cinematicTemplate } from "./cinematic.js";
+import { cinematic3dTemplate } from "./cinematic3d.js";
 import { swissTemplate } from "./swiss.js";
 import { campaignTemplate } from "./campaign.js";
 import { immersiveTemplate } from "./immersive.js";
@@ -10,6 +11,7 @@ import { discoveryTemplate } from "./discovery.js";
 export const TEMPLATES: readonly TemplateDefinition[] = [
   editorialTemplate,
   cinematicTemplate,
+  cinematic3dTemplate,
   swissTemplate,
   campaignTemplate,
   immersiveTemplate,

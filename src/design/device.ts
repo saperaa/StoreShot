@@ -40,6 +40,7 @@ export interface DeviceSpec {
   maxHeight: number;
   /** Rotate the device in 3D (angled mode only). */
   rotateY?: number;
+  rotateX?: number;
   rotateZ?: number;
   /** Layer a second, dimmed device behind (angled mode only). */
   backLayer?: boolean;
@@ -142,14 +143,44 @@ export const DEVICE_CSS = `
   filter: brightness(0.62) saturate(0.85);
 }
 .dev-stage {
+  /* Lens distance scales with the object's HEIGHT: a portrait-lens compression
+     (d ≈ 2.2 × H) keeps verticals believable. Distance driven by width alone
+     acts like a wide-angle lens centimeters from the phone and vertically
+     blows the projection out — reads as a skew, not a photograph. */
   perspective: var(--dpersp);
   perspective-origin: 50% 42%;
   transform-style: preserve-3d;
 }
 .dev-tilt {
   transform-style: preserve-3d;
-  transform: rotateY(var(--drot-y)) rotateZ(var(--drot-z));
+  transform: rotateY(var(--drot-y)) rotateX(var(--drot-x, 0deg)) rotateZ(var(--drot-z));
 }
+/* Extruded side faces: strips hinged on the front's left/right edges, folded
+   90° backward in local space. Backface culling leaves exactly one visible —
+   the near edge — and picks the correct one automatically for +/− rotateY,
+   so RTL compositions need no mirroring logic here. */
+.dev-side {
+  position: absolute;
+  top: 5%;
+  bottom: 5%;
+  width: var(--dthick);
+  border-radius: 4px;
+  /* Catch-light concentrated near the top (where the key light hits the rail),
+     falling through the body to a dark base — brightness varies along the
+     length so it reads as extruded geometry, not a uniform border stroke. */
+  background: linear-gradient(
+    180deg,
+    #b7c2d6 0%,
+    #6c7791 10%,
+    #39424f 32%,
+    #171c28 68%,
+    #05070c 100%
+  );
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  backface-visibility: hidden;
+}
+.dev-side.l { left: calc(var(--dthick) * -1); transform-origin: right center; transform: rotateY(-90deg); }
+.dev-side.r { left: 100%; transform-origin: left center; transform: rotateY(90deg); }
 .dev-ground {
   position: absolute;
   left: 50%;
@@ -282,26 +313,29 @@ export function renderDevice(spec: DeviceSpec): DeviceRender {
   // angled: perspective stage + optional second device behind
   const rotY = spec.rotateY ?? -9;
   const rotZ = spec.rotateZ ?? 0;
+  const rotX = spec.rotateX ?? 0;
   const backOffset = Math.round(totalW * 0.1);
+  const thick = Math.round(Math.min(Math.max(totalW * 0.075, 18), 44));
+  const lens = Math.round(totalH * 2.2);
 
   return {
     mode: "angled",
     width: Math.round(totalW + backOffset),
     height: Math.round(totalH),
     css: "",
-    html: `<div class="dev-stage ${spec.className ?? ""}" style="--dpersp:${Math.round(
-      totalW * 2.6,
-    )}px; position: relative; width:${Math.round(totalW + backOffset)}px; height:${Math.round(
-      totalH,
-    )}px;">
+    html: `<div class="dev-stage ${spec.className ?? ""}" style="--dpersp:${lens}px; --dthick:${thick}px; position: relative; width:${Math.round(
+      totalW + backOffset,
+    )}px; height:${Math.round(totalH)}px;">
   ${
     spec.backLayer === false
       ? ""
-      : `<div class="dev dev-back" style="${vars}; position:absolute; inset-inline-end:0; top:0; transform: rotateY(${rotY * -1.35}deg) rotateZ(${rotZ * -0.5}deg) translateZ(-70px) scale(0.965);"></div>`
+      : `<div class="dev dev-back" style="${vars}; position:absolute; inset-inline-end:0; top:0; transform: rotateY(${rotY * -1.35}deg) rotateX(${rotX * 0.5}deg) rotateZ(${rotZ * -0.5}deg) translateZ(-70px) scale(0.965);"></div>`
   }
-  <div class="dev-tilt" style="--drot-y:${rotY}deg; --drot-z:${rotZ}deg; position:absolute; inset-inline-start:0; top:0; width:${Math.round(
+  <div class="dev-tilt" style="--drot-y:${rotY}deg; --drot-x:${rotX}deg; --drot-z:${rotZ}deg; position:absolute; inset-inline-start:0; top:0; width:${Math.round(
     totalW,
   )}px; height:${Math.round(totalH)}px;">
+    <div class="dev-side l"></div>
+    <div class="dev-side r"></div>
     <div class="dev dev-front" style="${vars}">
       <div class="dev-rail"></div>
       <div class="dev-btn vol1"></div><div class="dev-btn vol2"></div><div class="dev-btn pwr"></div>

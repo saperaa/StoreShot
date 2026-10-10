@@ -27,7 +27,7 @@ import { readImageInfo } from "../../src/util/imageSize.js";
  */
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-const baselinesDir = path.join(repoRoot, "test", "visual", "baselines");
+const baselinesDir = path.join(repoRoot, "tests", "visual", "baselines");
 const updateSnapshots = process.env.UPDATE_SNAPSHOTS === "1";
 const CANVAS = { width: 720, height: 1280 }; // default portrait canvas
 
@@ -41,7 +41,6 @@ interface Case {
   /** Text overrides for regression scenarios (long copy, mixed content). */
   title?: string;
   subtitle?: string;
-  prompt?: string;
   /** Theme override for light/dark coverage. */
   theme?: Record<string, string>;
   /** Marketing prompt override for the search-layer cases. */
@@ -118,6 +117,32 @@ const cases: Case[] = [
     template: "editorial",
     screenshot: "home",
     theme: { background: "#F4F1EA", accent: "#0E7A5F", text: "#1A1D24", mutedText: "#6B6F7B" },
+  },
+  {
+    // Cinematic 3D variation A — angled hero, framed device, grounded shadow.
+    name: "c3d-en-a",
+    locale: "en-US",
+    template: "cinematic-3d",
+    screenshot: "home",
+    deviceFrame: true,
+  },
+  {
+    // Cinematic 3D variation B — two-device depth stack, Arabic composition.
+    name: "c3d-ar-b",
+    locale: "ar",
+    template: "cinematic-3d",
+    screenshot: "insights",
+    deviceFrame: true,
+    index: 1,
+  },
+  {
+    // Cinematic 3D landscape — asymmetric crop, shaft, floor pool.
+    name: "c3d-landscape-en",
+    locale: "en-US",
+    template: "cinematic-3d",
+    screenshot: "home",
+    deviceFrame: true,
+    size: { width: 960, height: 412 }, // 21:9 header aspect
   },
 ];
 
