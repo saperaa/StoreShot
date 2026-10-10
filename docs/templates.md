@@ -6,15 +6,24 @@ no plugin system, no build step, fully deterministic.
 
 ## The library
 
-| id | default device | settings |
-| --- | --- | --- |
-| `editorial` | `front` | `headlineScale`, `deviceScale`, `deviceMode` |
-| `cinematic` | `front` | `headlineScale`, `deviceScale`, `reflection`, `deviceMode` |
-| `swiss` | `bare` | `headlineScale`, `deviceScale`, `grid`, `deviceMode` |
-| `campaign` | `angled` | `headlineScale`, `deviceScale`, `band`, `deviceMode` |
-| `immersive` | `angled` + twin | `headlineScale`, `deviceScale`, `twin`, `deviceMode` |
-| `showcase` | layered bare | `headlineScale`, `shotScale`, `layers` |
-| `discovery` | framed + layered | `headlineScale`, `deviceScale`, `ghostType`, `deviceMode` |
+| id | family | default device | settings |
+| --- | --- | --- | --- |
+| `editorial` | Editorial Swiss | `front` | `headlineScale`, `deviceScale`, `deviceMode` |
+| `cinematic` | Dark Cinematic | `front` | `headlineScale`, `deviceScale`, `reflection`, `deviceMode` |
+| `cinematic-3d` | Dark Cinematic | `angled` (perspective, metal edges) | `headlineScale`, `deviceScale`, `variation`, `deviceMode` |
+| `swiss` | Editorial Swiss | `bare` | `headlineScale`, `deviceScale`, `grid`, `deviceMode` |
+| `campaign` | Bold Brand Campaign | `angled` | `headlineScale`, `deviceScale`, `band`, `deviceMode` |
+| `immersive` | Bold Brand Campaign | `angled` + twin | `headlineScale`, `deviceScale`, `twin`, `deviceMode` |
+| `showcase` | Bold Brand Campaign | layered bare | `headlineScale`, `shotScale`, `layers` |
+| `discovery` | — (Apple-inspired) | framed + layered | `headlineScale`, `deviceScale`, `ghostType`, `deviceMode` |
+| `atelier` | Warm Premium | `front` | `headlineScale`, `deviceScale`, `variation`, `deviceMode` |
+| `aurora` | Vibrant Gradient | `angled` (light-field rim) | `headlineScale`, `deviceScale`, `variation`, `deviceMode` |
+| `linea` | Minimal Product | `front` (plinth) | `headlineScale`, `deviceScale`, `variation`, `deviceMode` |
+
+Every family is a distinct design system — typography voice, composition
+rules, background treatment and device presentation — not a palette swap of
+one layout. The showcase in [`gallery/families`](gallery/families) renders
+the same app through all six.
 
 Common settings: `headlineScale` (0.8–1.25), `deviceScale` (0.8–1.15),
 `deviceMode` (`"auto" | "bare" | "front" | "angled"`; `auto` follows the

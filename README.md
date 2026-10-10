@@ -50,16 +50,29 @@ Output lands in `storeshots/<store-profile>/<locale>/01-…png` at exact verifie
 
 ## Template gallery
 
-| Template | Concept | English | العربية |
-| --- | --- | --- | --- |
-| `cinematic` | Hero product shot: key light, floor reflection | ![Cinematic EN](docs/gallery/cinematic/en-US/01-home.png) | ![Editorial AR](docs/gallery/editorial/ar/01-home.png)* |
-| `editorial` | Magazine spread: masthead, ghost numeral, serif display type | ![Editorial EN](docs/gallery/editorial/en-US/01-home.png) | *(shown left) |
-| `discovery` | Apple-inspired: localized search layer, layered screens | ![Discovery EN](docs/gallery/discovery/en-US-a/01-home.png) | ![Discovery AR](docs/gallery/discovery/ar-b/01-home.png) |
-| `swiss` | Typographic grid, frameless UI, figure caption | ![Swiss EN](docs/gallery/swiss/en-US/01-insights.png) | ![Swiss paper AR](docs/gallery/themes/swiss-paper/01-insights.png)* |
-| `campaign` | Launch poster: oversized type, angled device, brand band | ![Campaign EN](docs/gallery/campaign/en-US/01-compose.png) | ![Showcase AR](docs/gallery/showcase/ar/01-compose.png)* |
-| `immersive` / `showcase` | Perspective twin devices · layered UI on a slab | ![Immersive EN](docs/gallery/immersive/en-US/01-home.png) | *(shown left)* |
+Eleven templates across six art directions — each direction is a distinct design system (typography, composition rules, background treatment, device presentation), not a background swap. The same app, screenshot and copy rendered through each family: [`docs/gallery/families`](docs/gallery/families) (English & Arabic, portrait and landscape headers, Play feature graphics).
 
-\* Light-theme example. Landscape banners (Apple product-page headers & search assets, Play feature graphic): [`docs/gallery/landscape`](docs/gallery/landscape) · Before/after vs v0.1: [`docs/before-after.md`](docs/before-after.md)
+| Family | Template | Concept |
+| --- | --- | --- |
+| Dark Cinematic | `cinematic` · `cinematic-3d` | Product-studio photography: key light, floor reflection; the 3D variant adds true perspective, extruded metal edges and a diagonal light shaft |
+| Editorial Swiss | `editorial` · `swiss` | Magazine spread: masthead, ghost numeral, serif display type · typographic grid, frameless UI, figure caption |
+| Bold Brand Campaign | `campaign` | Launch poster: oversized type, angled device, brand band |
+| Warm Premium | `atelier` | Cream paper, ink serif typography, hairline plate margins, warm ambient shadows |
+| Vibrant Gradient | `aurora` | A structured two-tone light field with a luminous diagonal ridge — direction, not wallpaper |
+| Minimal Product | `linea` | Near-white field, one hairline line, plinth device presentation, restrained type |
+
+Plus `discovery` (Apple-inspired, localized search layer), `immersive` / `showcase` (perspective twin devices · layered UI on a slab).
+
+| Family | English | العربية |
+| --- | --- | --- |
+| Dark Cinematic | ![Dark Cinematic EN](docs/gallery/families/dark-cinematic/p/en-US/01-hero.png) | ![Dark Cinematic AR](docs/gallery/families/dark-cinematic/p/ar/01-hero.png) |
+| Bold Campaign | ![Bold Campaign EN](docs/gallery/families/bold-campaign/p/en-US/01-hero.png) | ![Bold Campaign AR](docs/gallery/families/bold-campaign/p/ar/01-hero.png) |
+| Warm Premium | ![Atelier EN](docs/gallery/families/warm-premium/p/en-US/01-hero.png) | ![Atelier AR](docs/gallery/families/warm-premium/p/ar/01-hero.png) |
+| Vibrant Gradient | ![Aurora EN](docs/gallery/families/vibrant-gradient/p/en-US/01-hero.png) | ![Aurora AR](docs/gallery/families/vibrant-gradient/p/ar/01-hero.png) |
+| Minimal Product | ![Linea EN](docs/gallery/families/minimal-product/p/en-US/01-hero.png) | ![Linea AR](docs/gallery/families/minimal-product/p/ar/01-hero.png) |
+| Editorial Swiss | ![Swiss EN](docs/gallery/families/editorial-swiss/p/en-US/01-hero.png) | ![Swiss AR](docs/gallery/families/editorial-swiss/p/ar/01-hero.png) |
+
+Arabic landscape headers, rendered through the RTL layout system (dedicated metrics, measured text, no clipped headlines): [`docs/gallery/families/*/l/ar/`](docs/gallery/families) · Landscape banners & Play feature graphics: [`docs/gallery/landscape`](docs/gallery/landscape) · Before/after vs v0.1: [`docs/before-after.md`](docs/before-after.md)
 
 ## How it compares
 
