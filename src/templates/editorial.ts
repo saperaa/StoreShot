@@ -126,6 +126,7 @@ function renderLandscape(ctx: TemplateContext) {
 }
 
 function renderPortrait(ctx: TemplateContext) {
+  if (ctx.index % 2 === 1) return renderPortraitB(ctx);
   const { width: w, height: h } = ctx.canvas;
   const tokens = buildTokens(ctx.theme);
   const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
@@ -228,6 +229,64 @@ function captionFor(ctx: TemplateContext): string {
   const label = escapeHtml((ctx.role ?? ctx.app.name).toUpperCase());
   return `FIG. ${String(ctx.index + 1).padStart(2, "0")} — ${label}`;
 }
+
+function renderPortraitB(ctx: TemplateContext) {
+  const { width: w, height: h } = ctx.canvas;
+  const tokens = buildTokens(ctx.theme);
+  const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
+  const deviceScale = numberSetting(SETTINGS, ctx.settings, "deviceScale");
+  const mode = resolveDeviceMode(stringSetting(SETTINGS, ctx.settings, "deviceMode"), ctx.deviceFrame, "front");
+  const margin = w * 0.075;
+
+  const device = renderDevice({
+    image: ctx.image,
+    mode,
+    maxWidth: w * 0.66 * deviceScale,
+    maxHeight: h * 0.62 * deviceScale,
+  });
+
+  const head = headline({
+    ctx,
+    tokens,
+    style: "editorial",
+    kicker: "masthead",
+    align: "center",
+    sizes: { kicker: w * 0.024, title: w * 0.088, subtitle: w * 0.029 },
+    lines: { title: 3, subtitle: 2 },
+    scale: headlineScale,
+    subtitleMaxWidth: w * 0.7,
+  });
+
+  const folio = String(ctx.index + 1).padStart(2, "0");
+  const css = [
+    ".shot-editorial.b {",
+    "  background:",
+    "    radial-gradient(70% 40% at 50% 100%, " + tokens.accentGlow(0.05) + " 0%, transparent 70%),",
+    "    " + tokens.bg + ";",
+    "  " + headlineVars(tokens, "editorial", h * 0.02, h * 0.022),
+    "  " + mastheadVars(tokens),
+    "}",
+    ".edb-numeral { position: absolute; bottom: " + px(-h * 0.04) + "px; left: 50%; transform: translateX(-50%); font-family: var(--font-display); font-weight: 600; font-size: " + px(h * 0.52) + "px; line-height: 1; color: " + tokens.surfaceAlt + "; z-index: 0; }",
+    ".edb-head { position: absolute; top: " + px(h * 0.17) + "; left: " + px(margin) + "; right: " + px(margin) + "; display: flex; flex-direction: column; align-items: center; z-index: 3; }",
+    ".edb-rule { position: absolute; top: " + px(h * 0.44) + "; left: " + px(margin) + "; right: " + px(margin) + "; height: 1px; background: " + tokens.line + "; z-index: 1; }",
+    ".edb-device { position: absolute; bottom: " + px(-h * 0.14) + "; left: 50%; transform: translateX(-50%); z-index: 2; }",
+    ".edb-caption { position: absolute; bottom: " + px(h * 0.028) + "; inset-inline-end: " + px(margin) + "; font-size: " + px(w * 0.019) + "; color: " + tokens.muted + "; letter-spacing: 0.08em; z-index: 3; }",
+    '[dir="ltr"] .edb-caption { text-transform: uppercase; }',
+  ].join("\n");
+
+  const html = [
+    '<div class="shot shot-editorial b">',
+    '  <div class="edb-numeral">' + folio + "</div>",
+    '  <div class="edb-head">' + head + "</div>",
+    '  <div class="edb-rule"></div>',
+    '  <div class="edb-device">' + device.html + "</div>",
+    '  <div class="edb-caption">FIG. ' + folio + " — " + escapeHtml((ctx.role ?? ctx.app.name).toUpperCase()) + "</div>",
+    "</div>",
+  ].join("\n");
+
+  return { css, html };
+}
+
 
 export const editorialTemplate: TemplateDefinition = {
   id: "editorial",

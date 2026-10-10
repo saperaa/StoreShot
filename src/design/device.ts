@@ -74,7 +74,7 @@ export const DEVICE_CSS = `
   inset: 0;
   border-radius: var(--dradius);
   background: linear-gradient(150deg, #454b58 0%, #12151d 28%, #2e3440 55%, #0b0d12 100%);
-  box-shadow: var(--dshadow);
+  box-shadow: var(--dshadow), inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 -1px 0 rgba(0, 0, 0, 0.6);
 }
 .dev .dev-glass {
   position: absolute;
@@ -90,6 +90,7 @@ export const DEVICE_CSS = `
   border-radius: var(--dsradius);
   overflow: hidden;
   background: #000;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.45), inset 0 0 14px rgba(0, 0, 0, 0.16);
 }
 .dev .dev-screen img {
   width: 100%;

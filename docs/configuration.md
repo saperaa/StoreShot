@@ -81,6 +81,7 @@ Each family accepts `regular`, `semibold`, `bold` file paths. Bundled defaults: 
 
 - `id` (required) — slug for output names: letters, digits, `-`, `_`
 - `image` (required) — PNG/JPEG/WebP screenshot of your app. StoreShot never alters its content.
+- `prompt` (optional) — localized marketing text for interface-inspired layers (the Discovery template's search-bar placeholder, e.g. `"Find a flight"` / `"ابحث عن رحلة"`). Rendered strictly outside the app screenshot.
 - `role` (optional) — semantic role in the campaign (`"hero"`, `"feature"`, `"workflow"`, `"trust"`…). Templates surface it in captions; use it to describe your sequence, not to switch templates.
 - `title`, `subtitle` — plain string (all locales) or per-locale map; every configured locale needs an entry (exact tag or primary language).
 - `deviceFrame` (optional) — what the template's `"auto"` device mode resolves to (`true` → the template's framed presentation, `false` → frameless). Override completely with the template's `deviceMode` setting.

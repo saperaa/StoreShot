@@ -118,6 +118,7 @@ function renderLandscape(ctx: TemplateContext) {
 }
 
 function renderPortrait(ctx: TemplateContext) {
+  if (ctx.index % 2 === 1) return renderPortraitB(ctx);
   const { width: w, height: h } = ctx.canvas;
   const tokens = buildTokens(ctx.theme);
   const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
@@ -210,6 +211,64 @@ function renderPortrait(ctx: TemplateContext) {
 
   return { css, html };
 }
+
+function renderPortraitB(ctx: TemplateContext) {
+  const { width: w, height: h } = ctx.canvas;
+  const tokens = buildTokens(ctx.theme);
+  const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
+  const deviceScale = numberSetting(SETTINGS, ctx.settings, "deviceScale");
+  const mode = resolveDeviceMode(stringSetting(SETTINGS, ctx.settings, "deviceMode"), ctx.deviceFrame, "bare");
+  const margin = w * 0.085;
+
+  const device = renderDevice({
+    image: ctx.image,
+    mode,
+    maxWidth: w * 0.48 * deviceScale,
+    maxHeight: h * 0.36 * deviceScale,
+  });
+
+  const head = headline({
+    ctx,
+    tokens,
+    style: "swiss",
+    kicker: "overline",
+    sizes: { kicker: w * 0.021, title: w * 0.118, subtitle: w * 0.026 },
+    lines: { title: 3, subtitle: 2 },
+    scale: headlineScale,
+    subtitleMaxWidth: w * 0.7,
+  });
+
+  const css = [
+    ".shot-swiss.b {",
+    "  background: " + tokens.bg + ";",
+    "  " + headlineVars(tokens, "swiss", h * 0.02, h * 0.022),
+    "  " + mastheadVars(tokens),
+    "}",
+    ".swb-bar { position: absolute; top: 0; left: 0; right: 0; height: " + px(Math.max(10, h * 0.007)) + "px; background: " + tokens.accent + "; }",
+    ".swb-meta { position: absolute; top: " + px(h * 0.085) + "px; inset-inline-start: " + px(margin) + "px; width: calc(100% - " + px(margin * 2) + "px); }",
+    ".swb-head { position: absolute; top: " + px(h * 0.16) + "px; inset-inline-start: " + px(margin) + "px; z-index: 2; max-width: " + px(w * 0.86) + "px; }",
+    ".swb-baseline { position: absolute; bottom: " + px(h * 0.14) + "px; inset-inline-start: " + px(margin) + "px; width: calc(100% - " + px(margin * 2) + "px); height: 1px; background: " + tokens.line + "; z-index: 1; }",
+    ".swb-device { position: absolute; bottom: " + px(h * 0.155) + "px; inset-inline-start: " + px(margin) + "px; z-index: 2; }",
+    ".swb-block { position: absolute; bottom: " + px(h * 0.14) + "px; inset-inline-end: " + px(margin) + "px; width: " + px(w * 0.028) + "px; height: " + px(w * 0.028) + "px; background: " + tokens.accent + "; z-index: 3; }",
+    ".swb-caption { position: absolute; bottom: " + px(h * 0.085) + "px; inset-inline-end: " + px(margin) + "px; font-size: " + px(w * 0.0185) + "px; color: " + tokens.muted + "; letter-spacing: 0.1em; z-index: 2; font-weight: 500; text-align: end; }",
+    '[dir="ltr"] .swb-caption { text-transform: uppercase; }',
+  ].join("\n");
+
+  const html = [
+    '<div class="shot shot-swiss b">',
+    '  <div class="swb-bar"></div>',
+    '  <div class="swb-meta">' + masthead(ctx, tokens, w * 0.021) + "</div>",
+    '  <div class="swb-head">' + head + "</div>",
+    '  <div class="swb-baseline"></div>',
+    '  <div class="swb-device">' + device.html + "</div>",
+    '  <div class="swb-block"></div>',
+    '  <div class="swb-caption">FIG. ' + String(ctx.index + 1).padStart(2, "0") + " / " + String(ctx.count).padStart(2, "0") + "</div>",
+    "</div>",
+  ].join("\n");
+
+  return { css, html };
+}
+
 
 export const swissTemplate: TemplateDefinition = {
   id: "swiss",

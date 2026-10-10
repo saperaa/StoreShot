@@ -5,6 +5,8 @@ export type TextDirection = "ltr" | "rtl";
 export interface TemplateTexts {
   title?: string;
   subtitle?: string;
+  /** Localized marketing prompt for interface-inspired layers (search bar…). */
+  prompt?: string;
 }
 
 export interface TemplateImage {

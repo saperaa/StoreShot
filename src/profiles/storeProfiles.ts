@@ -136,6 +136,19 @@ export const STORE_PROFILES: readonly StoreProfileDef[] = [
   },
   {
     store: "google-play",
+    id: "feature-graphic",
+    label: "Feature graphic (1024x500)",
+    width: 1024,
+    height: 500,
+    notes:
+      "Required to publish a listing; also the cover image for a preview video. " +
+      "JPEG or 24-bit PNG, no alpha. Landscape composition. Note: recommendation " +
+      "eligibility additionally wants 4+ phone screenshots at 1080px minimum.",
+    verifiedOn: "2026-10-10",
+    sourceUrl: GOOGLE_SOURCE,
+  },
+  {
+    store: "google-play",
     id: "tablet",
     label: "Tablet (1600x2560)",
     width: 1600,

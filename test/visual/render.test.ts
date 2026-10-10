@@ -41,6 +41,7 @@ interface Case {
   /** Text overrides for regression scenarios (long copy, mixed content). */
   title?: string;
   subtitle?: string;
+  prompt?: string;
   /** Theme override for light/dark coverage. */
   theme?: Record<string, string>;
   /** Canvas override; landscape sizes exercise the landscape compositions. */
@@ -76,6 +77,23 @@ const cases: Case[] = [
   { name: "immersive-ar", locale: "ar", template: "immersive", screenshot: "home", index: 1 },
   { name: "showcase-en", locale: "en-US", template: "showcase", screenshot: "compose" },
   { name: "showcase-ar", locale: "ar", template: "showcase", screenshot: "compose", index: 1 },
+  {
+    name: "discovery-en",
+    locale: "en-US",
+    template: "discovery",
+    screenshot: "home",
+    title: "Everything in one place",
+    subtitle: "Plan your day in seconds",
+  },
+  {
+    name: "discovery-ar",
+    locale: "ar",
+    template: "discovery",
+    screenshot: "compose",
+    index: 1,
+    title: "سجّلها في لحظتها",
+    subtitle: "إضافة سريعة وطبيعية للمهام",
+  },
   {
     name: "editorial-header-en",
     locale: "en-US",
@@ -122,6 +140,8 @@ beforeAll(async () => {
     if (caseDef.theme) {
       patched.theme = { ...patched.theme, ...caseDef.theme, mode: "auto" };
     }
+    if (caseDef.name === "discovery-en") (caseDef as any).prompt = "plan my week";
+    if (caseDef.name === "discovery-ar") (caseDef as any).prompt = "أضف مهمة";
     if (caseDef.title || caseDef.subtitle) {
       patched.screenshots = resolved.screenshots.map((shot) =>
         shot === screenshot
@@ -132,6 +152,7 @@ beforeAll(async () => {
                 [locale.tag]: {
                   title: caseDef.title ?? shot.texts[locale.tag]?.title,
                   subtitle: caseDef.subtitle ?? shot.texts[locale.tag]?.subtitle,
+                  prompt: caseDef.prompt ?? shot.texts[locale.tag]?.prompt,
                 },
               },
             }

@@ -4,6 +4,7 @@ import { headline, headlineVars } from "../design/primitives.js";
 import { renderDevice, resolveDeviceMode } from "../design/device.js";
 import { landscapeMetrics, landscapeSizes } from "../design/layout.js";
 import { numberSetting, stringSetting } from "./settings.js";
+import { escapeHtml } from "../util/escapeHtml.js";
 import { px, type TemplateContext, type TemplateDefinition } from "./types.js";
 
 /**
@@ -121,6 +122,7 @@ function renderLandscape(ctx: TemplateContext) {
 }
 
 function renderPortrait(ctx: TemplateContext) {
+  if (ctx.index % 2 === 1) return renderPortraitB(ctx);
   const { width: w, height: h } = ctx.canvas;
   const tokens = buildTokens(ctx.theme);
   const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
@@ -222,6 +224,72 @@ function renderPortrait(ctx: TemplateContext) {
 
   return { css, html };
 }
+
+function renderPortraitB(ctx: TemplateContext) {
+  const { width: w, height: h } = ctx.canvas;
+  const tokens = buildTokens(ctx.theme);
+  const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
+  const deviceScale = numberSetting(SETTINGS, ctx.settings, "deviceScale");
+  const mode = resolveDeviceMode(stringSetting(SETTINGS, ctx.settings, "deviceMode"), ctx.deviceFrame, "angled");
+
+  const device = renderDevice({
+    image: ctx.image,
+    mode,
+    maxWidth: w * 0.62 * deviceScale,
+    maxHeight: h * 0.56 * deviceScale,
+    ...(mode === "angled" ? { rotateY: -12, rotateZ: -3 } : {}),
+  });
+
+  const head = headline({
+    ctx,
+    tokens,
+    style: "campaign",
+    kicker: "chip",
+    sizes: { kicker: w * 0.022, title: w * 0.092, subtitle: w * 0.027 },
+    lines: { title: 3, subtitle: 2 },
+    scale: headlineScale,
+    subtitleMaxWidth: w * 0.7,
+  });
+
+  const css = [
+    ".shot-campaign.b {",
+    "  background: linear-gradient(180deg, " + tokens.bg + " 0%, " + tokens.surfaceAlt + " 140%);",
+    "  " + headlineVars(tokens, "campaign", h * 0.02, h * 0.02),
+    "}",
+    ".cpb-giantword {",
+    "  position: absolute;",
+    "  top: " + px(h * 0.31) + "px;",
+    "  left: 50%;",
+    "  transform: translateX(-50%);",
+    "  font-family: var(--font-sans);",
+    "  font-weight: 700;",
+    "  font-size: " + px(w * 0.3) + "px;",
+    "  line-height: 0.95;",
+    "  letter-spacing: -0.02em;",
+    "  color: " + tokens.text + ";",
+    "  opacity: 0.07;",
+    "  white-space: nowrap;",
+    "  z-index: 0;",
+    "}",
+    ".cpb-head { position: absolute; top: " + px(h * 0.085) + "px; inset-inline-start: " + px(w * 0.09) + "px; inset-inline-end: " + px(w * 0.09) + "px; z-index: 3; }",
+    ".cpb-device { position: absolute; bottom: " + px(-h * 0.08) + "px; left: 50%; transform: translateX(-50%); z-index: 2; display: flex; justify-content: center; }",
+    ".cpb-underline { width: " + px(w * 0.2) + "px; height: " + px(Math.max(8, h * 0.006)) + "px; border-radius: 999px; background: " + tokens.accent + "; margin-block-start: " + px(h * 0.028) + "px; }",
+    ".cpb-chip-solid { display: inline-flex; align-items: center; gap: 0.6em; background: " + tokens.accent + "; color: " + tokens.onAccent + "; font-weight: 700; border-radius: 999px; padding: 0.6em 1.4em; }",
+  ].join("\n");
+
+  const headHtml = head.replace('class="hl-chip"', 'class="hl-chip cpb-chip-solid"');
+
+  const html = [
+    '<div class="shot shot-campaign b">',
+    '  <div class="cpb-giantword">' + escapeHtml(ctx.app.name) + "</div>",
+    '  <div class="cpb-head">' + headHtml + '<div class="cpb-underline"></div></div>',
+    '  <div class="cpb-device">' + device.html + "</div>",
+    "</div>",
+  ].join("\n");
+
+  return { css, html };
+}
+
 
 export const campaignTemplate: TemplateDefinition = {
   id: "campaign",

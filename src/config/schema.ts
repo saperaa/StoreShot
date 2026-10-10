@@ -63,6 +63,8 @@ export const screenshotSchema = z.object({
   deviceFrame: z.boolean().optional(),
   /** Optional semantic role in the campaign ("hero", "feature", "trust"…). */
   role: z.string().trim().min(1).optional(),
+  /** Optional localized marketing prompt, e.g. a search-bar placeholder ("Find a flight"). */
+  prompt: localizedTextSchema.optional(),
 });
 
 export const exportSchema = z.object({

@@ -139,10 +139,10 @@ export function resolveConfig(loaded: LoadedConfig): ResolvedConfig {
     }
     seenIds.add(shot.id.toLowerCase());
 
-    const texts: Record<string, { title?: string; subtitle?: string }> = {};
+    const texts: Record<string, { title?: string; subtitle?: string; prompt?: string }> = {};
     for (const locale of locales) {
-      const entry: { title?: string; subtitle?: string } = {};
-      for (const field of ["title", "subtitle"] as const) {
+      const entry: { title?: string; subtitle?: string; prompt?: string } = {};
+      for (const field of ["title", "subtitle", "prompt"] as const) {
         const value: LocalizedText | undefined = shot[field];
         if (value === undefined) continue;
         const resolved = resolveLocalizedText(value, locale.tag);

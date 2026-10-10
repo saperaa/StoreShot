@@ -31,6 +31,12 @@ const base = {
   output: { dir: "./out" },
 };
 
+const prompt = {
+  home: { "en-US": "plan my week", ar: "خطّط أسبوعي" },
+  compose: { "en-US": "add a task", ar: "أضف مهمة" },
+  insights: { "en-US": "track my streak", ar: "تابع سلسلة إنجازي" },
+};
+
 const copy = {
   home: {
     "en-US": ["Your day, beautifully under control", "Plan the night before, glide through tomorrow"],
@@ -63,6 +69,7 @@ function frameConfig(template, screenId, locale, theme, extraSettings = {}) {
         image: path.resolve(screens, `${screenFile[screenId]}.png`),
         title,
         subtitle,
+        ...(template === "discovery" ? { prompt: prompt[screenId][locale] } : {}),
       },
     ],
   };
@@ -121,6 +128,7 @@ const templates = [
   ["campaign", "compose"],
   ["immersive", "home"],
   ["showcase", "compose"],
+  ["discovery", "home"],
 ];
 for (const [template, screen] of templates) {
   for (const locale of ["en-US", "ar"]) {
@@ -134,6 +142,11 @@ for (const [template, screen] of templates) {
 
 // Personality variants: editorial on paper (light), cinematic in violet.
 run(frameConfig("editorial", "home", "en-US", paper), path.join(gallery, "themes", "editorial-paper"));
+{
+  const playConfig = frameConfig("discovery", "compose", "en-US", dark);
+  playConfig.exports = [{ store: "google-play", profile: "feature-graphic", name: "frame" }];
+  run(playConfig, path.join(gallery, "google-play", "feature-graphic"));
+}
 run(frameConfig("cinematic", "compose", "ar", violet), path.join(gallery, "themes", "cinematic-violet"));
 run(frameConfig("swiss", "insights", "ar", paper), path.join(gallery, "themes", "swiss-paper"));
 console.log("gallery: themes");

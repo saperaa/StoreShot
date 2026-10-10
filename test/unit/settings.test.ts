@@ -61,8 +61,9 @@ describe("template registry", () => {
       "campaign",
       "immersive",
       "showcase",
+      "discovery",
     ]);
-    expect(listTemplates().length).toBe(6);
+    expect(listTemplates().length).toBe(7);
   });
 
   it("every template has metadata, settings and a render function", () => {

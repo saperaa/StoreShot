@@ -5,6 +5,7 @@ import { swissTemplate } from "./swiss.js";
 import { campaignTemplate } from "./campaign.js";
 import { immersiveTemplate } from "./immersive.js";
 import { showcaseTemplate } from "./showcase.js";
+import { discoveryTemplate } from "./discovery.js";
 
 export const TEMPLATES: readonly TemplateDefinition[] = [
   editorialTemplate,
@@ -13,6 +14,7 @@ export const TEMPLATES: readonly TemplateDefinition[] = [
   campaignTemplate,
   immersiveTemplate,
   showcaseTemplate,
+  discoveryTemplate,
 ];
 
 /**

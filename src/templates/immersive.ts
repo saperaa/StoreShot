@@ -108,6 +108,7 @@ function renderLandscape(ctx: TemplateContext) {
 }
 
 function renderPortrait(ctx: TemplateContext) {
+  if (ctx.index % 2 === 1) return renderPortraitB(ctx);
   const { width: w, height: h } = ctx.canvas;
   const tokens = buildTokens(ctx.theme);
   const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
@@ -190,6 +191,62 @@ function renderPortrait(ctx: TemplateContext) {
 
   return { css, html };
 }
+
+function renderPortraitB(ctx: TemplateContext) {
+  const { width: w, height: h } = ctx.canvas;
+  const tokens = buildTokens(ctx.theme);
+  const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
+  const deviceScale = numberSetting(SETTINGS, ctx.settings, "deviceScale");
+  const twin = ctx.settings["twin"] !== false;
+  const mode = resolveDeviceMode(stringSetting(SETTINGS, ctx.settings, "deviceMode"), ctx.deviceFrame, "angled");
+
+  const device = renderDevice({
+    image: ctx.image,
+    mode,
+    maxWidth: w * 0.7 * deviceScale,
+    maxHeight: h * 0.66 * deviceScale,
+    ...(mode === "angled" ? { rotateY: 10, rotateZ: 2, backLayer: twin } : {}),
+  });
+
+  const head = headline({
+    ctx,
+    tokens,
+    style: "display",
+    kicker: "overline",
+    sizes: { kicker: w * 0.022, title: w * 0.07, subtitle: w * 0.027 },
+    lines: { title: 3, subtitle: 2 },
+    scale: headlineScale,
+    subtitleMaxWidth: w * 0.5,
+  });
+
+  const css = [
+    ".shot-immersive.b {",
+    "  background:",
+    "    radial-gradient(65% 40% at 78% 55%, " + tokens.accentGlow(0.16) + " 0%, transparent 70%),",
+    "    " + tokens.bg + ";",
+    "  " + headlineVars(tokens, "display", h * 0.018, h * 0.02),
+    "}",
+    ".imb-head { position: absolute; top: " + px(h * 0.105) + "px; inset-inline-start: " + px(w * 0.085) + "px; z-index: 3; max-width: " + px(w * 0.52) + "px; }",
+    ".imb-vline { position: absolute; top: " + px(h * 0.12) + "px; bottom: " + px(h * 0.12) + "px; inset-inline-start: " + px(w * 0.52) + "px; width: 1px; background: " + tokens.line + "; z-index: 0; }",
+    ".imb-device { position: absolute; bottom: " + px(-h * 0.1) + "px; inset-inline-end: " + px(-w * 0.16) + "px; z-index: 2; }",
+    ".imb-tick { position: absolute; width: " + px(w * 0.045) + "px; height: " + px(w * 0.045) + "px; border-color: " + tokens.accent + "; border-style: solid; border-width: 0; z-index: 1; }",
+    ".imb-tick.tl { top: " + px(h * 0.045) + "px; inset-inline-start: " + px(w * 0.045) + "px; border-top-width: 2px; border-inline-start-width: 2px; }",
+    ".imb-tick.br { bottom: " + px(h * 0.045) + "px; inset-inline-end: " + px(w * 0.045) + "px; border-bottom-width: 2px; border-inline-end-width: 2px; }",
+  ].join("\n");
+
+  const html = [
+    '<div class="shot shot-immersive b">',
+    '  <div class="imb-vline"></div>',
+    '  <div class="imb-tick tl"></div>',
+    '  <div class="imb-tick br"></div>',
+    '  <div class="imb-head">' + head + "</div>",
+    '  <div class="imb-device">' + device.html + "</div>",
+    "</div>",
+  ].join("\n");
+
+  return { css, html };
+}
+
 
 export const immersiveTemplate: TemplateDefinition = {
   id: "immersive",

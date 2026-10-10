@@ -14,6 +14,7 @@ no plugin system, no build step, fully deterministic.
 | `campaign` | `angled` | `headlineScale`, `deviceScale`, `band`, `deviceMode` |
 | `immersive` | `angled` + twin | `headlineScale`, `deviceScale`, `twin`, `deviceMode` |
 | `showcase` | layered bare | `headlineScale`, `shotScale`, `layers` |
+| `discovery` | framed + layered | `headlineScale`, `deviceScale`, `ghostType`, `deviceMode` |
 
 Common settings: `headlineScale` (0.8–1.25), `deviceScale` (0.8–1.15),
 `deviceMode` (`"auto" | "bare" | "front" | "angled"`; `auto` follows the
@@ -69,7 +70,8 @@ Templates should compose these layers, not re-derive them.
    pixels out — no randomness, no dates, no environment reads.
 6. **No network, no absolute paths.** Only `ctx.image.url` and the injected
    `@font-face` families.
-7. **No letter-spacing on Arabic** (`[dir="ltr"]` selectors only) — tracking
+7. **Interface-inspired marketing layers** (search bars, chips) are marketing, not app UI: render them outside the screenshot, source their text from localized config fields (`texts.prompt`), and make them conditional — never add a search bar to an app that has no search.
+8. **No letter-spacing on Arabic** (`[dir="ltr"]` selectors only) — tracking
    breaks glyph connections.
 
 ## Device modes

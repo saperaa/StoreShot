@@ -108,6 +108,7 @@ function renderLandscape(ctx: TemplateContext) {
 }
 
 function renderPortrait(ctx: TemplateContext) {
+  if (ctx.index % 2 === 1) return renderPortraitB(ctx);
   const { width: w, height: h } = ctx.canvas;
   const tokens = buildTokens(ctx.theme);
   const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
@@ -204,6 +205,56 @@ ${reflection ? `<div class="ci-reflection"><img src="${ctx.image.url}" alt=""></
 
   return { css, html };
 }
+
+function renderPortraitB(ctx: TemplateContext) {
+  const { width: w, height: h } = ctx.canvas;
+  const tokens = buildTokens(ctx.theme);
+  const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
+  const deviceScale = numberSetting(SETTINGS, ctx.settings, "deviceScale");
+  const mode = resolveDeviceMode(stringSetting(SETTINGS, ctx.settings, "deviceMode"), ctx.deviceFrame, "front");
+
+  const device = renderDevice({
+    image: ctx.image,
+    mode,
+    maxWidth: w * 0.7 * deviceScale,
+    maxHeight: h * 0.88 * deviceScale,
+  });
+
+  const head = headline({
+    ctx,
+    tokens,
+    style: "cinematic",
+    kicker: "chip",
+    align: "center",
+    sizes: { kicker: w * 0.022, title: w * 0.078, subtitle: w * 0.03 },
+    lines: { title: 2, subtitle: 2 },
+    scale: headlineScale,
+    subtitleMaxWidth: w * 0.74,
+  });
+
+  const css = [
+    ".shot-cinematic.b {",
+    "  background:",
+    "    radial-gradient(90% 45% at 50% 18%, " + tokens.accentGlow(0.17) + " 0%, transparent 65%),",
+    "    linear-gradient(" + tokens.bg + " 40%, " + darken(tokens.bg, 0.5) + " 130%);",
+    "  " + headlineVars(tokens, "cinematic", h * 0.018, h * 0.02),
+    "}",
+    ".cib-device { position: absolute; bottom: " + px(-h * 0.3) + "px; left: 50%; transform: translateX(-50%); z-index: 2; }",
+    ".cib-scrim { position: absolute; bottom: 0; left: 0; right: 0; height: " + px(h * 0.4) + "px; background: linear-gradient(to top, rgba(3,5,9,0.9) 0%, rgba(3,5,9,0.5) 55%, transparent 100%); z-index: 3; }",
+    ".cib-head { position: absolute; bottom: " + px(h * 0.075) + "px; left: " + px(w * 0.1) + "px; right: " + px(w * 0.1) + "px; display: flex; justify-content: center; z-index: 4; }",
+  ].join("\n");
+
+  const html = [
+    '<div class="shot shot-cinematic b">',
+    '  <div class="cib-device">' + device.html + "</div>",
+    '  <div class="cib-scrim"></div>',
+    '  <div class="cib-head">' + head + "</div>",
+    "</div>",
+  ].join("\n");
+
+  return { css, html };
+}
+
 
 export const cinematicTemplate: TemplateDefinition = {
   id: "cinematic",

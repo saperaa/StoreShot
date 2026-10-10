@@ -23,8 +23,9 @@ Every frame is treated as a standalone marketing composition with a role in a se
 | `campaign` | Launch poster: the largest headline in the library, solid brand tag, angled device breaking a diagonal band | 3D angled |
 | `immersive` | Device in a scene: perspective twin devices, horizon, rim light, viewfinder ticks | 3D angled + twin |
 | `showcase` | The interface is the hero: layered UI views breaking the edge of an elevated slab | frameless, layered |
+| `discovery` | Apple-inspired product-page art direction: optional localized search layer, oversized ghost type, layered screens cropped by the canvas | framed + layered |
 
-Consecutive frames **alternate their layouts deterministically** (device anchor, camera setup, tilt direction, band angle), so a five-image listing reads like one campaign — same config, same pixels, every run.
+Consecutive frames **alternate between structurally different layouts** (centered vs asymmetric spreads, edge-cropped devices, typography behind objects), so a five-image listing reads like one campaign — and `screenshots[].prompt` feeds the Discovery template's localized search layer — same config, same pixels, every run.
 
 ## Gallery
 
@@ -41,6 +42,10 @@ All images below were rendered by this repository's CLI from the example project
 | Immersive (EN) | Showcase (AR) |
 | --- | --- |
 | ![Immersive EN](docs/gallery/immersive/en-US/01-home.png) | ![Showcase AR](docs/gallery/showcase/ar/01-compose.png) |
+
+| Discovery (EN) — search layer + layered screens | Discovery (AR) — RTL variant B |
+| --- | --- |
+| ![Discovery EN](docs/gallery/discovery/en-US/01-home.png) | ![Discovery AR](docs/gallery/discovery/ar/01-home.png) |
 
 | Swiss (EN) | Editorial on paper (light) |
 | --- | --- |
@@ -127,7 +132,7 @@ Apple's new product-page **header** and **search results** creatives are first-c
 | --- | --- |
 | ![Header AR](docs/gallery/landscape/header-21-9-ar/frame/ar/01-compose.png) | ![Header 16:9](docs/gallery/landscape/header-16-9/frame/en-US/01-home.png) |
 
-Profiles: `header-21-9`, `header-16-9` (one PNG covers header **and** search), `search-results-3-2`, plus `iphone-6-1` (1179×2556) and `preview-frame-6-3` (888×1920 poster frames — the preview itself must be video). Verified against Apple's official specifications on 2026-10-10 — see [`docs/store-profiles.md`](docs/store-profiles.md).
+Google Play gets its own treatment too: the verified `feature-graphic` profile (1024×500) renders in the same landscape engine — see `docs/gallery/google-play/`. Apple profiles: `header-21-9`, `header-16-9` (one PNG covers header **and** search), `search-results-3-2`, plus `iphone-6-1` (1179×2556) and `preview-frame-6-3` (888×1920 poster frames — the preview itself must be video). Verified against Apple's official specifications on 2026-10-10 — see [`docs/store-profiles.md`](docs/store-profiles.md).
 
 ## Store profiles
 

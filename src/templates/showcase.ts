@@ -132,6 +132,7 @@ function renderLandscape(ctx: TemplateContext) {
 }
 
 function renderPortrait(ctx: TemplateContext) {
+  if (ctx.index % 2 === 1) return renderPortraitB(ctx);
   const { width: w, height: h } = ctx.canvas;
   const tokens = buildTokens(ctx.theme);
   const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
@@ -223,6 +224,63 @@ function renderPortrait(ctx: TemplateContext) {
 
   return { css, html };
 }
+
+function renderPortraitB(ctx: TemplateContext) {
+  const { width: w, height: h } = ctx.canvas;
+  const tokens = buildTokens(ctx.theme);
+  const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
+  const shotScale = numberSetting(SETTINGS, ctx.settings, "shotScale");
+  const layers = ctx.settings["layers"] !== false;
+  const margin = w * 0.06;
+
+  const front = renderDevice({
+    image: ctx.image,
+    mode: "bare",
+    maxWidth: w * 0.62 * shotScale,
+    maxHeight: h * 0.46 * shotScale,
+  });
+  const back = renderDevice({
+    image: ctx.image,
+    mode: "bare",
+    maxWidth: w * 0.74 * shotScale,
+    maxHeight: h * 0.54 * shotScale,
+  });
+
+  const head = headline({
+    ctx,
+    tokens,
+    style: "display",
+    kicker: "chip",
+    align: "center",
+    sizes: { kicker: w * 0.022, title: w * 0.074, subtitle: w * 0.028 },
+    lines: { title: 2, subtitle: 2 },
+    scale: headlineScale,
+    subtitleMaxWidth: w * 0.72,
+  });
+
+  const css = [
+    ".shot-showcase.b { background: " + tokens.bg + "; " + headlineVars(tokens, "display", h * 0.018, h * 0.02) + " }",
+    ".shb-slab { position: absolute; inset: " + px(margin) + "px; background: " + tokens.surface + "; border: 1px solid " + tokens.line + "; border-radius: " + px(w * 0.06) + "px; box-shadow: " + tokens.shadowLg + "; overflow: hidden; }",
+    ".shb-head { position: absolute; top: " + px(h * 0.105) + "px; left: " + px(margin) + "px; right: " + px(margin) + "px; display: flex; flex-direction: column; align-items: center; z-index: 3; }",
+    ".shb-stack { position: absolute; bottom: " + px(-h * 0.1) + "px; left: 0; right: 0; height: " + px(h * 0.6) + "px; z-index: 2; }",
+    ".shb-back { position: absolute; bottom: " + px(h * 0.02) + "px; inset-inline-start: " + px(-w * 0.1) + "px; z-index: 1; filter: brightness(0.6) saturate(0.9); transform: rotate(2.5deg); }",
+    ".shb-front { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); z-index: 2; }",
+  ].join("\n");
+
+  const html = [
+    '<div class="shot shot-showcase b">',
+    '  <div class="shb-slab"></div>',
+    '  <div class="shb-head">' + head + "</div>",
+    '  <div class="shb-stack">',
+    layers ? '    <div class="shb-back">' + back.html + "</div>" : "",
+    '    <div class="shb-front">' + front.html + "</div>",
+    "  </div>",
+    "</div>",
+  ].join("\n");
+
+  return { css, html };
+}
+
 
 export const showcaseTemplate: TemplateDefinition = {
   id: "showcase",

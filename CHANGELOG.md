@@ -4,6 +4,28 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] — 2026-10-10
+
+Sequence art direction + the Discovery template.
+
+### Added
+
+- New `discovery` template — Apple-inspired product-page art direction: an
+  optional interface-inspired search layer rendered strictly OUTSIDE the app
+  screenshot with localized text from the new `screenshots[].prompt` field
+  (only marketplace/search apps need to set it), oversized ghost typography,
+  and layered app screens cropped by the canvas edges. Two portrait variants
+  plus landscape, all RTL-aware.
+- Structurally different portrait layout variant B for every template
+  (deterministic on odd sequence positions): editorial centered spread with
+  bottom-bleeding device, cinematic towering product over a scrim, swiss
+  giant-type page, campaign typography behind the device, immersive
+  edge-cropped twins, showcase full-bleed slab.
+- Google Play `feature-graphic` profile (1024x500, verified) and gallery
+  coverage; device realism pass (screen-edge vignette, rail specular
+  highlight).
+- Before/after gallery rebuilt from real CLI renders with Arabic examples;
+  every markdown image reference is verified to resolve on disk.
 ## [0.3.0] — 2026-10-10
 
 Apple creative assets + landscape compositions.
