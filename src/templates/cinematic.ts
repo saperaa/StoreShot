@@ -57,15 +57,15 @@ function renderLandscape(ctx: TemplateContext) {
   const tokens = buildTokens(ctx.theme);
   const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
   const deviceScale = numberSetting(SETTINGS, ctx.settings, "deviceScale");
-  const reflection = ctx.settings["reflection"] !== false;
   const mode = resolveDeviceMode(stringSetting(SETTINGS, ctx.settings, "deviceMode"), ctx.deviceFrame, "front");
-  const { pad, textWidth, deviceMaxH } = landscapeMetrics(w, h);
+  const { pad, textWidth } = landscapeMetrics(w, h);
 
+  // Banner crop: the device rises from the bottom edge and bleeds off it.
   const device = renderDevice({
     image: ctx.image,
     mode,
-    maxWidth: w * 0.34 * deviceScale,
-    maxHeight: deviceMaxH * 0.92 * deviceScale,
+    maxWidth: w * 0.36 * deviceScale,
+    maxHeight: h * 1.3 * deviceScale,
   });
 
   const head = headline({
@@ -74,41 +74,33 @@ function renderLandscape(ctx: TemplateContext) {
     style: "cinematic",
     kicker: "chip",
     align: "start",
-    sizes: landscapeSizes(h),
+    sizes: landscapeSizes(h, w),
     lines: { title: 3, subtitle: 3 },
     scale: headlineScale,
     subtitleMaxWidth: textWidth,
   });
 
-  const keyLight = tokens.accentGlow(0.16);
+  const keyLight = tokens.accentGlow(0.18);
   const css = [
     ".shot-cinematic.landscape {",
     "  background:",
-    "    radial-gradient(42% 75% at 74% 38%, " + keyLight + " 0%, transparent 70%),",
-    "    radial-gradient(70% 120% at 50% -30%, " + darken(tokens.bg, 0.5) + " 0%, transparent 60%),",
-    "    " + tokens.bg + ";",
+    "    radial-gradient(38% 95% at 73% 60%, " + keyLight + " 0%, transparent 72%),",
+    "    radial-gradient(60% 90% at 20% -20%, " + darken(tokens.bg, 0.4) + " 0%, transparent 55%),",
+    "    linear-gradient(" + tokens.bg + " 55%, " + darken(tokens.bg, 0.55) + " 130%);",
     "  " + headlineVars(tokens, "cinematic", h * 0.03, h * 0.034),
     "}",
     ".cil-head { position: absolute; inset-inline-start: " + px(pad) + "px; top: 50%; transform: translateY(-52%); width: " + px(textWidth) + "px; z-index: 3; }",
-    ".cil-device { position: absolute; inset-inline-end: " + px(w * 0.075) + "px; top: 50%; transform: translateY(-50%); z-index: 2; }",
-    ".cil-reflection {",
-    "  position: absolute;",
-    "  inset-inline-end: " + px(w * 0.075) + "px;",
-    "  top: calc(50% + " + px(deviceMaxH * 0.92 * deviceScale * 0.5) + "px);",
-    "  width: " + px(device.width) + "px;",
-    "  height: " + px(device.height * 0.14) + "px;",
-    "  overflow: hidden; opacity: 0.2; filter: blur(5px);",
-    '  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent 80%);',
-    "  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent 80%);",
-    "}",
-    ".cil-reflection img { width: " + px(device.width) + "px; transform: translateY(-" + px(device.height * 0.86) + "px) scaleY(-1); }",
+    ".cil-device { position: absolute; inset-inline-end: " + px(w * 0.09) + "px; bottom: " + px(-h * 0.26) + "px; z-index: 2; }",
+    ".cil-floor { position: absolute; left: 0; right: 0; bottom: 0; height: " + px(h * 0.42) + "px; background: linear-gradient(to top, " + tokens.blackShadow(0.38) + ", transparent); z-index: 1; }",
+    ".cil-rail { position: absolute; top: " + px(h * 0.66) + "px; inset-inline-start: " + px(w * 0.46) + "px; width: " + px(w * 0.42) + "px; height: 1px; background: " + tokens.line + "; z-index: 1; }",
   ].join("\n");
 
   const html = [
     '<div class="shot shot-cinematic landscape">',
+    '  <div class="cil-floor"></div>',
+    '  <div class="cil-rail"></div>',
     '  <div class="cil-head">' + head + "</div>",
     '  <div class="cil-device">' + device.html + "</div>",
-    reflection ? '  <div class="cil-reflection"><img src="' + ctx.image.url + '" alt=""></div>' : "",
     "</div>",
   ].join("\n");
 

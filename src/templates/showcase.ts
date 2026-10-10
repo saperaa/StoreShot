@@ -56,14 +56,14 @@ function renderLandscape(ctx: TemplateContext) {
   const front = renderDevice({
     image: ctx.image,
     mode: "bare",
-    maxWidth: w * 0.2 * shotScale,
-    maxHeight: h * 0.62 * shotScale,
+    maxWidth: w * 0.26 * shotScale,
+    maxHeight: h * 0.78 * shotScale,
   });
   const back = renderDevice({
     image: ctx.image,
     mode: "bare",
-    maxWidth: w * 0.24 * shotScale,
-    maxHeight: h * 0.74 * shotScale,
+    maxWidth: w * 0.32 * shotScale,
+    maxHeight: h * 1.0 * shotScale,
   });
 
   const head = headline({
@@ -71,13 +71,13 @@ function renderLandscape(ctx: TemplateContext) {
     tokens,
     style: "display",
     kicker: "chip",
-    sizes: landscapeSizes(h),
+    sizes: landscapeSizes(h, w),
     lines: { title: 3, subtitle: 3 },
     scale: headlineScale,
     subtitleMaxWidth: textWidth,
   });
 
-  const slabW = w * 0.46;
+  const slabW = w * 0.5;
 
   const css = `
 .shot-showcase.landscape {

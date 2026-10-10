@@ -58,13 +58,13 @@ function renderLandscape(ctx: TemplateContext) {
   const deviceScale = numberSetting(SETTINGS, ctx.settings, "deviceScale");
   const grid = ctx.settings["grid"] !== false;
   const mode = resolveDeviceMode(stringSetting(SETTINGS, ctx.settings, "deviceMode"), ctx.deviceFrame, "bare");
-  const { pad, textWidth, deviceMaxH } = landscapeMetrics(w, h);
+  const { pad, textWidth } = landscapeMetrics(w, h);
 
   const device = renderDevice({
     image: ctx.image,
     mode,
-    maxWidth: w * 0.26 * deviceScale,
-    maxHeight: deviceMaxH * 0.88 * deviceScale,
+    maxWidth: w * 0.34 * deviceScale,
+    maxHeight: h * 1.06 * deviceScale,
   });
 
   const head = headline({
@@ -72,7 +72,7 @@ function renderLandscape(ctx: TemplateContext) {
     tokens,
     style: "swiss",
     kicker: "overline",
-    sizes: landscapeSizes(h),
+    sizes: landscapeSizes(h, w),
     lines: { title: 3, subtitle: 3 },
     scale: headlineScale,
     subtitleMaxWidth: textWidth,
@@ -98,7 +98,7 @@ function renderLandscape(ctx: TemplateContext) {
 .swl-meta { position: absolute; top: ${px(pad * 0.55)}; inset-inline-start: ${px(pad)}; width: calc(100% - ${px(pad * 2)}); }
 .swl-head { position: absolute; inset-inline-start: ${px(pad)}; top: 50%; transform: translateY(-52%); width: ${px(textWidth)}; z-index: 2; }
 .swl-baseline { position: absolute; bottom: ${px(pad)}; inset-inline-start: ${px(pad)}; width: calc(100% - ${px(pad * 2)}); height: 1px; background: ${tokens.line}; z-index: 1; }
-.swl-device { position: absolute; inset-inline-end: ${px(w * 0.08)}; bottom: ${px(pad * 1.7)}; z-index: 2; }
+.swl-device { position: absolute; inset-inline-end: ${px(w * 0.1)}; bottom: ${px(-h * 0.07)}; z-index: 2; }
 .swl-caption { position: absolute; bottom: ${px(pad * 0.55)}; inset-inline-end: ${px(w * 0.08)}; font-size: ${px(h * 0.024)}; color: ${tokens.muted}; letter-spacing: 0.1em; z-index: 2; font-weight: 500; }
 [dir="ltr"] .swl-caption { text-transform: uppercase; }
 `;

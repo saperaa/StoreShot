@@ -17,15 +17,21 @@ export interface LandscapeMetrics {
 export function landscapeMetrics(width: number, height: number): LandscapeMetrics {
   return {
     pad: Math.round(height * 0.085),
-    textWidth: Math.round(width * 0.4),
+    textWidth: Math.round(width * 0.43),
     deviceMaxH: Math.round(height * 0.86),
   };
 }
 
-export function landscapeSizes(height: number): { kicker: number; title: number; subtitle: number } {
+export function landscapeSizes(
+  height: number,
+  width?: number,
+): { kicker: number; title: number; subtitle: number } {
+  // On very wide canvases (21:9 headers) the height alone would set an
+  // oversized headline; clamp the title by width too.
+  const title = width ? Math.min(height * 0.14, width * 0.052) : height * 0.14;
   return {
     kicker: height * 0.03,
-    title: height * 0.135,
+    title,
     subtitle: height * 0.044,
   };
 }

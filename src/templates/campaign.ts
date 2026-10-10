@@ -60,14 +60,14 @@ function renderLandscape(ctx: TemplateContext) {
   const band = ctx.settings["band"] !== false;
   const mode = resolveDeviceMode(stringSetting(SETTINGS, ctx.settings, "deviceMode"), ctx.deviceFrame, "angled");
   const flip = ctx.index % 2 === 1;
-  const { pad, textWidth, deviceMaxH } = landscapeMetrics(w, h);
+  const { pad, textWidth } = landscapeMetrics(w, h);
 
   const tilt = flip ? 9 : -11;
   const device = renderDevice({
     image: ctx.image,
     mode,
-    maxWidth: w * 0.3 * deviceScale,
-    maxHeight: deviceMaxH * 0.92 * deviceScale,
+    maxWidth: w * 0.36 * deviceScale,
+    maxHeight: h * 1.28 * deviceScale,
     ...(mode === "angled" ? { rotateY: tilt, rotateZ: flip ? 3 : -4 } : {}),
   });
 
@@ -76,7 +76,7 @@ function renderLandscape(ctx: TemplateContext) {
     tokens,
     style: "campaign",
     kicker: "chip",
-    sizes: landscapeSizes(h),
+    sizes: landscapeSizes(h, w),
     lines: { title: 3, subtitle: 2 },
     scale: headlineScale,
     subtitleMaxWidth: textWidth,
@@ -87,19 +87,20 @@ function renderLandscape(ctx: TemplateContext) {
   background: linear-gradient(90deg, ${tokens.bg} 0%, ${tokens.surfaceAlt} 130%);
   ${headlineVars(tokens, "campaign", h * 0.032, h * 0.032)}
 }
+.cpl-device { position: absolute; inset-inline-end: ${px(w * 0.1)}; bottom: ${px(-h * 0.24)}; z-index: 2; display: flex; justify-content: center; }
 .cpl-band {
   position: absolute;
   top: ${px(-h * 0.15)};
   inset-inline-end: ${px(w * 0.14)};
-  width: ${px(w * 0.34)};
-  height: ${px(h * 1.3)};
+  width: ${px(w * 0.4)};
+  height: ${px(h * 1.55)};
   background: ${tokens.accent};
   transform: rotate(${flip ? 9 : -9}deg);
   z-index: 0;
 }
 .cpl-head { position: absolute; inset-inline-start: ${px(pad)}; top: 50%; transform: translateY(-52%); width: ${px(textWidth)}; z-index: 3; }
 .cpl-underline { width: ${px(w * 0.09)}; height: ${px(Math.max(8, h * 0.012))}; border-radius: 999px; background: ${tokens.accent}; margin-block-start: ${px(h * 0.05)}; }
-.cpl-device { position: absolute; inset-inline-end: ${px(w * 0.075)}; top: 50%; transform: translateY(-50%); z-index: 2; display: flex; justify-content: center; }
+
 .cpl-chip-solid {
   display: inline-flex; align-items: center; gap: 0.6em;
   background: ${tokens.accent}; color: ${tokens.onAccent};

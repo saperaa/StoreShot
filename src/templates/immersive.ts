@@ -59,13 +59,13 @@ function renderLandscape(ctx: TemplateContext) {
   const twin = ctx.settings["twin"] !== false;
   const mode = resolveDeviceMode(stringSetting(SETTINGS, ctx.settings, "deviceMode"), ctx.deviceFrame, "angled");
   const flip = ctx.index % 2 === 1;
-  const { pad, textWidth, deviceMaxH } = landscapeMetrics(w, h);
+  const { pad, textWidth } = landscapeMetrics(w, h);
 
   const device = renderDevice({
     image: ctx.image,
     mode,
-    maxWidth: w * 0.3 * deviceScale,
-    maxHeight: deviceMaxH * 0.92 * deviceScale,
+    maxWidth: w * 0.38 * deviceScale,
+    maxHeight: h * 1.18 * deviceScale,
     ...(mode === "angled" ? { rotateY: flip ? 8 : -8, rotateZ: 0, backLayer: twin } : {}),
   });
 
@@ -74,7 +74,7 @@ function renderLandscape(ctx: TemplateContext) {
     tokens,
     style: "display",
     kicker: "overline",
-    sizes: landscapeSizes(h),
+    sizes: landscapeSizes(h, w),
     lines: { title: 3, subtitle: 3 },
     scale: headlineScale,
     subtitleMaxWidth: textWidth,
@@ -83,13 +83,13 @@ function renderLandscape(ctx: TemplateContext) {
   const css = `
 .shot-immersive.landscape {
   background:
-    radial-gradient(30% 60% at 72% 55%, ${tokens.accentGlow(0.14)} 0%, transparent 72%),
+    radial-gradient(34% 90% at 74% 65%, ${tokens.accentGlow(0.17)} 0%, transparent 74%),
     ${tokens.bg};
   ${headlineVars(tokens, "display", h * 0.03, h * 0.034)}
 }
 .iml-head { position: absolute; inset-inline-start: ${px(pad)}; top: 50%; transform: translateY(-52%); width: ${px(textWidth)}; z-index: 3; }
-.iml-horizon { position: absolute; top: ${px(h * 0.72)}; left: ${px(w * 0.42)}; right: ${px(pad)}; height: 1px; background: ${tokens.line}; z-index: 0; }
-.iml-device { position: absolute; inset-inline-end: ${px(w * 0.075)}; top: 50%; transform: translateY(-50%); z-index: 2; display: flex; justify-content: center; }
+.iml-horizon { position: absolute; top: ${px(h * 0.24)}; left: ${px(w * 0.5)}; right: ${px(pad)}; height: 1px; background: ${tokens.line}; z-index: 0; }
+.iml-device { position: absolute; inset-inline-end: ${px(w * 0.09)}; bottom: ${px(-h * 0.18)}; z-index: 2; display: flex; justify-content: center; }
 .iml-tick { position: absolute; width: ${px(h * 0.045)}; height: ${px(h * 0.045)}; border-color: ${tokens.accent}; border-style: solid; border-width: 0; z-index: 1; }
 .iml-tick.tl { top: ${px(pad * 0.45)}; inset-inline-start: ${px(pad * 0.45)}; border-top-width: 2px; border-inline-start-width: 2px; }
 .iml-tick.br { bottom: ${px(pad * 0.45)}; inset-inline-end: ${px(pad * 0.45)}; border-bottom-width: 2px; border-inline-end-width: 2px; }
