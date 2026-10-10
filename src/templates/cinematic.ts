@@ -148,8 +148,8 @@ function renderPortrait(ctx: TemplateContext) {
   const device = renderDevice({
     image: ctx.image,
     mode,
-    maxWidth: w * 0.64 * deviceScale,
-    maxHeight: h * (headlineBelow ? 0.62 : 0.56) * deviceScale,
+    maxWidth: w * 0.74 * deviceScale,
+    maxHeight: h * (headlineBelow ? 0.72 : 0.66) * deviceScale,
   });
 
   const head = headline({
@@ -158,7 +158,7 @@ function renderPortrait(ctx: TemplateContext) {
     style: "cinematic",
     kicker: "chip",
     align: "center",
-    sizes: { kicker: w * 0.022, title: w * 0.072, subtitle: w * 0.03 },
+    sizes: { kicker: w * 0.023, title: w * 0.082, subtitle: w * 0.032 },
     lines: { title: 2, subtitle: 2 },
     scale: headlineScale,
     subtitleMaxWidth: w * 0.72,
@@ -195,7 +195,7 @@ function renderPortrait(ctx: TemplateContext) {
 }
 .ci-reflection img { width: 100%; transform: translateY(-${px(device.height * 0.84)}) scaleY(-1); }
 .ci-reflection img { width: ${px(device.width)}; }
-.ci-head-top { position: absolute; top: ${px(h * 0.095)}; left: 0; right: 0; display: flex; justify-content: center; }
+.ci-head-top { position: absolute; top: ${px(h * 0.085)}; left: 0; right: 0; display: flex; justify-content: center; }
 .ci-head-bottom {
   position: absolute;
   bottom: ${px(h * 0.055)};
@@ -208,8 +208,8 @@ function renderPortrait(ctx: TemplateContext) {
 .ci-scrim {
   position: absolute;
   bottom: 0; left: 0; right: 0;
-  height: ${px(h * 0.34)};
-  background: linear-gradient(to top, rgba(3,5,9,0.88) 0%, rgba(3,5,9,0.45) 55%, transparent 100%);
+  height: ${px(h * 0.38)};
+  background: linear-gradient(to top, rgba(3,5,9,0.92) 0%, rgba(3,5,9,0.5) 55%, transparent 100%);
   z-index: 2;
 }
 `;
@@ -248,8 +248,8 @@ function renderPortraitB(ctx: TemplateContext) {
   const device = renderDevice({
     image: ctx.image,
     mode,
-    maxWidth: w * 0.7 * deviceScale,
-    maxHeight: h * 0.88 * deviceScale,
+    maxWidth: w * 0.8 * deviceScale,
+    maxHeight: h * 1.02 * deviceScale,
   });
 
   const head = headline({
@@ -258,7 +258,7 @@ function renderPortraitB(ctx: TemplateContext) {
     style: "cinematic",
     kicker: "chip",
     align: "center",
-    sizes: { kicker: w * 0.022, title: w * 0.078, subtitle: w * 0.03 },
+    sizes: { kicker: w * 0.023, title: w * 0.086, subtitle: w * 0.032 },
     lines: { title: 2, subtitle: 2 },
     scale: headlineScale,
     subtitleMaxWidth: w * 0.74,

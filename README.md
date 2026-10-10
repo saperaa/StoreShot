@@ -16,6 +16,14 @@ These are the problems StoreShot was built to kill:
 - **Cloud tools want your unreleased app.** AppScreens, Previewed, LaunchMatics and friends are freemium SaaS ($10–25/month) that upload pre-release, NDA-sensitive screenshots to third-party servers. StoreShot runs 100% offline and is MIT-licensed.
 - **"I'm a developer, not a designer."** Seven art-directed templates — editorial, cinematic, Swiss, campaign, immersive, showcase, discovery — with realistic device rendering, sequence-aware layouts, and a validator that refuses to ship a clipped or overflowing headline.
 
+## The flagship campaign — Dark Cinematic
+
+A complete five-role listing (value proposition → feature → differentiator → workflow → strength) in English and Arabic, one config, alternating camera setups. Rendered by the CLI at 1206×2622 — [full set](docs/gallery/campaign-cinematic).
+
+| 01 Value proposition | 04 Workflow |
+| --- | --- |
+| ![EN hero](docs/gallery/campaign-cinematic/app-store-iphone-6-3/en-US/01-home.png) | ![AR workflow](docs/gallery/campaign-cinematic/app-store-iphone-6-3/ar/04-focus.png) |
+
 ## How it compares
 
 |  | StoreShot | fastlane frameit | AppScreens / Previewed | Shotlingo |
