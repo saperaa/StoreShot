@@ -120,7 +120,7 @@ Sans Arabic on RTL pages, with graceful cross-fallthrough for mixed text.
 
 ## Testing
 
-1. Add a case to `cases` in `test/visual/render.test.ts` (use `title`/
+1. Add a case to `cases` in `tests/visual/render.test.ts` (use `title`/
    `subtitle`/`theme` overrides for Arabic long-copy and light-mode cases).
 2. `npm run test:visual:update` writes per-platform baselines; commit them.
 3. `npm test` asserts dimensions, fonts loaded, no overflow, non-blank

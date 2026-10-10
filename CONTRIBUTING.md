@@ -43,8 +43,8 @@ test/{unit,integration,visual}
 
 ## Visual regression baselines
 
-`test/visual` compares renders against per-platform committed baselines in
-`test/visual/baselines/`. Text rasterization differs between Windows and
+`tests/visual` compares renders against per-platform committed baselines in
+`tests/visual/baselines/`. Text rasterization differs between Windows and
 Linux Chromium, so baselines are platform-suffixed (`gradient-ar-win32.png`).
 
 - Changed rendering **intentionally**? Regenerate your platform's baselines

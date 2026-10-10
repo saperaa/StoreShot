@@ -69,9 +69,9 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "schema": "tsx scripts/gen-schema.ts",
     "test": "npm run build && vitest run",
-    "test:unit": "vitest run test/unit",
-    "test:integration": "npm run build && vitest run test/integration",
-    "test:visual": "npm run build && vitest run test/visual",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "npm run build && vitest run tests/integration",
+    "test:visual": "npm run build && vitest run tests/visual",
     "test:visual:update": "cross-env UPDATE_SNAPSHOTS=1 npm run test:visual",
     "prepublishOnly": "npm run lint && npm run typecheck && npm run schema && npm run test"
   },

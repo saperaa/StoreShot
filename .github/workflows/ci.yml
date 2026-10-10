@@ -38,10 +38,10 @@ jobs:
         run: npx playwright-core install chromium
 
       - name: Unit + integration tests
-        run: npx vitest run test/unit test/integration
+        run: npx vitest run tests/unit tests/integration
 
       - name: Visual regression tests
-        run: npx vitest run test/visual
+        run: npx vitest run tests/visual
 
       - name: Verify npm package contents
         run: npm pack --dry-run
