@@ -195,6 +195,82 @@ const cases: Case[] = [
     subtitle: "رؤى أسبوعية واضحة، وتنبيهات ذكية تلازم إيقاع حياتك اليومي.",
     size: { width: 1024, height: 500 },
   },
+  {
+    // Warm Premium family: paper tones, serif display, plate margin.
+    name: "atelier-en",
+    locale: "en-US",
+    template: "atelier",
+    screenshot: "home",
+    theme: { background: "#F5EFE4", accent: "#B4552D", text: "#221C14", mutedText: "#7A6F5D" },
+  },
+  {
+    // Warm Premium family, Arabic studio-panel composition.
+    name: "atelier-ar",
+    locale: "ar",
+    template: "atelier",
+    screenshot: "compose",
+    index: 1,
+    theme: { background: "#F5EFE4", accent: "#B4552D", text: "#221C14", mutedText: "#7A6F5D" },
+  },
+  {
+    // Vibrant Gradient family: structured two-tone light field.
+    name: "aurora-en",
+    locale: "en-US",
+    template: "aurora",
+    screenshot: "home",
+    theme: { background: "#171233", accent: "#8B5CF6", text: "#FFFFFF", mutedText: "#B7AFC9" },
+  },
+  {
+    // Vibrant Gradient family, constellation composition, Arabic.
+    name: "aurora-ar",
+    locale: "ar",
+    template: "aurora",
+    screenshot: "insights",
+    index: 1,
+    theme: { background: "#171233", accent: "#8B5CF6", text: "#FFFFFF", mutedText: "#B7AFC9" },
+  },
+  {
+    // Minimal Product family: near-white field, plinth presentation.
+    name: "linea-en",
+    locale: "en-US",
+    template: "linea",
+    screenshot: "home",
+    theme: { background: "#FAFAF8", accent: "#14161A", text: "#14161A", mutedText: "#8A8F98" },
+  },
+  {
+    // Minimal Product family, caption composition, Arabic.
+    name: "linea-ar",
+    locale: "ar",
+    template: "linea",
+    screenshot: "focus",
+    index: 1,
+    theme: { background: "#FAFAF8", accent: "#14161A", text: "#14161A", mutedText: "#8A8F98" },
+  },
+  {
+    // New families across landscape formats.
+    name: "atelier-landscape-ar",
+    locale: "ar",
+    template: "atelier",
+    screenshot: "home",
+    theme: { background: "#F5EFE4", accent: "#B4552D", text: "#221C14", mutedText: "#7A6F5D" },
+    size: { width: 960, height: 412 },
+  },
+  {
+    name: "aurora-landscape-en",
+    locale: "en-US",
+    template: "aurora",
+    screenshot: "home",
+    theme: { background: "#171233", accent: "#8B5CF6", text: "#FFFFFF", mutedText: "#B7AFC9" },
+    size: { width: 960, height: 412 },
+  },
+  {
+    name: "linea-landscape-en",
+    locale: "en-US",
+    template: "linea",
+    screenshot: "home",
+    theme: { background: "#FAFAF8", accent: "#14161A", text: "#14161A", mutedText: "#8A8F98" },
+    size: { width: 960, height: 412 },
+  },
 ];
 
 let renderer: RendererType;
