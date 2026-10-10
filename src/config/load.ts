@@ -17,7 +17,7 @@ export function formatZodIssues(error: z.ZodError): string {
     const location = issue.path.length > 0 ? issue.path.join(".") : "<root>";
     return `  - ${location}: ${issue.message}`;
   });
-  return `Invalid configuration:\n${lines.join("\n")}\n\nSee the configuration reference: https://github.com/storeshot/storeshot/blob/main/docs/configuration.md`;
+  return `Invalid configuration:\n${lines.join("\n")}\n\nSee the configuration reference: https://github.com/saperaa/StoreShot/blob/main/docs/configuration.md`;
 }
 
 /**

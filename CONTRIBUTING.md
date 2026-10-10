@@ -7,7 +7,7 @@ error messages — keep those three in mind for every change.
 ## Getting set up
 
 ```bash
-git clone https://github.com/storeshot/storeshot
+git clone https://github.com/saperaa/StoreShot
 cd storeshot
 npm install
 npx playwright-core install chromium   # one-time

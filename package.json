@@ -3,27 +3,37 @@
   "version": "0.1.0",
   "description": "Generate professional, RTL-ready App Store and Google Play screenshots from a JSON config. Local, deterministic, Arabic-first.",
   "keywords": [
+    "app-store-screenshots",
+    "google-play-screenshots",
+    "screenshot-generator",
     "app-store",
     "google-play",
+    "store-listing",
     "screenshots",
-    "screenshot-generator",
     "arabic",
     "rtl",
+    "localization",
     "cli",
+    "developer-tools",
+    "fastlane-frameit-alternative",
+    "frameit",
     "marketing",
-    "store-listing"
+    "design-automation",
+    "playwright",
+    "typescript",
+    "open-source"
   ],
   "type": "module",
   "license": "MIT",
   "author": "StoreShot contributors",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/storeshot/storeshot.git"
+    "url": "git+https://github.com/saperaa/StoreShot.git"
   },
   "bugs": {
-    "url": "https://github.com/storeshot/storeshot/issues"
+    "url": "https://github.com/saperaa/StoreShot/issues"
   },
-  "homepage": "https://github.com/storeshot/storeshot#readme",
+  "homepage": "https://github.com/saperaa/StoreShot#readme",
   "engines": {
     "node": ">=20"
   },

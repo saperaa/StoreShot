@@ -1,12 +1,65 @@
-# StoreShot
+# StoreShot — App Store & Google Play screenshots that look designed, not generated
 
-**Art-directed, RTL-first App Store & Google Play screenshots — from one JSON config, rendered locally.**
+[![CI](https://github.com/saperaa/StoreShot/actions/workflows/ci.yml/badge.svg)](https://github.com/saperaa/StoreShot/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![npm](https://img.shields.io/badge/npm-storeshot--cli-blue)](https://www.npmjs.com/package/storeshot-cli)
 
-StoreShot composes your real app screenshots into premium marketing frames for every locale you ship — with **Arabic and right-to-left typography as a first-class design system**, deterministic offline rendering, and a validator that refuses to ship a clipped headline.
+A **free, open-source CLI** that turns your real app screenshots into premium, art-directed store listings — for every locale and every device size — rendered **locally and deterministically**. First-class **Arabic and right-to-left** support: connected letterforms, mirrored layouts, localized marketing layers. No cloud. No subscription. Your unreleased app never leaves your machine.
+
+## Stop fighting your store screenshots
+
+These are the problems StoreShot was built to kill:
+
+- **The combinatorial explosion.** Screenshots × locales × device sizes is hundreds of assets per release ("300 assets to regenerate each release" is a real number from real teams). One JSON config renders the whole matrix — same pixels, every time, straight into CI.
+- **Arbitrary exact-resolution rules.** Wrong pixel dimensions are the #1 cause of App Store Connect upload rejections. StoreShot ships store profiles **verified against official Apple/Google specifications** (with verification dates) and guarantees exact output dimensions.
+- **fastlane frameit pain.** Frameit is slow, needs Ruby + ImageMagick, ships stale device frames — and **breaks Arabic letterforms entirely**. StoreShot renders through Chromium's text engine: correct shaping, bidi, mixed Arabic/English text and numerals, always.
+- **Cloud tools want your unreleased app.** AppScreens, Previewed, LaunchMatics and friends are freemium SaaS ($10–25/month) that upload pre-release, NDA-sensitive screenshots to third-party servers. StoreShot runs 100% offline and is MIT-licensed.
+- **"I'm a developer, not a designer."** Seven art-directed templates — editorial, cinematic, Swiss, campaign, immersive, showcase, discovery — with realistic device rendering, sequence-aware layouts, and a validator that refuses to ship a clipped or overflowing headline.
+
+## How it compares
+
+|  | StoreShot | fastlane frameit | AppScreens / Previewed | Shotlingo |
+| --- | --- | --- | --- | --- |
+| Price | Free, MIT | Free | $10–25/mo | Paid |
+| Runs | Local CLI, offline | Local (Ruby + ImageMagick) | Cloud only | Cloud only |
+| Arabic / RTL | First-class: shaping, mirrored layouts, Arabic art direction | Breaks ligatures | Not advertised | Yes |
+| Deterministic CI output | Pixel-identical | Environment-dependent | No | No |
+| Verified store sizes | Yes, dated + sourced | Manual Framefile.json | Yes | Yes |
+| Product-page headers & search assets (Apple) | Yes | No | Paid tiers | No |
+
+## 60 seconds to your first listing
 
 ```bash
-npx storeshot-cli init my-app
-npx storeshot-cli generate
+npx storeshot-cli init my-app     # wizard: app name, story, locales, template, theme
+npx storeshot-cli install         # one-time Chromium download
+cd my-app && npx storeshot-cli generate
+```
+
+```text
+storeshots/
+  app-store-iphone-6-3/en-US/01-home.png … 05-plan.png
+  app-store-iphone-6-3/ar/…
+  google-play-phone/…
+```
+
+```jsonc
+{
+  "locales": ["en-US", "ar"],
+  "template": "editorial",
+  "screenshots": [
+    { "id": "home", "role": "hero", "image": "./screens/home.png",
+      "title": { "en-US": "Your day, beautifully in control", "ar": "يومك تحت سيطرتك، بأناقة" } }
+  ],
+  "exports": [ { "store": "app-store", "profile": "iphone-6-3" } ]
+}
+```
+
+Full example gallery (every template, English + Arabic, light + dark, portrait + landscape banners): [docs/gallery](docs/gallery) · Before/after: [docs/before-after.md](docs/before-after.md)
+
+```bash
+git clone https://github.com/saperaa/StoreShot && cd StoreShot
+npm install && npm run build && npx playwright-core install chromium
+cd starter && node ../dist/cli.js generate
 ```
 
 ---
@@ -54,7 +107,7 @@ All images below were rendered by this repository's CLI from the example project
 Rebuild it yourself:
 
 ```bash
-git clone https://github.com/storeshot/storeshot && cd storeshot
+git clone https://github.com/saperaa/StoreShot && cd storeshot
 npm install && npm run build && npx playwright-core install chromium
 cd starter && node ../dist/cli.js generate
 node ../scripts/build-gallery.mjs   # docs/gallery

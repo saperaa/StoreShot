@@ -49,4 +49,4 @@ storeshot generate --export google-play-phone
 storeshot templates           # list templates + settings
 ```
 
-Full documentation: https://github.com/storeshot/storeshot
+Full documentation: https://github.com/saperaa/StoreShot
