@@ -28,6 +28,9 @@ export interface ResolvedScreenshot {
   deviceFrame: boolean | undefined;
   /** Optional semantic role from the config ("hero", "feature", …). */
   role: string | undefined;
+  /** Screen fitting controls ("cover"/"contain" + focal point). */
+  fit: "cover" | "contain" | undefined;
+  focalPoint: { x: number; y: number } | undefined;
   /** Resolved text per locale tag. */
   texts: Record<string, { title?: string; subtitle?: string }>;
 }
@@ -166,6 +169,8 @@ export function resolveConfig(loaded: LoadedConfig): ResolvedConfig {
       imagePath: resolveFromConfigDir(loaded.dir, shot.image),
       deviceFrame: shot.deviceFrame,
       role: shot.role,
+      fit: shot.fit,
+      focalPoint: shot.focalPoint,
       texts,
     });
   }

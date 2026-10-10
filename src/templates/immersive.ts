@@ -57,7 +57,11 @@ function renderLandscape(ctx: TemplateContext) {
   const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
   const deviceScale = numberSetting(SETTINGS, ctx.settings, "deviceScale");
   const twin = ctx.settings["twin"] !== false;
-  const mode = resolveDeviceMode(stringSetting(SETTINGS, ctx.settings, "deviceMode"), ctx.deviceFrame, "angled");
+  const mode = resolveDeviceMode(
+    stringSetting(SETTINGS, ctx.settings, "deviceMode"),
+    ctx.deviceFrame,
+    "angled",
+  );
   const flip = ctx.index % 2 === 1;
   const { pad, textWidth } = landscapeMetrics(w, h);
 
@@ -101,7 +105,7 @@ function renderLandscape(ctx: TemplateContext) {
   <div class="iml-tick tl"></div>
   <div class="iml-tick br"></div>
   <div class="iml-head">${head}</div>
-  <div class="iml-device">${device.html}</div>
+  <div class="iml-device" data-bleed="true">${device.html}</div>
 </div>`;
 
   return { css, html };
@@ -114,7 +118,11 @@ function renderPortrait(ctx: TemplateContext) {
   const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
   const deviceScale = numberSetting(SETTINGS, ctx.settings, "deviceScale");
   const twin = ctx.settings["twin"] !== false;
-  const mode = resolveDeviceMode(stringSetting(SETTINGS, ctx.settings, "deviceMode"), ctx.deviceFrame, "angled");
+  const mode = resolveDeviceMode(
+    stringSetting(SETTINGS, ctx.settings, "deviceMode"),
+    ctx.deviceFrame,
+    "angled",
+  );
   const flip = ctx.index % 2 === 1;
 
   const device = renderDevice({
@@ -122,9 +130,7 @@ function renderPortrait(ctx: TemplateContext) {
     mode,
     maxWidth: w * 0.56 * deviceScale,
     maxHeight: h * 0.55 * deviceScale,
-    ...(mode === "angled"
-      ? { rotateY: flip ? 8 : -8, rotateZ: 0, backLayer: twin }
-      : {}),
+    ...(mode === "angled" ? { rotateY: flip ? 8 : -8, rotateZ: 0, backLayer: twin } : {}),
   });
 
   const head = headline({
@@ -198,7 +204,11 @@ function renderPortraitB(ctx: TemplateContext) {
   const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
   const deviceScale = numberSetting(SETTINGS, ctx.settings, "deviceScale");
   const twin = ctx.settings["twin"] !== false;
-  const mode = resolveDeviceMode(stringSetting(SETTINGS, ctx.settings, "deviceMode"), ctx.deviceFrame, "angled");
+  const mode = resolveDeviceMode(
+    stringSetting(SETTINGS, ctx.settings, "deviceMode"),
+    ctx.deviceFrame,
+    "angled",
+  );
 
   const device = renderDevice({
     image: ctx.image,
@@ -226,12 +236,44 @@ function renderPortraitB(ctx: TemplateContext) {
     "    " + tokens.bg + ";",
     "  " + headlineVars(tokens, "display", h * 0.018, h * 0.02),
     "}",
-    ".imb-head { position: absolute; top: " + px(h * 0.105) + "px; inset-inline-start: " + px(w * 0.085) + "px; z-index: 3; max-width: " + px(w * 0.52) + "px; }",
-    ".imb-vline { position: absolute; top: " + px(h * 0.12) + "px; bottom: " + px(h * 0.12) + "px; inset-inline-start: " + px(w * 0.52) + "px; width: 1px; background: " + tokens.line + "; z-index: 0; }",
-    ".imb-device { position: absolute; bottom: " + px(-h * 0.1) + "px; inset-inline-end: " + px(-w * 0.16) + "px; z-index: 2; }",
-    ".imb-tick { position: absolute; width: " + px(w * 0.045) + "px; height: " + px(w * 0.045) + "px; border-color: " + tokens.accent + "; border-style: solid; border-width: 0; z-index: 1; }",
-    ".imb-tick.tl { top: " + px(h * 0.045) + "px; inset-inline-start: " + px(w * 0.045) + "px; border-top-width: 2px; border-inline-start-width: 2px; }",
-    ".imb-tick.br { bottom: " + px(h * 0.045) + "px; inset-inline-end: " + px(w * 0.045) + "px; border-bottom-width: 2px; border-inline-end-width: 2px; }",
+    ".imb-head { position: absolute; top: " +
+      px(h * 0.105) +
+      "px; inset-inline-start: " +
+      px(w * 0.085) +
+      "px; z-index: 3; max-width: " +
+      px(w * 0.52) +
+      "px; }",
+    ".imb-vline { position: absolute; top: " +
+      px(h * 0.12) +
+      "px; bottom: " +
+      px(h * 0.12) +
+      "px; inset-inline-start: " +
+      px(w * 0.52) +
+      "px; width: 1px; background: " +
+      tokens.line +
+      "; z-index: 0; }",
+    ".imb-device { position: absolute; bottom: " +
+      px(-h * 0.1) +
+      "px; inset-inline-end: " +
+      px(-w * 0.16) +
+      "px; z-index: 2; }",
+    ".imb-tick { position: absolute; width: " +
+      px(w * 0.045) +
+      "px; height: " +
+      px(w * 0.045) +
+      "px; border-color: " +
+      tokens.accent +
+      "; border-style: solid; border-width: 0; z-index: 1; }",
+    ".imb-tick.tl { top: " +
+      px(h * 0.045) +
+      "px; inset-inline-start: " +
+      px(w * 0.045) +
+      "px; border-top-width: 2px; border-inline-start-width: 2px; }",
+    ".imb-tick.br { bottom: " +
+      px(h * 0.045) +
+      "px; inset-inline-end: " +
+      px(w * 0.045) +
+      "px; border-bottom-width: 2px; border-inline-end-width: 2px; }",
   ].join("\n");
 
   const html = [
@@ -240,13 +282,12 @@ function renderPortraitB(ctx: TemplateContext) {
     '  <div class="imb-tick tl"></div>',
     '  <div class="imb-tick br"></div>',
     '  <div class="imb-head">' + head + "</div>",
-    '  <div class="imb-device">' + device.html + "</div>",
+    '  <div class="imb-device" data-bleed="true">' + device.html + "</div>",
     "</div>",
   ].join("\n");
 
   return { css, html };
 }
-
 
 export const immersiveTemplate: TemplateDefinition = {
   id: "immersive",

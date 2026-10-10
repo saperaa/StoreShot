@@ -122,7 +122,7 @@ function renderLandscape(ctx: TemplateContext) {
 <div class="shot shot-showcase landscape">
   <div class="shl-head">${head}</div>
   <div class="shl-slab"></div>
-  <div class="shl-devicecol">
+  <div class="shl-devicecol" data-bleed="true">
     ${layers ? `<div class="shl-back">${back.html}</div>` : ""}
     <div class="shl-front">${front.html}</div>
   </div>
@@ -259,11 +259,39 @@ function renderPortraitB(ctx: TemplateContext) {
   });
 
   const css = [
-    ".shot-showcase.b { background: " + tokens.bg + "; " + headlineVars(tokens, "display", h * 0.018, h * 0.02) + " }",
-    ".shb-slab { position: absolute; inset: " + px(margin) + "px; background: " + tokens.surface + "; border: 1px solid " + tokens.line + "; border-radius: " + px(w * 0.06) + "px; box-shadow: " + tokens.shadowLg + "; overflow: hidden; }",
-    ".shb-head { position: absolute; top: " + px(h * 0.105) + "px; left: " + px(margin) + "px; right: " + px(margin) + "px; display: flex; flex-direction: column; align-items: center; z-index: 3; }",
-    ".shb-stack { position: absolute; bottom: " + px(-h * 0.1) + "px; left: 0; right: 0; height: " + px(h * 0.6) + "px; z-index: 2; }",
-    ".shb-back { position: absolute; bottom: " + px(h * 0.02) + "px; inset-inline-start: " + px(-w * 0.1) + "px; z-index: 1; filter: brightness(0.6) saturate(0.9); transform: rotate(2.5deg); }",
+    ".shot-showcase.b { background: " +
+      tokens.bg +
+      "; " +
+      headlineVars(tokens, "display", h * 0.018, h * 0.02) +
+      " }",
+    ".shb-slab { position: absolute; inset: " +
+      px(margin) +
+      "px; background: " +
+      tokens.surface +
+      "; border: 1px solid " +
+      tokens.line +
+      "; border-radius: " +
+      px(w * 0.06) +
+      "px; box-shadow: " +
+      tokens.shadowLg +
+      "; overflow: hidden; }",
+    ".shb-head { position: absolute; top: " +
+      px(h * 0.105) +
+      "px; left: " +
+      px(margin) +
+      "px; right: " +
+      px(margin) +
+      "px; display: flex; flex-direction: column; align-items: center; z-index: 3; }",
+    ".shb-stack { position: absolute; bottom: " +
+      px(-h * 0.1) +
+      "px; left: 0; right: 0; height: " +
+      px(h * 0.6) +
+      "px; z-index: 2; }",
+    ".shb-back { position: absolute; bottom: " +
+      px(h * 0.02) +
+      "px; inset-inline-start: " +
+      px(-w * 0.1) +
+      "px; z-index: 1; filter: brightness(0.6) saturate(0.9); transform: rotate(2.5deg); }",
     ".shb-front { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); z-index: 2; }",
   ].join("\n");
 
@@ -271,7 +299,7 @@ function renderPortraitB(ctx: TemplateContext) {
     '<div class="shot shot-showcase b">',
     '  <div class="shb-slab"></div>',
     '  <div class="shb-head">' + head + "</div>",
-    '  <div class="shb-stack">',
+    '  <div class="shb-stack" data-bleed="true">',
     layers ? '    <div class="shb-back">' + back.html + "</div>" : "",
     '    <div class="shb-front">' + front.html + "</div>",
     "  </div>",
@@ -280,7 +308,6 @@ function renderPortraitB(ctx: TemplateContext) {
 
   return { css, html };
 }
-
 
 export const showcaseTemplate: TemplateDefinition = {
   id: "showcase",

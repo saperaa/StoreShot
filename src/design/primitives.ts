@@ -43,13 +43,55 @@ export interface HeadlineOptions {
 
 const STYLE_SPEC: Record<
   HeadlineStyle,
-  { font: string; weight: number; tracking: string; titleLh: number; subtitleLh: number; upper: boolean }
+  {
+    font: string;
+    weight: number;
+    tracking: string;
+    titleLh: number;
+    subtitleLh: number;
+    upper: boolean;
+  }
 > = {
-  editorial: { font: "var(--font-display)", weight: 600, tracking: "-0.01em", titleLh: 1.05, subtitleLh: 1.6, upper: false },
-  swiss: { font: "var(--font-sans)", weight: 700, tracking: "-0.015em", titleLh: 1.06, subtitleLh: 1.55, upper: false },
-  campaign: { font: "var(--font-sans)", weight: 700, tracking: "-0.01em", titleLh: 1.02, subtitleLh: 1.5, upper: true },
-  cinematic: { font: "var(--font-sans)", weight: 600, tracking: "0em", titleLh: 1.16, subtitleLh: 1.6, upper: false },
-  display: { font: "var(--font-sans)", weight: 700, tracking: "-0.02em", titleLh: 1.05, subtitleLh: 1.55, upper: false },
+  editorial: {
+    font: "var(--font-display)",
+    weight: 600,
+    tracking: "-0.01em",
+    titleLh: 1.05,
+    subtitleLh: 1.6,
+    upper: false,
+  },
+  swiss: {
+    font: "var(--font-sans)",
+    weight: 700,
+    tracking: "-0.015em",
+    titleLh: 1.06,
+    subtitleLh: 1.55,
+    upper: false,
+  },
+  campaign: {
+    font: "var(--font-sans)",
+    weight: 700,
+    tracking: "-0.01em",
+    titleLh: 1.02,
+    subtitleLh: 1.5,
+    upper: true,
+  },
+  cinematic: {
+    font: "var(--font-sans)",
+    weight: 600,
+    tracking: "0em",
+    titleLh: 1.16,
+    subtitleLh: 1.6,
+    upper: false,
+  },
+  display: {
+    font: "var(--font-sans)",
+    weight: 700,
+    tracking: "-0.02em",
+    titleLh: 1.05,
+    subtitleLh: 1.55,
+    upper: false,
+  },
 };
 
 export function headline(options: HeadlineOptions): string {
@@ -125,7 +167,12 @@ export const HEADLINE_CSS = `
 `;
 
 /** Configure the headline style for one page (applies to .hl-* elements). */
-export function headlineVars(tokens: DesignTokens, style: HeadlineStyle, gap: number, gapS: number): string {
+export function headlineVars(
+  tokens: DesignTokens,
+  style: HeadlineStyle,
+  gap: number,
+  gapS: number,
+): string {
   const spec = STYLE_SPEC[style];
   return [
     `--hl-text: ${tokens.text}`,

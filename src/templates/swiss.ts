@@ -57,7 +57,11 @@ function renderLandscape(ctx: TemplateContext) {
   const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
   const deviceScale = numberSetting(SETTINGS, ctx.settings, "deviceScale");
   const grid = ctx.settings["grid"] !== false;
-  const mode = resolveDeviceMode(stringSetting(SETTINGS, ctx.settings, "deviceMode"), ctx.deviceFrame, "bare");
+  const mode = resolveDeviceMode(
+    stringSetting(SETTINGS, ctx.settings, "deviceMode"),
+    ctx.deviceFrame,
+    "bare",
+  );
   const { pad, textWidth } = landscapeMetrics(w, h);
 
   const device = renderDevice({
@@ -80,10 +84,7 @@ function renderLandscape(ctx: TemplateContext) {
 
   const columns = grid
     ? [1, 2, 3]
-        .map(
-          (i) =>
-            `<div class="swl-col" style="inset-inline-start: ${px((w / 4) * i)}"></div>`,
-        )
+        .map((i) => `<div class="swl-col" style="inset-inline-start: ${px((w / 4) * i)}"></div>`)
         .join("\n    ")
     : "";
 
@@ -110,7 +111,7 @@ function renderLandscape(ctx: TemplateContext) {
   <div class="swl-meta">${masthead(ctx, tokens, h * 0.026)}</div>
   <div class="swl-head">${head}</div>
   <div class="swl-baseline"></div>
-  <div class="swl-device">${device.html}</div>
+  <div class="swl-device" data-bleed="true">${device.html}</div>
   <div class="swl-caption">FIG. ${String(ctx.index + 1).padStart(2, "0")} — ${escapeHtml((ctx.role ?? ctx.app.name).toUpperCase())}</div>
 </div>`;
 
@@ -124,7 +125,11 @@ function renderPortrait(ctx: TemplateContext) {
   const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
   const deviceScale = numberSetting(SETTINGS, ctx.settings, "deviceScale");
   const grid = ctx.settings["grid"] !== false;
-  const mode = resolveDeviceMode(stringSetting(SETTINGS, ctx.settings, "deviceMode"), ctx.deviceFrame, "front");
+  const mode = resolveDeviceMode(
+    stringSetting(SETTINGS, ctx.settings, "deviceMode"),
+    ctx.deviceFrame,
+    "front",
+  );
   const deviceStart = ctx.index % 2 === 1; // alternate grid anchor
 
   const margin = w * 0.085;
@@ -217,7 +222,11 @@ function renderPortraitB(ctx: TemplateContext) {
   const tokens = buildTokens(ctx.theme);
   const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
   const deviceScale = numberSetting(SETTINGS, ctx.settings, "deviceScale");
-  const mode = resolveDeviceMode(stringSetting(SETTINGS, ctx.settings, "deviceMode"), ctx.deviceFrame, "bare");
+  const mode = resolveDeviceMode(
+    stringSetting(SETTINGS, ctx.settings, "deviceMode"),
+    ctx.deviceFrame,
+    "bare",
+  );
   const margin = w * 0.085;
 
   const device = renderDevice({
@@ -244,13 +253,59 @@ function renderPortraitB(ctx: TemplateContext) {
     "  " + headlineVars(tokens, "swiss", h * 0.02, h * 0.022),
     "  " + mastheadVars(tokens),
     "}",
-    ".swb-bar { position: absolute; top: 0; left: 0; right: 0; height: " + px(Math.max(10, h * 0.007)) + "px; background: " + tokens.accent + "; }",
-    ".swb-meta { position: absolute; top: " + px(h * 0.085) + "px; inset-inline-start: " + px(margin) + "px; width: calc(100% - " + px(margin * 2) + "px); }",
-    ".swb-head { position: absolute; top: " + px(h * 0.16) + "px; inset-inline-start: " + px(margin) + "px; z-index: 2; max-width: " + px(w * 0.86) + "px; }",
-    ".swb-baseline { position: absolute; bottom: " + px(h * 0.14) + "px; inset-inline-start: " + px(margin) + "px; width: calc(100% - " + px(margin * 2) + "px); height: 1px; background: " + tokens.line + "; z-index: 1; }",
-    ".swb-device { position: absolute; bottom: " + px(h * 0.155) + "px; inset-inline-start: " + px(margin) + "px; z-index: 2; }",
-    ".swb-block { position: absolute; bottom: " + px(h * 0.14) + "px; inset-inline-end: " + px(margin) + "px; width: " + px(w * 0.028) + "px; height: " + px(w * 0.028) + "px; background: " + tokens.accent + "; z-index: 3; }",
-    ".swb-caption { position: absolute; bottom: " + px(h * 0.085) + "px; inset-inline-end: " + px(margin) + "px; font-size: " + px(w * 0.0185) + "px; color: " + tokens.muted + "; letter-spacing: 0.1em; z-index: 2; font-weight: 500; text-align: end; }",
+    ".swb-bar { position: absolute; top: 0; left: 0; right: 0; height: " +
+      px(Math.max(10, h * 0.007)) +
+      "px; background: " +
+      tokens.accent +
+      "; }",
+    ".swb-meta { position: absolute; top: " +
+      px(h * 0.085) +
+      "px; inset-inline-start: " +
+      px(margin) +
+      "px; width: calc(100% - " +
+      px(margin * 2) +
+      "px); }",
+    ".swb-head { position: absolute; top: " +
+      px(h * 0.16) +
+      "px; inset-inline-start: " +
+      px(margin) +
+      "px; z-index: 2; max-width: " +
+      px(w * 0.86) +
+      "px; }",
+    ".swb-baseline { position: absolute; bottom: " +
+      px(h * 0.14) +
+      "px; inset-inline-start: " +
+      px(margin) +
+      "px; width: calc(100% - " +
+      px(margin * 2) +
+      "px); height: 1px; background: " +
+      tokens.line +
+      "; z-index: 1; }",
+    ".swb-device { position: absolute; bottom: " +
+      px(h * 0.155) +
+      "px; inset-inline-start: " +
+      px(margin) +
+      "px; z-index: 2; }",
+    ".swb-block { position: absolute; bottom: " +
+      px(h * 0.14) +
+      "px; inset-inline-end: " +
+      px(margin) +
+      "px; width: " +
+      px(w * 0.028) +
+      "px; height: " +
+      px(w * 0.028) +
+      "px; background: " +
+      tokens.accent +
+      "; z-index: 3; }",
+    ".swb-caption { position: absolute; bottom: " +
+      px(h * 0.085) +
+      "px; inset-inline-end: " +
+      px(margin) +
+      "px; font-size: " +
+      px(w * 0.0185) +
+      "px; color: " +
+      tokens.muted +
+      "; letter-spacing: 0.1em; z-index: 2; font-weight: 500; text-align: end; }",
     '[dir="ltr"] .swb-caption { text-transform: uppercase; }',
   ].join("\n");
 
@@ -262,13 +317,16 @@ function renderPortraitB(ctx: TemplateContext) {
     '  <div class="swb-baseline"></div>',
     '  <div class="swb-device">' + device.html + "</div>",
     '  <div class="swb-block"></div>',
-    '  <div class="swb-caption">FIG. ' + String(ctx.index + 1).padStart(2, "0") + " / " + String(ctx.count).padStart(2, "0") + "</div>",
+    '  <div class="swb-caption">FIG. ' +
+      String(ctx.index + 1).padStart(2, "0") +
+      " / " +
+      String(ctx.count).padStart(2, "0") +
+      "</div>",
     "</div>",
   ].join("\n");
 
   return { css, html };
 }
-
 
 export const swissTemplate: TemplateDefinition = {
   id: "swiss",

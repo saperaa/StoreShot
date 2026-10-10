@@ -77,8 +77,7 @@ export function displayStack(dir: TextDirection): string {
   const arabic = '"StoreShot Arabic"';
   const display = '"StoreShot Display"';
   const latin = '"StoreShot Latin"';
-  const fallbacks =
-    '-apple-system, "Segoe UI", "Noto Sans Arabic", "Noto Sans", "Tahoma", serif';
+  const fallbacks = '-apple-system, "Segoe UI", "Noto Sans Arabic", "Noto Sans", "Tahoma", serif';
   return dir === "rtl"
     ? `${arabic}, ${display}, ${latin}, ${fallbacks}`
     : `${display}, ${arabic}, ${latin}, ${fallbacks}`;

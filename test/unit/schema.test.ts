@@ -80,8 +80,16 @@ describe("configuration schema", () => {
   it("accepts sequence roles and light/dark theme tokens", () => {
     const config = storeshotConfigSchema.parse({
       ...baseConfig,
-      screenshots: [{ id: "hero", image: "./x.png", role: "hero", title: { "en-US": "A", ar: "ب" } }],
-      theme: { background: "#F4F1EA", accent: "#0E7A5F", text: "#1A1D24", mutedText: "#6B6F7B", mode: "light" },
+      screenshots: [
+        { id: "hero", image: "./x.png", role: "hero", title: { "en-US": "A", ar: "ب" } },
+      ],
+      theme: {
+        background: "#F4F1EA",
+        accent: "#0E7A5F",
+        text: "#1A1D24",
+        mutedText: "#6B6F7B",
+        mode: "light",
+      },
     });
     expect(config.screenshots[0]!.role).toBe("hero");
     expect(config.theme.mode).toBe("light");

@@ -7,8 +7,18 @@ const image: TemplateImage = { url: "img/shot.png", width: 1080, height: 2340, a
 
 describe("design tokens", () => {
   it("derives dark mode from the background luminance", () => {
-    const dark = buildTokens({ background: "#0E1524", accent: "#62E6B5", text: "#fff", muted: "#9AA7BD" });
-    const light = buildTokens({ background: "#F4F1EA", accent: "#0E7A5F", text: "#111", muted: "#666" });
+    const dark = buildTokens({
+      background: "#0E1524",
+      accent: "#62E6B5",
+      text: "#fff",
+      muted: "#9AA7BD",
+    });
+    const light = buildTokens({
+      background: "#F4F1EA",
+      accent: "#0E7A5F",
+      text: "#111",
+      muted: "#666",
+    });
     expect(dark.mode).toBe("dark");
     expect(light.mode).toBe("light");
   });
@@ -25,7 +35,12 @@ describe("design tokens", () => {
   });
 
   it("steps surfaces from the background and picks readable onAccent", () => {
-    const tokens = buildTokens({ background: "#0E1524", accent: "#62E6B5", text: "#fff", muted: "#9AA7BD" });
+    const tokens = buildTokens({
+      background: "#0E1524",
+      accent: "#62E6B5",
+      text: "#fff",
+      muted: "#9AA7BD",
+    });
     expect(tokens.surface).not.toBe(tokens.bg);
     expect(tokens.onAccent).toBe("#0B1220"); // light accent -> dark text on it
   });

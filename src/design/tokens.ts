@@ -50,8 +50,7 @@ export function buildTokens(theme: ThemeInput): DesignTokens {
         ? "dark"
         : "light";
 
-  const surface =
-    theme.surface ?? (mode === "dark" ? lighten(theme.background, 0.05) : "#FFFFFF");
+  const surface = theme.surface ?? (mode === "dark" ? lighten(theme.background, 0.05) : "#FFFFFF");
   const surfaceAlt =
     mode === "dark" ? lighten(theme.background, 0.09) : darken(theme.background, 0.04);
 

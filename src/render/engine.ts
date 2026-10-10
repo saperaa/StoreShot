@@ -51,6 +51,14 @@ export interface RenderDiagnostics {
   blockedExternalRequests: string[];
   /** Text fields whose rendered height exceeds their declared budget. */
   overflow: OverflowMeasurement[];
+  /** Browser-measured geometry violations (clipping, letterboxed screens). */
+  outOfBounds: Array<{
+    selector: string;
+    field?: string;
+    issue: string;
+    rect: { top: number; right: number; bottom: number; left: number };
+  }>;
+  letterboxed: Array<{ selector: string; note: string }>;
 }
 
 export interface RenderResult {
@@ -131,6 +139,8 @@ export class Renderer {
         failedAssets: [],
         blockedExternalRequests: [],
         overflow: [],
+        outOfBounds: [],
+        letterboxed: [],
       };
 
       await context.route("**/*", (route) => {
@@ -149,7 +159,25 @@ export class Renderer {
       diagnostics.fontChecks = measured.fontChecks;
       diagnostics.failedAssets = measured.failedAssets;
       diagnostics.overflow = measured.overflow;
+      diagnostics.outOfBounds = measured.geometry.outOfBounds;
+      diagnostics.letterboxed = measured.geometry.letterboxed;
 
+      if (diagnostics.outOfBounds.length > 0) {
+        const first = diagnostics.outOfBounds[0]!;
+        throw new RenderError(
+          `Layout violation while rendering ${request.label}: ${first.selector}${first.field ? ` (${first.field})` : ""} ` +
+            `is clipped outside the canvas (rect ${JSON.stringify(first.rect)}). ` +
+            `${diagnostics.outOfBounds.length} element(s) affected.`,
+        );
+      }
+      const fatalLetterbox = diagnostics.letterboxed.filter((l) => !l.note.includes("advisory"));
+      if (fatalLetterbox.length > 0) {
+        const first = fatalLetterbox[0]!;
+        throw new RenderError(
+          `Screen presentation error while rendering ${request.label}: ${first.selector} — ${first.note}. ` +
+            "The source image does not fill its device screen; check the source file and fit settings.",
+        );
+      }
       if (diagnostics.failedAssets.length > 0) {
         throw new RenderError(
           `Failed to load image asset(s) while rendering ${request.label}: ` +

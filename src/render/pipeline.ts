@@ -46,6 +46,8 @@ export function buildRenderRequest(input: {
       width: imageInfo.width,
       height: imageInfo.height,
       alt: escapeHtml(`${resolved.app.name} — screenshot ${screenshot.id}`),
+      fit: screenshot.fit,
+      focalPoint: screenshot.focalPoint,
     },
     deviceFrame: input.deviceFrame,
     settings: resolved.template.settings,

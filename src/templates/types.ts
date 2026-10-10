@@ -15,6 +15,10 @@ export interface TemplateImage {
   width: number;
   height: number;
   alt: string;
+  /** Fitting strategy for the device screen (default "cover"). */
+  fit?: "cover" | "contain";
+  /** Focal point for cover crops, 0-1 (default 0.5 / 0.4). */
+  focalPoint?: { x: number; y: number };
 }
 
 export interface TemplateTheme {

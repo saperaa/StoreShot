@@ -45,7 +45,7 @@ All images below were rendered by this repository's CLI from the example project
 
 | Discovery (EN) — search layer + layered screens | Discovery (AR) — RTL variant B |
 | --- | --- |
-| ![Discovery EN](docs/gallery/discovery/en-US/01-home.png) | ![Discovery AR](docs/gallery/discovery/ar/01-home.png) |
+| ![Discovery EN](docs/gallery/discovery/en-US-a/01-home.png) | ![Discovery AR](docs/gallery/discovery/ar-b/01-home.png) |
 
 | Swiss (EN) | Editorial on paper (light) |
 | --- | --- |

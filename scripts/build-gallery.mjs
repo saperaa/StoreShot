@@ -39,7 +39,10 @@ const prompt = {
 
 const copy = {
   home: {
-    "en-US": ["Your day, beautifully under control", "Plan the night before, glide through tomorrow"],
+    "en-US": [
+      "Your day, beautifully under control",
+      "Plan the night before, glide through tomorrow",
+    ],
     ar: ["يومك تحت سيطرتك، بأناقة", "خطّط من الليلة، وأنجز براحة غدًا"],
   },
   compose: {
@@ -128,36 +131,75 @@ const templates = [
   ["campaign", "compose"],
   ["immersive", "home"],
   ["showcase", "compose"],
-  ["discovery", "home"],
 ];
+// Discovery: all three compositions, both locales.
+for (const locale of ["en-US", "ar"]) {
+  for (const variation of ["a", "b", "c"]) {
+    const config = frameConfig("discovery", "home", locale, dark, { variation });
+    run(config, path.join(gallery, "discovery", locale + "-" + variation));
+    console.log("gallery: discovery/" + locale + "-" + variation);
+  }
+}
+
 for (const [template, screen] of templates) {
   for (const locale of ["en-US", "ar"]) {
-    run(
-      frameConfig(template, screen, locale, dark),
-      path.join(gallery, template, locale),
-    );
+    run(frameConfig(template, screen, locale, dark), path.join(gallery, template, locale));
     console.log(`gallery: ${template}/${locale}`);
   }
 }
 
 // Personality variants: editorial on paper (light), cinematic in violet.
-run(frameConfig("editorial", "home", "en-US", paper), path.join(gallery, "themes", "editorial-paper"));
+run(
+  frameConfig("editorial", "home", "en-US", paper),
+  path.join(gallery, "themes", "editorial-paper"),
+);
 {
   const playConfig = frameConfig("discovery", "compose", "en-US", dark);
   playConfig.exports = [{ store: "google-play", profile: "feature-graphic", name: "frame" }];
   run(playConfig, path.join(gallery, "google-play", "feature-graphic"));
 }
-run(frameConfig("cinematic", "compose", "ar", violet), path.join(gallery, "themes", "cinematic-violet"));
+run(
+  frameConfig("cinematic", "compose", "ar", violet),
+  path.join(gallery, "themes", "cinematic-violet"),
+);
 run(frameConfig("swiss", "insights", "ar", paper), path.join(gallery, "themes", "swiss-paper"));
 console.log("gallery: themes");
 
 // Apple creative assets: product page header (21:9 + 16:9 universal) and the
 // dedicated search-results asset (3:2), in landscape compositions.
 const landscapeConfigs = [
-  ["editorial", "home", "en-US", dark, "header-21-9", { title: "Beautifully in control", subtitle: "Plan the night before, glide through tomorrow" }],
-  ["editorial", "home", "en-US", dark, "header-16-9", { title: "Beautifully in control", subtitle: "Plan the night before, glide through tomorrow" }],
-  ["editorial", "home", "en-US", dark, "search-results-3-2", { title: "Beautifully in control", subtitle: "Plan the night before, glide through tomorrow" }],
-  ["cinematic", "compose", "ar", violet, "header-21-9", { title: "سجّلها في لحظتها", subtitle: "إضافة سريعة وطبيعية للمهام" }],
+  [
+    "editorial",
+    "home",
+    "en-US",
+    dark,
+    "header-21-9",
+    { title: "Beautifully in control", subtitle: "Plan the night before, glide through tomorrow" },
+  ],
+  [
+    "editorial",
+    "home",
+    "en-US",
+    dark,
+    "header-16-9",
+    { title: "Beautifully in control", subtitle: "Plan the night before, glide through tomorrow" },
+  ],
+  [
+    "editorial",
+    "home",
+    "en-US",
+    dark,
+    "search-results-3-2",
+    { title: "Beautifully in control", subtitle: "Plan the night before, glide through tomorrow" },
+  ],
+  [
+    "cinematic",
+    "compose",
+    "ar",
+    violet,
+    "header-21-9",
+    { title: "سجّلها في لحظتها", subtitle: "إضافة سريعة وطبيعية للمهام" },
+  ],
 ];
 for (const [template, screen, locale, theme, profile, copy] of landscapeConfigs) {
   const [file] = [screenFile[screen]];
@@ -186,14 +228,18 @@ for (const [template, screen, locale, theme, profile, copy] of landscapeConfigs)
       2,
     ),
   );
-  execFileSync(process.execPath, [
-    cli,
-    "generate",
-    "-e",
-    "frame",
-    "-o",
-    path.join(gallery, "landscape", profile + (locale === "ar" ? "-ar" : "")),
-  ], { cwd: path.join(gallery, ".work"), stdio: "inherit" });
+  execFileSync(
+    process.execPath,
+    [
+      cli,
+      "generate",
+      "-e",
+      "frame",
+      "-o",
+      path.join(gallery, "landscape", profile + (locale === "ar" ? "-ar" : "")),
+    ],
+    { cwd: path.join(gallery, ".work"), stdio: "inherit" },
+  );
   fs.rmSync(path.join(gallery, ".work"), { recursive: true, force: true });
   console.log("gallery: landscape/" + profile + (locale === "ar" ? "-ar" : ""));
 }

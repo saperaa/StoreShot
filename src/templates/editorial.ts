@@ -51,7 +51,11 @@ function renderLandscape(ctx: TemplateContext) {
   const tokens = buildTokens(ctx.theme);
   const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
   const deviceScale = numberSetting(SETTINGS, ctx.settings, "deviceScale");
-  const mode = resolveDeviceMode(stringSetting(SETTINGS, ctx.settings, "deviceMode"), ctx.deviceFrame, "front");
+  const mode = resolveDeviceMode(
+    stringSetting(SETTINGS, ctx.settings, "deviceMode"),
+    ctx.deviceFrame,
+    "front",
+  );
   const { pad, textWidth } = landscapeMetrics(w, h);
 
   // Banner crop: the device bleeds off the bottom edge so a portrait phone
@@ -113,12 +117,12 @@ function renderLandscape(ctx: TemplateContext) {
 
   const html = `
 <div class="shot shot-editorial landscape">
-  <div class="edl-numeral">${folio}</div>
+  <div class="edl-numeral" data-bleed="true">${folio}</div>
   <div class="edl-masthead">${masthead(ctx, tokens, h * 0.03)}</div>
   <div class="edl-rule"></div>
   <div class="edl-head">${head}</div>
   <div class="edl-columnrule"></div>
-  <div class="edl-device">${device.html}</div>
+  <div class="edl-device" data-bleed="true">${device.html}</div>
   <div class="edl-caption">FIG. ${folio} — ${escapeHtml((ctx.role ?? ctx.app.name).toUpperCase())}</div>
 </div>`;
 
@@ -131,7 +135,11 @@ function renderPortrait(ctx: TemplateContext) {
   const tokens = buildTokens(ctx.theme);
   const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
   const deviceScale = numberSetting(SETTINGS, ctx.settings, "deviceScale");
-  const mode = resolveDeviceMode(stringSetting(SETTINGS, ctx.settings, "deviceMode"), ctx.deviceFrame, "front");
+  const mode = resolveDeviceMode(
+    stringSetting(SETTINGS, ctx.settings, "deviceMode"),
+    ctx.deviceFrame,
+    "front",
+  );
   const alternate = ctx.index % 2 === 1;
 
   const margin = w * 0.075;
@@ -173,7 +181,7 @@ function renderPortrait(ctx: TemplateContext) {
   inset-inline-end: ${px(margin * 0.4)};
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: ${px(w * 0.30)};
+  font-size: ${px(w * 0.3)};
   line-height: 1;
   color: ${tokens.surfaceAlt};
   z-index: 0;
@@ -235,7 +243,11 @@ function renderPortraitB(ctx: TemplateContext) {
   const tokens = buildTokens(ctx.theme);
   const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
   const deviceScale = numberSetting(SETTINGS, ctx.settings, "deviceScale");
-  const mode = resolveDeviceMode(stringSetting(SETTINGS, ctx.settings, "deviceMode"), ctx.deviceFrame, "front");
+  const mode = resolveDeviceMode(
+    stringSetting(SETTINGS, ctx.settings, "deviceMode"),
+    ctx.deviceFrame,
+    "front",
+  );
   const margin = w * 0.075;
 
   const device = renderDevice({
@@ -261,32 +273,67 @@ function renderPortraitB(ctx: TemplateContext) {
   const css = [
     ".shot-editorial.b {",
     "  background:",
-    "    radial-gradient(70% 40% at 50% 100%, " + tokens.accentGlow(0.05) + " 0%, transparent 70%),",
+    "    radial-gradient(70% 40% at 50% 100%, " +
+      tokens.accentGlow(0.05) +
+      " 0%, transparent 70%),",
     "    " + tokens.bg + ";",
     "  " + headlineVars(tokens, "editorial", h * 0.02, h * 0.022),
     "  " + mastheadVars(tokens),
     "}",
-    ".edb-numeral { position: absolute; bottom: " + px(-h * 0.04) + "px; left: 50%; transform: translateX(-50%); font-family: var(--font-display); font-weight: 600; font-size: " + px(h * 0.52) + "px; line-height: 1; color: " + tokens.surfaceAlt + "; z-index: 0; }",
-    ".edb-head { position: absolute; top: " + px(h * 0.17) + "; left: " + px(margin) + "; right: " + px(margin) + "; display: flex; flex-direction: column; align-items: center; z-index: 3; }",
-    ".edb-rule { position: absolute; top: " + px(h * 0.44) + "; left: " + px(margin) + "; right: " + px(margin) + "; height: 1px; background: " + tokens.line + "; z-index: 1; }",
-    ".edb-device { position: absolute; bottom: " + px(-h * 0.14) + "; left: 50%; transform: translateX(-50%); z-index: 2; }",
-    ".edb-caption { position: absolute; bottom: " + px(h * 0.028) + "; inset-inline-end: " + px(margin) + "; font-size: " + px(w * 0.019) + "; color: " + tokens.muted + "; letter-spacing: 0.08em; z-index: 3; }",
+    ".edb-numeral { position: absolute; bottom: " +
+      px(-h * 0.04) +
+      "px; left: 50%; transform: translateX(-50%); font-family: var(--font-display); font-weight: 600; font-size: " +
+      px(h * 0.52) +
+      "px; line-height: 1; color: " +
+      tokens.surfaceAlt +
+      "; z-index: 0; }",
+    ".edb-head { position: absolute; top: " +
+      px(h * 0.17) +
+      "; left: " +
+      px(margin) +
+      "; right: " +
+      px(margin) +
+      "; display: flex; flex-direction: column; align-items: center; z-index: 3; }",
+    ".edb-rule { position: absolute; top: " +
+      px(h * 0.44) +
+      "; left: " +
+      px(margin) +
+      "; right: " +
+      px(margin) +
+      "; height: 1px; background: " +
+      tokens.line +
+      "; z-index: 1; }",
+    ".edb-device { position: absolute; bottom: " +
+      px(-h * 0.14) +
+      "; left: 50%; transform: translateX(-50%); z-index: 2; }",
+    ".edb-caption { position: absolute; bottom: " +
+      px(h * 0.028) +
+      "; inset-inline-end: " +
+      px(margin) +
+      "; font-size: " +
+      px(w * 0.019) +
+      "; color: " +
+      tokens.muted +
+      "; letter-spacing: 0.08em; z-index: 3; }",
     '[dir="ltr"] .edb-caption { text-transform: uppercase; }',
   ].join("\n");
 
   const html = [
     '<div class="shot shot-editorial b">',
-    '  <div class="edb-numeral">' + folio + "</div>",
+    '  <div class="edb-numeral" data-bleed="true">' + folio + "</div>",
     '  <div class="edb-head">' + head + "</div>",
     '  <div class="edb-rule"></div>',
-    '  <div class="edb-device">' + device.html + "</div>",
-    '  <div class="edb-caption">FIG. ' + folio + " — " + escapeHtml((ctx.role ?? ctx.app.name).toUpperCase()) + "</div>",
+    '  <div class="edb-device" data-bleed="true">' + device.html + "</div>",
+    '  <div class="edb-caption">FIG. ' +
+      folio +
+      " — " +
+      escapeHtml((ctx.role ?? ctx.app.name).toUpperCase()) +
+      "</div>",
     "</div>",
   ].join("\n");
 
   return { css, html };
 }
-
 
 export const editorialTemplate: TemplateDefinition = {
   id: "editorial",

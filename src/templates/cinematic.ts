@@ -57,7 +57,11 @@ function renderLandscape(ctx: TemplateContext) {
   const tokens = buildTokens(ctx.theme);
   const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
   const deviceScale = numberSetting(SETTINGS, ctx.settings, "deviceScale");
-  const mode = resolveDeviceMode(stringSetting(SETTINGS, ctx.settings, "deviceMode"), ctx.deviceFrame, "front");
+  const mode = resolveDeviceMode(
+    stringSetting(SETTINGS, ctx.settings, "deviceMode"),
+    ctx.deviceFrame,
+    "front",
+  );
   const { pad, textWidth } = landscapeMetrics(w, h);
 
   // Banner crop: the device rises from the bottom edge and bleeds off it.
@@ -89,10 +93,30 @@ function renderLandscape(ctx: TemplateContext) {
     "    linear-gradient(" + tokens.bg + " 55%, " + darken(tokens.bg, 0.55) + " 130%);",
     "  " + headlineVars(tokens, "cinematic", h * 0.03, h * 0.034),
     "}",
-    ".cil-head { position: absolute; inset-inline-start: " + px(pad) + "px; top: 50%; transform: translateY(-52%); width: " + px(textWidth) + "px; z-index: 3; }",
-    ".cil-device { position: absolute; inset-inline-end: " + px(w * 0.09) + "px; bottom: " + px(-h * 0.26) + "px; z-index: 2; }",
-    ".cil-floor { position: absolute; left: 0; right: 0; bottom: 0; height: " + px(h * 0.42) + "px; background: linear-gradient(to top, " + tokens.blackShadow(0.38) + ", transparent); z-index: 1; }",
-    ".cil-rail { position: absolute; top: " + px(h * 0.66) + "px; inset-inline-start: " + px(w * 0.46) + "px; width: " + px(w * 0.42) + "px; height: 1px; background: " + tokens.line + "; z-index: 1; }",
+    ".cil-head { position: absolute; inset-inline-start: " +
+      px(pad) +
+      "px; top: 50%; transform: translateY(-52%); width: " +
+      px(textWidth) +
+      "px; z-index: 3; }",
+    ".cil-device { position: absolute; inset-inline-end: " +
+      px(w * 0.09) +
+      "px; bottom: " +
+      px(-h * 0.26) +
+      "px; z-index: 2; }",
+    ".cil-floor { position: absolute; left: 0; right: 0; bottom: 0; height: " +
+      px(h * 0.42) +
+      "px; background: linear-gradient(to top, " +
+      tokens.blackShadow(0.38) +
+      ", transparent); z-index: 1; }",
+    ".cil-rail { position: absolute; top: " +
+      px(h * 0.66) +
+      "px; inset-inline-start: " +
+      px(w * 0.46) +
+      "px; width: " +
+      px(w * 0.42) +
+      "px; height: 1px; background: " +
+      tokens.line +
+      "; z-index: 1; }",
   ].join("\n");
 
   const html = [
@@ -100,7 +124,7 @@ function renderLandscape(ctx: TemplateContext) {
     '  <div class="cil-floor"></div>',
     '  <div class="cil-rail"></div>',
     '  <div class="cil-head">' + head + "</div>",
-    '  <div class="cil-device">' + device.html + "</div>",
+    '  <div class="cil-device" data-bleed="true">' + device.html + "</div>",
     "</div>",
   ].join("\n");
 
@@ -114,7 +138,11 @@ function renderPortrait(ctx: TemplateContext) {
   const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
   const deviceScale = numberSetting(SETTINGS, ctx.settings, "deviceScale");
   const reflection = ctx.settings["reflection"] !== false;
-  const mode = resolveDeviceMode(stringSetting(SETTINGS, ctx.settings, "deviceMode"), ctx.deviceFrame, "front");
+  const mode = resolveDeviceMode(
+    stringSetting(SETTINGS, ctx.settings, "deviceMode"),
+    ctx.deviceFrame,
+    "front",
+  );
   const headlineBelow = ctx.index % 2 === 1; // alternate camera setup
 
   const device = renderDevice({
@@ -211,7 +239,11 @@ function renderPortraitB(ctx: TemplateContext) {
   const tokens = buildTokens(ctx.theme);
   const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
   const deviceScale = numberSetting(SETTINGS, ctx.settings, "deviceScale");
-  const mode = resolveDeviceMode(stringSetting(SETTINGS, ctx.settings, "deviceMode"), ctx.deviceFrame, "front");
+  const mode = resolveDeviceMode(
+    stringSetting(SETTINGS, ctx.settings, "deviceMode"),
+    ctx.deviceFrame,
+    "front",
+  );
 
   const device = renderDevice({
     image: ctx.image,
@@ -239,14 +271,24 @@ function renderPortraitB(ctx: TemplateContext) {
     "    linear-gradient(" + tokens.bg + " 40%, " + darken(tokens.bg, 0.5) + " 130%);",
     "  " + headlineVars(tokens, "cinematic", h * 0.018, h * 0.02),
     "}",
-    ".cib-device { position: absolute; bottom: " + px(-h * 0.3) + "px; left: 50%; transform: translateX(-50%); z-index: 2; }",
-    ".cib-scrim { position: absolute; bottom: 0; left: 0; right: 0; height: " + px(h * 0.4) + "px; background: linear-gradient(to top, rgba(3,5,9,0.9) 0%, rgba(3,5,9,0.5) 55%, transparent 100%); z-index: 3; }",
-    ".cib-head { position: absolute; bottom: " + px(h * 0.075) + "px; left: " + px(w * 0.1) + "px; right: " + px(w * 0.1) + "px; display: flex; justify-content: center; z-index: 4; }",
+    ".cib-device { position: absolute; bottom: " +
+      px(-h * 0.3) +
+      "px; left: 50%; transform: translateX(-50%); z-index: 2; }",
+    ".cib-scrim { position: absolute; bottom: 0; left: 0; right: 0; height: " +
+      px(h * 0.4) +
+      "px; background: linear-gradient(to top, rgba(3,5,9,0.9) 0%, rgba(3,5,9,0.5) 55%, transparent 100%); z-index: 3; }",
+    ".cib-head { position: absolute; bottom: " +
+      px(h * 0.075) +
+      "px; left: " +
+      px(w * 0.1) +
+      "px; right: " +
+      px(w * 0.1) +
+      "px; display: flex; justify-content: center; z-index: 4; }",
   ].join("\n");
 
   const html = [
     '<div class="shot shot-cinematic b">',
-    '  <div class="cib-device">' + device.html + "</div>",
+    '  <div class="cib-device" data-bleed="true">' + device.html + "</div>",
     '  <div class="cib-scrim"></div>',
     '  <div class="cib-head">' + head + "</div>",
     "</div>",
@@ -254,7 +296,6 @@ function renderPortraitB(ctx: TemplateContext) {
 
   return { css, html };
 }
-
 
 export const cinematicTemplate: TemplateDefinition = {
   id: "cinematic",

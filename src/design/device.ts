@@ -95,7 +95,6 @@ export const DEVICE_CSS = `
 .dev .dev-screen img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
   display: block;
 }
 .dev .dev-glare {
@@ -166,6 +165,8 @@ export const DEVICE_CSS = `
 
 export function renderDevice(spec: DeviceSpec): DeviceRender {
   const aspect = spec.image.width / spec.image.height;
+  const focal = spec.image.focalPoint ?? { x: 0.5, y: 0.4 };
+  const imgStyle = `object-fit:${spec.image.fit ?? "cover"};object-position:${focal.x * 100}% ${focal.y * 100}%;`;
   const glare = spec.glare !== false;
   const island = spec.island !== false;
   const home = spec.homeIndicator !== false;
@@ -195,7 +196,7 @@ export function renderDevice(spec: DeviceSpec): DeviceRender {
       html: `<div class="dev dev-bare ${spec.className ?? ""}" style="--dw:${Math.round(
         width,
       )}px; --dh:${Math.round(height)}px; border-radius:${radius}px; box-shadow: 0 10px 34px rgba(10, 14, 22, 0.30), 0 34px 90px rgba(10, 14, 22, 0.34); border: 1px solid rgba(255,255,255,0.10); overflow: hidden;">
-  <img src="${spec.image.url}" alt="${spec.image.alt}" style="width:100%;height:100%;object-fit:cover;display:block;">
+  <img src="${spec.image.url}" alt="${spec.image.alt}" style="width:100%;height:100%;${imgStyle}display:block;">
 </div>`,
     };
   }
@@ -257,7 +258,7 @@ export function renderDevice(spec: DeviceSpec): DeviceRender {
   ].join("; ");
 
   const screenInner = `
-    <img src="${spec.image.url}" alt="${spec.image.alt}">
+    <img src="${spec.image.url}" alt="${spec.image.alt}" style="${imgStyle}">
     ${glare ? '<div class="dev-glare"></div>' : ""}
     ${island ? '<div class="dev-island"></div>' : ""}
     ${home ? '<div class="dev-home"></div>' : ""}`;
@@ -312,8 +313,8 @@ export function renderDevice(spec: DeviceSpec): DeviceRender {
   <div class="dev-ground" style="--dground-w:${Math.round(
     totalW * 1.18,
   )}px; --dground-h:${Math.round(totalW * 0.2)}px; --dground-off:${Math.round(
-      totalH * 0.012,
-    )}px; --dground-c: rgba(4,7,12,0.55);"></div>
+    totalH * 0.012,
+  )}px; --dground-c: rgba(4,7,12,0.55);"></div>
 </div>`,
   };
 }

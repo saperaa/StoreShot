@@ -65,6 +65,10 @@ export const screenshotSchema = z.object({
   role: z.string().trim().min(1).optional(),
   /** Optional localized marketing prompt, e.g. a search-bar placeholder ("Find a flight"). */
   prompt: localizedTextSchema.optional(),
+  /** How the source screenshot fills the device screen. "cover" may crop (use focalPoint to choose what stays); "contain" never crops. */
+  fit: z.enum(["cover", "contain"]).optional(),
+  /** Focal point for cover cropping: { "x": 0.5, "y": 0.4 } (0-1, default center-top). */
+  focalPoint: z.object({ x: z.number().min(0).max(1), y: z.number().min(0).max(1) }).optional(),
 });
 
 export const exportSchema = z.object({

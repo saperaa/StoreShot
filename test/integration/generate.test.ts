@@ -105,7 +105,10 @@ describe("storeshot generate", () => {
       path.join(projectDir, "header.config.json"),
       JSON.stringify(headerConfig, null, 2),
     );
-    const result = await runCli(["generate", "-c", "header.config.json", "-o", "header-out"], projectDir);
+    const result = await runCli(
+      ["generate", "-c", "header.config.json", "-o", "header-out"],
+      projectDir,
+    );
     expect(result.code, result.stderr).toBe(0);
     const info = await readImageInfo(
       path.join(projectDir, "header-out", "header", "en-US", "01-home.png"),
