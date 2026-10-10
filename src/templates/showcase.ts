@@ -1,7 +1,7 @@
 import { buildTokens } from "../design/tokens.js";
 import { headline, headlineVars } from "../design/primitives.js";
 import { renderDevice } from "../design/device.js";
-import { landscapeMetrics, landscapeSizes } from "../design/layout.js";
+import { isLongTitle, landscapeLines, landscapeMetrics, landscapeSizes } from "../design/layout.js";
 import { numberSetting } from "./settings.js";
 import { px, type TemplateContext, type TemplateDefinition } from "./types.js";
 
@@ -51,7 +51,9 @@ function renderLandscape(ctx: TemplateContext) {
   const shotScale = numberSetting(SETTINGS, ctx.settings, "shotScale");
   const layers = ctx.settings["layers"] !== false;
   const flip = ctx.index % 2 === 1;
-  const { pad, textWidth } = landscapeMetrics(w, h);
+  const isRtl = ctx.dir === "rtl";
+const longTitle = isLongTitle(ctx);
+const { pad, textWidth } = landscapeMetrics(w, h, { rtl: isRtl, longTitle });
 
   const front = renderDevice({
     image: ctx.image,
@@ -71,8 +73,8 @@ function renderLandscape(ctx: TemplateContext) {
     tokens,
     style: "display",
     kicker: "chip",
-    sizes: landscapeSizes(h, w),
-    lines: { title: 3, subtitle: 3 },
+    sizes: landscapeSizes(h, w, isRtl, longTitle),
+    lines: landscapeLines(isRtl, longTitle),
     scale: headlineScale,
     subtitleMaxWidth: textWidth,
   });

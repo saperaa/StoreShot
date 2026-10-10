@@ -1,0 +1,22 @@
+{
+  "configVersion": 1,
+  "app": { "name": "قمر" },
+  "locales": ["ar"],
+  "direction": { "ar": "rtl" },
+  "template": "editorial",
+  "theme": { "background": "#0A0F1E", "accent": "#62E6B5", "text": "#FFFFFF", "mutedText": "#93A0B8" },
+  "screenshots": [
+    { "id": "hero", "role": "hero", "image": "../starter/screens/home.png",
+      "title": "يومك تحت سيطرتك، بأناقة", "subtitle": "خطّط الليلة، وانطلق غدًا بثقة." },
+    { "id": "long", "role": "feature", "image": "../starter/screens/stats.png",
+      "title": "كل ما تحتاجه لتخطيط يومك بالكامل وتنظيم مهامك المهمة بدون مجهود",
+      "subtitle": "رؤى أسبوعية واضحة، وتنبيهات ذكية تلازم إيقاع حياتك اليومي." }
+  ],
+  "exports": [
+    { "store": "app-store", "profile": "header-21-9", "name": "h21" },
+    { "store": "app-store", "profile": "search-results-3-2", "name": "s32" },
+    { "store": "app-store", "profile": "header-16-9", "name": "h169" },
+    { "store": "google-play", "profile": "feature-graphic", "name": "fg" }
+  ],
+  "output": { "dir": "./out-ed" }
+}

@@ -144,6 +144,57 @@ const cases: Case[] = [
     deviceFrame: true,
     size: { width: 960, height: 412 }, // 21:9 header aspect
   },
+  {
+    // RTL landscape system: short Arabic headline on a 21:9 header.
+    name: "ar-land-header-short",
+    locale: "ar",
+    template: "editorial",
+    screenshot: "home",
+    title: "يومك تحت سيطرتك، بأناقة",
+    subtitle: "خطّط الليلة، وانطلق غدًا بثقة.",
+    size: { width: 960, height: 412 },
+  },
+  {
+    // RTL landscape system: long Arabic headline on a 21:9 header.
+    name: "ar-land-header-long",
+    locale: "ar",
+    template: "editorial",
+    screenshot: "home",
+    title: "كل ما تحتاجه لتخطيط يومك بالكامل وتنظيم مهامك المهمة بدون مجهود",
+    subtitle: "رؤى أسبوعية واضحة، وتنبيهات ذكية تلازم إيقاع حياتك اليومي.",
+    size: { width: 960, height: 412 },
+  },
+  {
+    // RTL landscape system: long Arabic headline on a 3:2 search creative.
+    name: "ar-land-search-long",
+    locale: "ar",
+    template: "cinematic",
+    screenshot: "compose",
+    title: "كل ما تحتاجه لتخطيط يومك بالكامل وتنظيم مهامك المهمة بدون مجهود",
+    subtitle: "رؤى أسبوعية واضحة، وتنبيهات ذكية تلازم إيقاع حياتك اليومي.",
+    size: { width: 960, height: 640 },
+  },
+  {
+    // RTL landscape system: short Arabic headline on a 16:9 universal header.
+    name: "ar-land-universal-short",
+    locale: "ar",
+    template: "cinematic-3d",
+    screenshot: "home",
+    deviceFrame: true,
+    title: "يومك تحت سيطرتك، بأناقة",
+    subtitle: "خطّط الليلة، وانطلق غدًا بثقة.",
+    size: { width: 960, height: 540 },
+  },
+  {
+    // RTL landscape system: long Arabic headline on a Play feature graphic.
+    name: "ar-land-feature-graphic-long",
+    locale: "ar",
+    template: "campaign",
+    screenshot: "compose",
+    title: "كل ما تحتاجه لتخطيط يومك بالكامل وتنظيم مهامك المهمة بدون مجهود",
+    subtitle: "رؤى أسبوعية واضحة، وتنبيهات ذكية تلازم إيقاع حياتك اليومي.",
+    size: { width: 1024, height: 500 },
+  },
 ];
 
 let renderer: RendererType;

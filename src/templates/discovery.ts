@@ -3,7 +3,7 @@ import { buildTokens, type DesignTokens } from "../design/tokens.js";
 import { escapeHtml } from "../util/escapeHtml.js";
 import { headline, headlineVars } from "../design/primitives.js";
 import { renderDevice, resolveDeviceMode } from "../design/device.js";
-import { landscapeMetrics, landscapeSizes } from "../design/layout.js";
+import { isLongTitle, landscapeLines, landscapeMetrics, landscapeSizes } from "../design/layout.js";
 import { numberSetting, stringSetting } from "./settings.js";
 import { px, type TemplateContext, type TemplateDefinition } from "./types.js";
 
@@ -392,7 +392,9 @@ function renderLandscape(ctx: TemplateContext) {
     ctx.deviceFrame,
     "front",
   );
-  const { pad, textWidth } = landscapeMetrics(w, h);
+  const isRtl = ctx.dir === "rtl";
+const longTitle = isLongTitle(ctx);
+const { pad, textWidth } = landscapeMetrics(w, h, { rtl: isRtl, longTitle });
 
   const device = renderDevice({
     image: ctx.image,
@@ -407,8 +409,8 @@ function renderLandscape(ctx: TemplateContext) {
     style: "display",
     kicker: "chip",
     align: "start",
-    sizes: landscapeSizes(h, w),
-    lines: { title: 3, subtitle: 3 },
+    sizes: landscapeSizes(h, w, isRtl, longTitle),
+    lines: landscapeLines(isRtl, longTitle),
     scale: headlineScale,
     subtitleMaxWidth: textWidth,
   });

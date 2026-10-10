@@ -2,7 +2,7 @@ import { withAlpha } from "../util/colors.js";
 import { buildTokens } from "../design/tokens.js";
 import { headline, headlineVars } from "../design/primitives.js";
 import { renderDevice, resolveDeviceMode } from "../design/device.js";
-import { landscapeMetrics, landscapeSizes } from "../design/layout.js";
+import { isLongTitle, landscapeLines, landscapeMetrics, landscapeSizes } from "../design/layout.js";
 import { numberSetting, stringSetting } from "./settings.js";
 import { escapeHtml } from "../util/escapeHtml.js";
 import { px, type TemplateContext, type TemplateDefinition } from "./types.js";
@@ -65,7 +65,9 @@ function renderLandscape(ctx: TemplateContext) {
     "angled",
   );
   const flip = ctx.index % 2 === 1;
-  const { pad, textWidth } = landscapeMetrics(w, h);
+  const isRtl = ctx.dir === "rtl";
+const longTitle = isLongTitle(ctx);
+const { pad, textWidth } = landscapeMetrics(w, h, { rtl: isRtl, longTitle });
 
   const tilt = flip ? 9 : -11;
   const device = renderDevice({
@@ -81,8 +83,8 @@ function renderLandscape(ctx: TemplateContext) {
     tokens,
     style: "campaign",
     kicker: "chip",
-    sizes: landscapeSizes(h, w),
-    lines: { title: 3, subtitle: 2 },
+    sizes: landscapeSizes(h, w, isRtl, longTitle),
+    lines: landscapeLines(isRtl, longTitle),
     scale: headlineScale,
     subtitleMaxWidth: textWidth,
   });

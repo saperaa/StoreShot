@@ -1,7 +1,7 @@
 import { buildTokens } from "../design/tokens.js";
 import { headline, headlineVars, masthead, mastheadVars } from "../design/primitives.js";
 import { renderDevice, resolveDeviceMode } from "../design/device.js";
-import { landscapeMetrics, landscapeSizes } from "../design/layout.js";
+import { isLongTitle, landscapeLines, landscapeMetrics, landscapeSizes } from "../design/layout.js";
 import { escapeHtml } from "../util/escapeHtml.js";
 import { numberSetting, stringSetting } from "./settings.js";
 import { px, type TemplateContext, type TemplateDefinition } from "./types.js";
@@ -56,7 +56,9 @@ function renderLandscape(ctx: TemplateContext) {
     ctx.deviceFrame,
     "front",
   );
-  const { pad, textWidth } = landscapeMetrics(w, h);
+  const isRtl = ctx.dir === "rtl";
+  const longTitle = isLongTitle(ctx);
+  const { pad, textWidth } = landscapeMetrics(w, h, { rtl: isRtl, longTitle });
 
   // Banner crop: the device bleeds off the bottom edge so a portrait phone
   // fills the right zone instead of floating small in the middle.
@@ -67,14 +69,14 @@ function renderLandscape(ctx: TemplateContext) {
     maxHeight: h * 1.22 * deviceScale,
   });
 
-  const sizes = landscapeSizes(h, w);
+  const sizes = landscapeSizes(h, w, isRtl, longTitle);
   const head = headline({
     ctx,
     tokens,
     style: "editorial",
     kicker: "overline",
     sizes,
-    lines: { title: 3, subtitle: 3 },
+    lines: landscapeLines(isRtl, longTitle),
     scale: headlineScale,
     subtitleMaxWidth: textWidth,
   });
