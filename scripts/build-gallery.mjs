@@ -262,4 +262,10 @@ for (const [template, screen, locale, theme, profile, copy] of landscapeConfigs)
 }
 
 fs.rmSync(path.join(gallery, ".work"), { recursive: true, force: true });
+
+// Display-size copies: full store-export resolution belongs in user output,
+// not in the repo — shrink everything to GitHub viewing size.
+const { downscaleTree } = await import("./downscale.mjs");
+const { touched, saved } = downscaleTree(gallery);
+console.log(`downscaled ${touched} file(s), saved ${(saved / 1e6).toFixed(1)} MB`);
 console.log("done");
