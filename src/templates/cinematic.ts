@@ -146,14 +146,23 @@ function renderPortrait(ctx: TemplateContext) {
     maxHeight: h * (headlineBelow ? 0.72 : 0.66) * deviceScale,
   });
 
+  // Content-aware budgets (same rule as the rest of the library): the
+  // centered column lost its full-width measure when it gained side insets,
+  // so starter-length copy needs three lines of room.
+  const rtlA = ctx.dir === "rtl";
+  const longA = (ctx.texts.title ?? "").length >= 40;
   const head = headline({
     ctx,
     tokens,
     style: "cinematic",
     kicker: "chip",
     align: "center",
-    sizes: { kicker: w * 0.023, title: w * 0.082, subtitle: w * 0.032 },
-    lines: { title: 2, subtitle: 2 },
+    sizes: {
+      kicker: w * 0.023,
+      title: w * 0.082 * (rtlA ? 0.86 : 1) * (longA ? 0.85 : 1),
+      subtitle: w * 0.032,
+    },
+    lines: { title: rtlA ? (longA ? 4 : 3) : longA ? 3 : 3, subtitle: 2 },
     scale: headlineScale,
     subtitleMaxWidth: w * 0.72,
   });
@@ -245,17 +254,27 @@ function renderPortraitB(ctx: TemplateContext) {
     image: ctx.image,
     mode,
     maxWidth: w * 0.86 * deviceScale,
-    maxHeight: h * 0.92 * deviceScale,
+    maxHeight: h * 0.78 * deviceScale,
   });
 
+  // Content-aware budgets, same rule as every other template: Arabic gets a
+  // deeper line budget at a slightly smaller optical size, long copy takes
+  // one deliberate step down. The top band has room for four title lines
+  // before the device zone starts at 0.34h.
+  const rtl = ctx.dir === "rtl";
+  const longTitle = (ctx.texts.title ?? "").length >= 40;
   const head = headline({
     ctx,
     tokens,
     style: "cinematic",
     kicker: "chip",
     align: "center",
-    sizes: { kicker: w * 0.023, title: w * 0.084, subtitle: w * 0.032 },
-    lines: { title: 3, subtitle: 2 },
+    sizes: {
+      kicker: w * 0.023,
+      title: w * 0.084 * (rtl ? 0.86 : 1) * (longTitle ? 0.85 : 1),
+      subtitle: w * 0.032,
+    },
+    lines: { title: rtl ? (longTitle ? 5 : 4) : 4, subtitle: 2 },
     scale: headlineScale,
     subtitleMaxWidth: w * 0.74,
   });
@@ -267,11 +286,16 @@ function renderPortraitB(ctx: TemplateContext) {
     "    linear-gradient(" + tokens.bg + " 40%, " + darken(tokens.bg, 0.5) + " 130%);",
     "  " + headlineVars(tokens, "cinematic", h * 0.018, h * 0.02),
     "}",
-    ".cib-device { position: absolute; bottom: " +
-      px(-h * 0.3) + "; left: 50%; transform: translateX(-50%); z-index: 2; }",
-    ".cib-scrim { position: absolute; bottom: 0; left: 0; right: 0; height: " +
-      px(h * 0.4) + "; background: linear-gradient(to top, rgba(3,5,9,0.9) 0%, rgba(3,5,9,0.5) 55%, transparent 100%); z-index: 3; }",
-    ".cib-head { position: absolute; bottom: " +
+    // Non-intersecting zones: the headline owns the top band, the device
+    // starts below it. Marketing text never sits over the app UI — a scrim
+    // is not a fix for that, so there is none over the device.
+    ".cib-device { position: absolute; top: " +
+      px(h * 0.34) + "; left: 50%; transform: translateX(-50%); bottom: " +
+      px(-h * 0.12) + "; z-index: 2; }",
+    ".cib-floor { position: absolute; bottom: 0; left: 0; right: 0; height: " +
+      px(h * 0.16) + "; background: linear-gradient(to top, " +
+      tokens.blackShadow(0.55) + " 0%, transparent 100%); z-index: 1; }",
+    ".cib-head { position: absolute; top: " +
       px(h * 0.075) + "; left: " +
       px(w * 0.1) + "; right: " +
       px(w * 0.1) + "; display: flex; justify-content: center; z-index: 4; }",
@@ -279,9 +303,9 @@ function renderPortraitB(ctx: TemplateContext) {
 
   const html = [
     '<div class="shot shot-cinematic b">',
-    '  <div class="cib-device" data-bleed="true">' + device.html + "</div>",
-    '  <div class="cib-scrim"></div>',
+    '  <div class="cib-floor"></div>',
     '  <div class="cib-head">' + head + "</div>",
+    '  <div class="cib-device" data-bleed="true">' + device.html + "</div>",
     "</div>",
   ].join("\n");
 
