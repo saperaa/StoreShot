@@ -74,8 +74,20 @@ export const DEVICE_CSS = `
   position: absolute;
   inset: 0;
   border-radius: var(--dradius);
-  background: linear-gradient(150deg, #454b58 0%, #12151d 28%, #2e3440 55%, #0b0d12 100%);
-  box-shadow: var(--dshadow), inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 -1px 0 rgba(0, 0, 0, 0.6);
+  /* Brushed-titanium band: bright top catch, sheen band across the upper
+     third, cool body, dark base. Reads as machined metal at export size. */
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, transparent 3%),
+    linear-gradient(
+      165deg,
+      #6a7385 0%,
+      #2a2f3b 14%,
+      #3d4452 30%,
+      #161a23 52%,
+      #2b313d 74%,
+      #0a0c11 100%
+    );
+  box-shadow: var(--dshadow), inset 0 0 0 1px rgba(255, 255, 255, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.28), inset 0 -1px 0 rgba(0, 0, 0, 0.65);
 }
 .dev .dev-glass {
   position: absolute;
@@ -115,6 +127,21 @@ export const DEVICE_CSS = `
   height: var(--disland-h);
   border-radius: calc(var(--disland-h) / 2);
   background: #04060a;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+/* Camera lens: dark pupil with an off-center specular pin — visible from
+   mid sizes up, sells the hardware cutout without stealing attention. */
+.dev .dev-island::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 18%;
+  transform: translateY(-50%);
+  width: calc(var(--disland-h) * 0.62);
+  height: calc(var(--disland-h) * 0.62);
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 32%, #3d4657 0%, #10141d 58%, #05070b 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 .dev .dev-home {
   position: absolute;
@@ -352,3 +379,88 @@ export function renderDevice(spec: DeviceSpec): DeviceRender {
 </div>`,
   };
 }
+
+/* --------------------------------------------------------------- group --- */
+
+export interface SecondaryDeviceSpec {
+  /** Device spec for the supporting screen (mode defaults to "front");
+   * size derives from the hero assembly × depth.scale when omitted. */
+  spec: Omit<DeviceSpec, "className" | "maxWidth" | "maxHeight"> &
+    Partial<Pick<DeviceSpec, "maxWidth" | "maxHeight">>;
+  /** Which side of the hero it occupies: "start" (inline-start) or "end". */
+  side?: "start" | "end";
+  /** Depth treatment: pushes the secondary into a clearly farther plane. */
+  depth?: {
+    /** Optical scale vs the hero assembly (default 0.78). */
+    scale?: number;
+    /** Brightness multiplier (default 0.4 — reads as background, not clutter). */
+    brightness?: number;
+    /** Blur in px relative to the hero width (default 0.006). */
+    blurRatio?: number;
+    /** Raise the secondary's baseline vs the hero bottom (0–1 of hero height). */
+    lift?: number;
+    /** Slight 2D rotation for a candid feel, degrees (default 2). */
+    rotate?: number;
+  };
+}
+
+export interface DeviceGroupSpec {
+  /** The dominant device. Its width/height define the group box. */
+  hero: DeviceSpec;
+  /** Optional supporting device — must add to the story, not decorate. */
+  secondary?: SecondaryDeviceSpec;
+}
+
+export interface DeviceGroupRender {
+  html: string;
+  css: string;
+  width: number;
+  height: number;
+}
+
+/**
+ * Multi-device presentation: one dominant device plus an optional secondary
+ * pushed into a farther plane (smaller, dimmer, softer). The group owns
+ * z-order and the depth treatment so every template gets a consistent,
+ * believable two-device scene; the template still owns outer placement.
+ */
+export function renderDeviceGroup(group: DeviceGroupSpec): DeviceGroupRender {
+  const hero = renderDevice(group.hero);
+  if (!group.secondary) {
+    return { html: hero.html, css: hero.css, width: hero.width, height: hero.height };
+  }
+
+  const d = group.secondary.depth ?? {};
+  const scale = d.scale ?? 0.78;
+  const brightness = d.brightness ?? 0.4;
+  const blur = Math.max(1, Math.round(hero.width * (d.blurRatio ?? 0.006)));
+  const lift = d.lift ?? 0.06;
+  const rotate = d.rotate ?? 2;
+  const side = group.secondary.side ?? "start";
+
+  const secondary = renderDevice({
+    ...group.secondary.spec,
+    mode: group.secondary.spec.mode ?? "front",
+    maxWidth: group.secondary.spec.maxWidth ?? hero.width * scale,
+    maxHeight: group.secondary.spec.maxHeight ?? hero.height * scale,
+  });
+
+  const html = `<div class="devgrp">
+  <div class="devgrp-secondary" style="inset-inline-${side}: ${Math.round(
+    -hero.width * 0.04,
+  )}px; bottom: ${Math.round(hero.height * lift)}px; filter: brightness(${brightness}) blur(${blur}px); transform: rotate(${rotate}deg);">${secondary.html}</div>
+  <div class="devgrp-hero">${hero.html}</div>
+</div>`;
+  return {
+    html,
+    css: hero.css + secondary.css + GROUP_CSS,
+    width: hero.width,
+    height: hero.height,
+  };
+}
+
+const GROUP_CSS = `
+.devgrp { position: relative; }
+.devgrp-secondary { position: absolute; z-index: 1; }
+.devgrp-hero { position: relative; z-index: 2; }
+`;

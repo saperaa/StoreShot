@@ -10,3 +10,4 @@ examples/**/storeshots/
 package/
 .DS_Store
 Thumbs.db
+.work/

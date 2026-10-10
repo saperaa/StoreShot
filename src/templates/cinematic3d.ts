@@ -1,7 +1,7 @@
 import { darken, lighten } from "../util/colors.js";
 import { buildTokens, type DesignTokens } from "../design/tokens.js";
 import { headline, headlineVars } from "../design/primitives.js";
-import { renderDevice, resolveDeviceMode } from "../design/device.js";
+import { renderDevice, renderDeviceGroup, resolveDeviceMode } from "../design/device.js";
 import { isLongTitle, landscapeLines, landscapeMetrics, landscapeSizes } from "../design/layout.js";
 import { numberSetting, stringSetting } from "./settings.js";
 import { px, type TemplateContext, type TemplateDefinition } from "./types.js";
@@ -218,21 +218,23 @@ function renderTwoDevice(ctx: TemplateContext) {
   const deviceScale = numberSetting(SETTINGS, ctx.settings, "deviceScale");
   const mode = resolveDeviceMode(stringSetting(SETTINGS, ctx.settings, "deviceMode"), ctx.deviceFrame, "angled");
 
-  const hero = renderDevice({
-    image: ctx.image,
-    mode,
-    maxWidth: w * 0.64 * deviceScale,
-    maxHeight: h * 0.6 * deviceScale,
-    // Near edge faces the supporting device so the two read as one scene.
-    ...(mode === "angled" ? { rotateY: rtl ? -26 : 26, rotateX: 3, rotateZ: 0 } : {}),
-  });
-  // Far plane: a fully framed device, pushed deeper (smaller, dimmer, softer)
-  // and cropped at the top so it clearly lives behind the hero's plane.
-  const support = renderDevice({
-    image: ctx.image,
-    mode: "front",
-    maxWidth: w * 0.5 * deviceScale,
-    maxHeight: h * 0.5 * deviceScale,
+  // One scene, two planes: the shared group primitive owns z-order and the
+  // depth treatment (smaller, dimmer, softer far plane), so the secondary
+  // reads as context for the hero rather than decoration.
+  const group = renderDeviceGroup({
+    hero: {
+      image: ctx.image,
+      mode,
+      maxWidth: w * 0.64 * deviceScale,
+      maxHeight: h * 0.6 * deviceScale,
+      // Near edge faces the supporting device so the two read as one scene.
+      ...(mode === "angled" ? { rotateY: rtl ? -26 : 26, rotateX: 3, rotateZ: 0 } : {}),
+    },
+    secondary: {
+      spec: { image: ctx.image, mode: "front" },
+      side: "start",
+      depth: { scale: 0.78, brightness: 0.33, blurRatio: 0.004, lift: 0.5, rotate: 2 },
+    },
   });
 
   const head = headline({
@@ -255,20 +257,6 @@ function renderTwoDevice(ctx: TemplateContext) {
 .c3b-head { position: absolute; top: ${px(h * 0.075)}; left: ${px(w * 0.09)}; right: ${px(
     w * 0.09,
   )}; display: flex; flex-direction: column; align-items: center; z-index: 4; }
-.c3b-support {
-  position: absolute;
-  top: ${px(-h * 0.055)};
-  inset-inline-start: ${px(w * 0.065)};
-  z-index: 1;
-  filter: brightness(0.33) saturate(0.75) blur(3px);
-  transform: rotate(1.5deg) translateY(${px(h * 0.02)});
-}
-.c3b-hero {
-  position: absolute;
-  bottom: ${px(h * 0.03)};
-  inset-inline-end: ${px(w * 0.055)};
-  z-index: 3;
-}
 .c3b-hero-shadow {
   position: absolute;
   bottom: ${px(h * 0.012)};
@@ -287,6 +275,12 @@ function renderTwoDevice(ctx: TemplateContext) {
   background: linear-gradient(to top, ${tokens.blackShadow(0.42)}, transparent 74%);
   z-index: 2;
 }
+.c3b-group {
+  position: absolute;
+  bottom: ${px(h * 0.03)};
+  inset-inline-end: ${px(w * 0.055)};
+  z-index: 3;
+}
 `;
 
   const html = `
@@ -294,10 +288,9 @@ function renderTwoDevice(ctx: TemplateContext) {
   ${lightShaft(tokens, rtl, w, h)}
   ${floorGlow(tokens, w, h, h * 0.78, rtl ? 0.3 : 0.7)}
   <div class="c3b-head">${head}</div>
-  <div class="c3b-support" data-bleed="true">${support.html}</div>
   <div class="c3b-veil"></div>
   <div class="c3b-hero-shadow"></div>
-  <div class="c3b-hero">${hero.html}</div>
+  <div class="c3b-group" data-bleed="true">${group.html}</div>
 </div>`;
 
   return { css, html };

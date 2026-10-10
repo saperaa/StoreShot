@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildTokens } from "../../src/design/tokens.js";
-import { renderDevice, resolveDeviceMode } from "../../src/design/device.js";
+import { renderDevice, renderDeviceGroup, resolveDeviceMode } from "../../src/design/device.js";
 import type { TemplateImage } from "../../src/templates/types.js";
 
 const image: TemplateImage = { url: "img/shot.png", width: 1080, height: 2340, alt: "x" };
@@ -108,5 +108,50 @@ describe("device rendering math", () => {
       backLayer: false,
     });
     expect(device.html).not.toContain("dev-back");
+  });
+
+  it("angled mode renders both extruded side faces with backface culling", () => {
+    const device = renderDevice({ image, mode: "angled", maxWidth: 600, maxHeight: 1200 });
+    expect(device.html).toContain('class="dev-side l"');
+    expect(device.html).toContain('class="dev-side r"');
+  });
+});
+
+describe("device group presentation", () => {
+  it("without a secondary it returns the hero render unchanged", () => {
+    const group = renderDeviceGroup({
+      hero: { image, mode: "front", maxWidth: 600, maxHeight: 1200 },
+    });
+    expect(group.html).toContain("dev-front");
+    expect(group.html).not.toContain("devgrp-secondary");
+  });
+
+  it("with a secondary it owns z-order and the depth treatment", () => {
+    const group = renderDeviceGroup({
+      hero: { image, mode: "angled", maxWidth: 600, maxHeight: 1200, rotateY: -20 },
+      secondary: {
+        spec: { image, mode: "front" },
+        side: "start",
+        depth: { scale: 0.8, brightness: 0.35, lift: 0.5, rotate: 3 },
+      },
+    });
+    expect(group.html).toContain("devgrp");
+    const secondaryIdx = group.html.indexOf("devgrp-secondary");
+    const heroIdx = group.html.indexOf("devgrp-hero");
+    expect(secondaryIdx).toBeGreaterThan(-1);
+    expect(heroIdx).toBeGreaterThan(secondaryIdx); // hero paints above
+    expect(group.html).toContain("brightness(0.35)");
+    expect(group.html).toContain("rotate(3deg)");
+    // The secondary is sized off the hero assembly, so it stays in-scene.
+    expect(group.html).toMatch(/maxWidth|600/);
+  });
+
+  it("defaults the secondary to a clearly farther plane", () => {
+    const group = renderDeviceGroup({
+      hero: { image, mode: "front", maxWidth: 600, maxHeight: 1200 },
+      secondary: { spec: { image, mode: "front" } },
+    });
+    expect(group.html).toContain("brightness(0.4)");
+    expect(group.html).toContain("blur(");
   });
 });
