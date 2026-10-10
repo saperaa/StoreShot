@@ -1,155 +1,89 @@
-# StoreShot — App Store & Google Play screenshots that look designed, not generated
+<div align="center">
+
+# StoreShot
+
+**App Store & Google Play screenshots that look designed — from one JSON config.**
+
+An open-source CLI that turns your real app screenshots into art-directed store listings for every locale and device size. First-class **Arabic/RTL** support. **Local, reproducible rendering** — nothing leaves your machine.
 
 [![CI](https://github.com/saperaa/StoreShot/actions/workflows/ci.yml/badge.svg)](https://github.com/saperaa/StoreShot/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![npm](https://img.shields.io/badge/npm-storeshot--cli-blue)](https://www.npmjs.com/package/storeshot-cli)
+[![Node](https://img.shields.io/badge/node-%E2%89%A520-blue)](./package.json)
 
-A **free, open-source CLI** that turns your real app screenshots into premium, art-directed store listings — for every locale and every device size — rendered **locally and deterministically**. First-class **Arabic and right-to-left** support: connected letterforms, mirrored layouts, localized marketing layers. No cloud. No subscription. Your unreleased app never leaves your machine.
+[Gallery](#-template-gallery) · [Quick start](#-quick-start) · [Templates](docs/templates.md) · [Configuration](docs/configuration.md) · [Store profiles](docs/store-profiles.md) · [Arabic & RTL](docs/rtl-guide.md) · [Contributing](CONTRIBUTING.md)
 
-## Stop fighting your store screenshots
-
-These are the problems StoreShot was built to kill:
-
-- **The combinatorial explosion.** Screenshots × locales × device sizes is hundreds of assets per release ("300 assets to regenerate each release" is a real number from real teams). One JSON config renders the whole matrix — same pixels, every time, straight into CI.
-- **Arbitrary exact-resolution rules.** Wrong pixel dimensions are the #1 cause of App Store Connect upload rejections. StoreShot ships store profiles **verified against official Apple/Google specifications** (with verification dates) and guarantees exact output dimensions.
-- **fastlane frameit pain.** Frameit is slow, needs Ruby + ImageMagick, ships stale device frames — and **breaks Arabic letterforms entirely**. StoreShot renders through Chromium's text engine: correct shaping, bidi, mixed Arabic/English text and numerals, always.
-- **Cloud tools want your unreleased app.** AppScreens, Previewed, LaunchMatics and friends are freemium SaaS ($10–25/month) that upload pre-release, NDA-sensitive screenshots to third-party servers. StoreShot runs 100% offline and is MIT-licensed.
-- **"I'm a developer, not a designer."** Seven art-directed templates — editorial, cinematic, Swiss, campaign, immersive, showcase, discovery — with realistic device rendering, sequence-aware layouts, and a validator that refuses to ship a clipped or overflowing headline.
-
-## The flagship campaign — Dark Cinematic
-
-A complete five-role listing (value proposition → feature → differentiator → workflow → strength) in English and Arabic, one config, alternating camera setups. Rendered by the CLI at 1206×2622 — [full set](docs/gallery/campaign-cinematic).
-
-| 01 Value proposition | 04 Workflow |
-| --- | --- |
-| ![EN hero](docs/gallery/campaign-cinematic/app-store-iphone-6-3/en-US/01-home.png) | ![AR workflow](docs/gallery/campaign-cinematic/app-store-iphone-6-3/ar/04-focus.png) |
-
-## How it compares
-
-|  | StoreShot | fastlane frameit | AppScreens / Previewed | Shotlingo |
-| --- | --- | --- | --- | --- |
-| Price | Free, MIT | Free | $10–25/mo | Paid |
-| Runs | Local CLI, offline | Local (Ruby + ImageMagick) | Cloud only | Cloud only |
-| Arabic / RTL | First-class: shaping, mirrored layouts, Arabic art direction | Breaks ligatures | Not advertised | Yes |
-| Deterministic CI output | Pixel-identical | Environment-dependent | No | No |
-| Verified store sizes | Yes, dated + sourced | Manual Framefile.json | Yes | Yes |
-| Product-page headers & search assets (Apple) | Yes | No | Paid tiers | No |
-
-## 60 seconds to your first listing
-
-```bash
-npx storeshot-cli init my-app     # wizard: app name, story, locales, template, theme
-npx storeshot-cli install         # one-time Chromium download
-cd my-app && npx storeshot-cli generate
-```
-
-```text
-storeshots/
-  app-store-iphone-6-3/en-US/01-home.png … 05-plan.png
-  app-store-iphone-6-3/ar/…
-  google-play-phone/…
-```
-
-```jsonc
-{
-  "locales": ["en-US", "ar"],
-  "template": "editorial",
-  "screenshots": [
-    { "id": "home", "role": "hero", "image": "./screens/home.png",
-      "title": { "en-US": "Your day, beautifully in control", "ar": "يومك تحت سيطرتك، بأناقة" } }
-  ],
-  "exports": [ { "store": "app-store", "profile": "iphone-6-3" } ]
-}
-```
-
-Full example gallery (every template, English + Arabic, light + dark, portrait + landscape banners): [docs/gallery](docs/gallery) · Before/after: [docs/before-after.md](docs/before-after.md)
-
-```bash
-git clone https://github.com/saperaa/StoreShot && cd StoreShot
-npm install && npm run build && npx playwright-core install chromium
-cd starter && node ../dist/cli.js generate
-```
+</div>
 
 ---
 
-## The v0.2 creative system
+## The flagship campaign
 
-Every frame is treated as a standalone marketing composition with a role in a sequence — not a screenshot pasted into a colored rectangle. Six art-directed templates, a realistic device renderer, magazine-grade typography, and sequence awareness:
+Every frame below was generated by this CLI from one config — real app screenshots, localized copy, deterministic output. Left: English value proposition. Right: Arabic workflow frame (RTL layout, connected letterforms).
 
-| Template | Concept | Device |
-| --- | --- | --- |
-| `editorial` | Magazine opening page: masthead + folio, ghost numeral, serif display headline, device crossing the fold | framed front |
-| `cinematic` | Hero product shot: key light, floor reflection, scrim — two alternating camera setups | framed front |
-| `swiss` | International typographic style: visible grid, heavy accent bar, diagonal composition, figure caption | frameless |
-| `campaign` | Launch poster: the largest headline in the library, solid brand tag, angled device breaking a diagonal band | 3D angled |
-| `immersive` | Device in a scene: perspective twin devices, horizon, rim light, viewfinder ticks | 3D angled + twin |
-| `showcase` | The interface is the hero: layered UI views breaking the edge of an elevated slab | frameless, layered |
-| `discovery` | Apple-inspired product-page art direction: optional localized search layer, oversized ghost type, layered screens cropped by the canvas | framed + layered |
-
-Consecutive frames **alternate between structurally different layouts** (centered vs asymmetric spreads, edge-cropped devices, typography behind objects), so a five-image listing reads like one campaign — and `screenshots[].prompt` feeds the Discovery template's localized search layer — same config, same pixels, every run.
-
-## Gallery
-
-All images below were rendered by this repository's CLI from the example project in [`starter/`](starter/) (the sample app "Qamar" is original StoreShot artwork). Full gallery: [`docs/gallery/`](docs/gallery), including a complete five-image campaign in English and Arabic, light themes, and every template. Before/after against v0.1: [`docs/before-after.md`](docs/before-after.md).
-
-| Editorial (EN) | Editorial (AR) |
+| **01 · Value proposition** (EN) | **04 · Deep work** (AR) |
 | --- | --- |
-| ![Editorial EN](docs/gallery/editorial/en-US/01-home.png) | ![Editorial AR](docs/gallery/editorial/ar/01-home.png) |
+| ![English campaign frame](docs/gallery/campaign-cinematic/app-store-iphone-6-3/en-US/01-home.png) | ![Arabic campaign frame](docs/gallery/campaign-cinematic/app-store-iphone-6-3/ar/04-focus.png) |
 
-| Cinematic (EN) | Campaign (EN) |
-| --- | --- |
-| ![Cinematic EN](docs/gallery/cinematic/en-US/01-home.png) | ![Campaign EN](docs/gallery/campaign/en-US/01-compose.png) |
+The complete five-frame listing — value proposition → feature → differentiator → workflow → product strength, in English and Arabic — lives in [`docs/gallery/campaign-cinematic`](docs/gallery/campaign-cinematic).
 
-| Immersive (EN) | Showcase (AR) |
-| --- | --- |
-| ![Immersive EN](docs/gallery/immersive/en-US/01-home.png) | ![Showcase AR](docs/gallery/showcase/ar/01-compose.png) |
+## Why StoreShot
 
-| Discovery (EN) — search layer + layered screens | Discovery (AR) — RTL variant B |
-| --- | --- |
-| ![Discovery EN](docs/gallery/discovery/en-US-a/01-home.png) | ![Discovery AR](docs/gallery/discovery/ar-b/01-home.png) |
-
-| Swiss (EN) | Editorial on paper (light) |
-| --- | --- |
-| ![Swiss EN](docs/gallery/swiss/en-US/01-insights.png) | ![Editorial paper](docs/gallery/themes/editorial-paper/01-home.png) |
-
-Rebuild it yourself:
-
-```bash
-git clone https://github.com/saperaa/StoreShot && cd storeshot
-npm install && npm run build && npx playwright-core install chromium
-cd starter && node ../dist/cli.js generate
-node ../scripts/build-gallery.mjs   # docs/gallery
-```
-
-## Arabic & RTL — designed, not translated
-
-- Shaping, bidi and mixed Arabic/English/numerals are handled by Chromium's text engine (HarfBuzz + ICU); StoreShot never reorders or reverses strings.
-- `<html lang dir>` comes from the locale; templates mirror via CSS logical properties — headlines, rules, grids and captions re-flow, while the app screenshot and device hardware stay un-mirrored.
-- Direction-aware display stack: Arabic headlines set in **IBM Plex Sans Arabic** with embedded Latin words falling through to **Fraunces**, the bundled display serif (both SIL OFL 1.1, both shipped).
-- Text is measured **after fonts load**; a headline that doesn't fit its budget fails the build with the screenshot id, locale and field — nothing is silently shrunk.
-- Visual regression cases cover long Arabic headlines, multi-line subtitles, mixed-language copy with numerals and punctuation, and light/dark modes.
-
-Troubleshooting guide: [`docs/rtl-guide.md`](docs/rtl-guide.md).
-
-## Installation
-
-```bash
-npm install --save-dev storeshot-cli   # or: npx storeshot-cli@latest …
-npx storeshot-cli install              # one-time Chromium download (~170 MB)
-```
-
-Requirements: **Node.js ≥ 20**, Windows / macOS / Linux. The npm package is `storeshot-cli` (the name `storeshot` was taken); the binary is `storeshot`. No installed Chromium? `STORESHOT_BROWSER_CHANNEL=msedge storeshot generate` (or `chrome`).
+- **One config, every asset.** Screenshots × locales × device sizes from a single `storeshot.config.json` — same pixels every run.
+- **Local & free forever.** Renders offline with Chromium. No SaaS subscription, no uploads of your unreleased app, no API keys.
+- **Real design, not frames around rectangles.** Seven art-directed templates with realistic device rendering and sequence-aware layouts.
+- **Arabic/RTL done right.** Connected letterforms, mirrored compositions, mixed Arabic/English text — through Chromium's text engine, never string reversal.
+- **Fails before you ship bad assets.** Validates config, translations, exact store dimensions, and rendered text fit — with browser-measured geometry checks.
 
 ## Quick start
 
 ```bash
-storeshot init my-app   # asks: app name, story, locales, template, theme
+npm install --save-dev storeshot-cli
+npx storeshot install        # one-time Chromium download (~170 MB)
+npx storeshot init my-app    # wizard: name, story, locales, template, theme
 cd my-app
-storeshot generate      # every locale × export, sequence-aware
-storeshot validate      # config, assets, translations, rendered text fit
+npx storeshot generate
 ```
 
-Replace the five example screenshots in `screens/` with your real app UI (PNG/JPEG/WebP), edit the copy in `storeshot.config.json`, done. StoreShot never modifies your screenshots — it composes the marketing around them.
+Output lands in `storeshots/<store-profile>/<locale>/01-…png` at exact verified dimensions. Already have Chrome or Edge installed? Skip the download: `STORESHOT_BROWSER_CHANNEL=msedge npx storeshot generate`.
+
+> Requires Node.js ≥ 20 · Windows / macOS / Linux. First render after `init` uses the bundled example app — replace `screens/*.png` with your real screenshots and edit the copy in `storeshot.config.json`.
+
+## Template gallery
+
+| Template | Concept | English | العربية |
+| --- | --- | --- | --- |
+| `cinematic` | Hero product shot: key light, floor reflection | ![Cinematic EN](docs/gallery/cinematic/en-US/01-home.png) | ![Editorial AR](docs/gallery/editorial/ar/01-home.png)* |
+| `editorial` | Magazine spread: masthead, ghost numeral, serif display type | ![Editorial EN](docs/gallery/editorial/en-US/01-home.png) | *(shown left) |
+| `discovery` | Apple-inspired: localized search layer, layered screens | ![Discovery EN](docs/gallery/discovery/en-US-a/01-home.png) | ![Discovery AR](docs/gallery/discovery/ar-b/01-home.png) |
+| `swiss` | Typographic grid, frameless UI, figure caption | ![Swiss EN](docs/gallery/swiss/en-US/01-insights.png) | ![Swiss paper AR](docs/gallery/themes/swiss-paper/01-insights.png)* |
+| `campaign` | Launch poster: oversized type, angled device, brand band | ![Campaign EN](docs/gallery/campaign/en-US/01-compose.png) | ![Showcase AR](docs/gallery/showcase/ar/01-compose.png)* |
+| `immersive` / `showcase` | Perspective twin devices · layered UI on a slab | ![Immersive EN](docs/gallery/immersive/en-US/01-home.png) | *(shown left)* |
+
+\* Light-theme example. Landscape banners (Apple product-page headers & search assets, Play feature graphic): [`docs/gallery/landscape`](docs/gallery/landscape) · Before/after vs v0.1: [`docs/before-after.md`](docs/before-after.md)
+
+## How it compares
+
+|  | StoreShot | fastlane frameit | cloud SaaS tools |
+| --- | --- | --- | --- |
+| Runs locally, offline | ✅ | ✅ (Ruby + ImageMagick) | ❌ uploads required |
+| CLI / CI automation | ✅ | ✅ | Limited |
+| Reusable JSON config | ✅ | Framefile.json | Per-project UI |
+| Arabic / RTL typography | ✅ first-class | ❌ breaks ligatures | Rare |
+| Reproducible pixels | ✅ | ❌ environment-dependent | ❌ |
+| Price | Free, MIT | Free | Subscription |
+
+## Documentation
+
+| Topic | Link |
+| --- | --- |
+| Installation & configuration reference | [docs/configuration.md](docs/configuration.md) |
+| Templates & authoring guide | [docs/templates.md](docs/templates.md) |
+| Store export profiles (verified, dated) | [docs/store-profiles.md](docs/store-profiles.md) |
+| Arabic & RTL behavior + troubleshooting | [docs/rtl-guide.md](docs/rtl-guide.md) |
+| Launch & discoverability playbook | [docs/repo-seo.md](docs/repo-seo.md) |
+| Contributing · Code of conduct · Security | [CONTRIBUTING.md](CONTRIBUTING.md) · [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) · [SECURITY.md](SECURITY.md) |
+
+---
 
 ## Configuration highlights
 
