@@ -28,6 +28,9 @@ interface WrittenFile {
 export async function runGenerate(options: GenerateOptions): Promise<void> {
   const loaded = await loadConfigFile(options.config);
   const resolved = resolveConfig(loaded);
+  for (const notice of resolved.deprecations) {
+    log.warn(notice);
+  }
 
   const locales = filterLocales(resolved, options.locale);
   const exports_ = filterExports(resolved, options.export);
@@ -95,6 +98,8 @@ export async function runGenerate(options: GenerateOptions): Promise<void> {
             imageInfo: imageInfos.get(screenshot.id)!,
             size: { width: exportEntry.width, height: exportEntry.height },
             deviceFrame: deviceFrameFor(resolved, screenshot),
+            index: shotIndex,
+            count: resolved.screenshots.length,
           });
 
           const result = await renderer.render(request);

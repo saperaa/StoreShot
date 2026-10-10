@@ -4,6 +4,57 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.2.0] — 2026-10-10
+
+The creative redesign. Generated screenshots are now art-directed marketing
+compositions with sequence awareness, realistic device rendering and a full
+design-token system. See docs/before-after.md.
+
+### Added
+
+- Six art-directed templates — `editorial`, `cinematic`, `swiss`,
+  `campaign`, `immersive`, `showcase` — each with its own layout rules,
+  typographic character and device presentation.
+- Device rendering system with three modes: frameless (`bare`), premium
+  front-facing hardware (`front`: rail, bezel, glare, island, buttons,
+  layered shadows) and perspective scenes (`angled`: rotation, optional
+  twin device, ground shadow). Exact screen aspect guaranteed; the assembly
+  never exceeds its slot.
+- Design-token layer (`src/design/tokens.ts`): light/dark derivation,
+  surfaces, hairlines and three shadow levels shared by every template.
+- Composition primitives: five headline typographic characters, masthead
+  with folio, overlines, chips — all carrying the overflow-measurement
+  attributes.
+- Sequence awareness: templates receive `index`/`count`/`role` and
+  alternate layouts deterministically across a campaign; `screenshots[].role`
+  config field.
+- Theme tokens: `theme.surface` and `theme.mode` (auto/light/dark).
+- Display typography: bundled Fraunces (variable, SIL OFL 1.1) with a
+  direction-aware font stack — Arabic headlines stay IBM Plex Sans Arabic
+  with Latin words falling through to the serif.
+- Six wizard theme personalities incl. light presets; five example app
+  screens (two new: focus timer, Arabic weekly planner) and a full
+  five-image example campaign.
+- Gallery builder (`scripts/build-gallery.mjs`) rendering every template ×
+  locale + light themes + the complete campaign into `docs/gallery`.
+- New unit tests for design tokens, device math and mode resolution; visual
+  cases for all six templates incl. long Arabic headlines, mixed
+  Arabic/English/numerals copy and light mode.
+
+### Changed
+
+- Template registry replaced; pre-v0.2 ids resolve through aliases
+  (minimal→swiss, gradient→campaign, device-focus→immersive,
+  spotlight→cinematic) with a deprecation notice from generate/validate.
+- Template settings unified around `headlineScale`, `deviceScale`,
+  `deviceMode` + a small per-template set.
+
+### Fixed
+
+- Framed devices could exceed their layout slot by the bezel/rail width;
+  the screen is now fitted inside the slot minus chrome (caught by a unit
+  test).
+
 ## [0.1.0] — 2026-10-10
 
 First public release.

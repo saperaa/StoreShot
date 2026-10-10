@@ -25,7 +25,7 @@ function loadedWith(overrides: Record<string, unknown>): LoadedConfig {
 describe("configuration schema", () => {
   it("accepts a minimal config and applies defaults", () => {
     const config = storeshotConfigSchema.parse(baseConfig);
-    expect(config.template).toBe("gradient");
+    expect(config.template).toBe("gradient"); // shipped default; resolves via alias
     expect(config.theme.background).toBe("#0E1524");
     expect(config.output.dir).toBe("./storeshots");
     expect(config.locales).toEqual(["en-US", "ar"]);
@@ -76,6 +76,24 @@ describe("configuration schema", () => {
     const result = storeshotConfigSchema.safeParse({ ...baseConfig, configVersion: 2 });
     expect(result.success).toBe(false);
   });
+
+  it("accepts sequence roles and light/dark theme tokens", () => {
+    const config = storeshotConfigSchema.parse({
+      ...baseConfig,
+      screenshots: [{ id: "hero", image: "./x.png", role: "hero", title: { "en-US": "A", ar: "ب" } }],
+      theme: { background: "#F4F1EA", accent: "#0E7A5F", text: "#1A1D24", mutedText: "#6B6F7B", mode: "light" },
+    });
+    expect(config.screenshots[0]!.role).toBe("hero");
+    expect(config.theme.mode).toBe("light");
+  });
+
+  it("accepts a display font family", () => {
+    const config = storeshotConfigSchema.parse({
+      ...baseConfig,
+      fonts: { display: { regular: "./fonts/MyDisplay.ttf" } },
+    });
+    expect(config.fonts!.display!.regular).toBe("./fonts/MyDisplay.ttf");
+  });
 });
 
 describe("config resolution", () => {
@@ -94,9 +112,9 @@ describe("config resolution", () => {
       resolveConfig(loadedWith({ template: "nope" }));
     } catch (error) {
       const message = (error as ConfigError).message;
-      expect(message).toMatch(/minimal/);
-      expect(message).toMatch(/gradient/);
-      expect(message).toMatch(/device-focus/);
+      expect(message).toMatch(/editorial/);
+      expect(message).toMatch(/cinematic/);
+      expect(message).toMatch(/swiss/);
     }
   });
 
@@ -155,5 +173,29 @@ describe("config resolution", () => {
         }),
       ),
     ).toThrow(/2x the shortest side/);
+  });
+
+  it("resolves pre-v0.2 template ids with a deprecation notice", () => {
+    const resolved = resolveConfig(loadedWith({ template: "minimal" }));
+    expect(resolved.template.definition.id).toBe("swiss");
+    expect(resolved.deprecations.length).toBe(1);
+    expect(resolved.deprecations[0]).toMatch(/minimal/);
+    expect(resolved.deprecations[0]).toMatch(/swiss/);
+
+    const fresh = resolveConfig(loadedWith({ template: "editorial" }));
+    expect(fresh.deprecations).toEqual([]);
+  });
+
+  it("carries sequence roles through resolution", () => {
+    const resolved = resolveConfig(
+      loadedWith({
+        screenshots: [
+          { id: "a", image: "./a.png", role: "hero", title: { "en-US": "A", ar: "أ" } },
+          { id: "b", image: "./b.png", title: { "en-US": "B", ar: "ب" } },
+        ],
+      }),
+    );
+    expect(resolved.screenshots[0]!.role).toBe("hero");
+    expect(resolved.screenshots[1]!.role).toBeUndefined();
   });
 });

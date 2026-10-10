@@ -1,114 +1,128 @@
 # Template authoring guide
 
 StoreShot templates are TypeScript modules that turn a render context into
-HTML + CSS. There is no plugin system to learn — a template is a pure
-function, which makes them easy to review, test and pixel-compare.
+HTML + CSS. A template is a pure function over `(context) → {css, html}` —
+no plugin system, no build step, fully deterministic.
 
-## Anatomy
+## The library
 
-A template lives in `src/templates/<name>.ts` and exports a
-`TemplateDefinition`:
+| id | default device | settings |
+| --- | --- | --- |
+| `editorial` | `front` | `headlineScale`, `deviceScale`, `deviceMode` |
+| `cinematic` | `front` | `headlineScale`, `deviceScale`, `reflection`, `deviceMode` |
+| `swiss` | `bare` | `headlineScale`, `deviceScale`, `grid`, `deviceMode` |
+| `campaign` | `angled` | `headlineScale`, `deviceScale`, `band`, `deviceMode` |
+| `immersive` | `angled` + twin | `headlineScale`, `deviceScale`, `twin`, `deviceMode` |
+| `showcase` | layered bare | `headlineScale`, `shotScale`, `layers` |
 
-```ts
-import { px, type TemplateContext, type TemplateDefinition } from "./types.js";
+Common settings: `headlineScale` (0.8–1.25), `deviceScale` (0.8–1.15),
+`deviceMode` (`"auto" | "bare" | "front" | "angled"`; `auto` follows the
+screenshot's `deviceFrame` flag).
 
-const SETTINGS = [
-  {
-    key: "cornerRadius",
-    type: "number" as const,
-    default: 0.03,
-    min: 0,
-    max: 0.1,
-    description: "Screenshot corner radius as a fraction of canvas width.",
-  },
-] as const;
+Pre-v0.2 ids (`minimal`, `gradient`, `device-focus`, `spotlight`) resolve to
+their redesigns (`swiss`, `campaign`, `immersive`, `cinematic`) with a
+deprecation notice.
 
-function render(ctx: TemplateContext) {
-  const { width: w, height: h } = ctx.canvas;
-  const radius = w * 0.03;
+## Architecture layers
 
-  const css = `
-.shot-mytemplate { position: absolute; inset: 0; background: ${ctx.theme.background}; }
-.shot-mytemplate .app-shot { border-radius: ${px(radius)}; }`;
-
-  const html = `
-<div class="shot shot-mytemplate">
-  <img class="app-shot" src="${ctx.image.url}" alt="${ctx.image.alt}">
-</div>`;
-
-  return { css, html };
-}
-
-export const myTemplate: TemplateDefinition = {
-  id: "my-template",
-  name: "My Template",
-  description: "One sentence that sells the layout.",
-  defaultDeviceFrame: false,
-  settings: SETTINGS,
-  render,
-};
+```
+src/design/tokens.ts      theme → design tokens (modes, surfaces, shadows, lines)
+src/design/device.ts      device rendering: bare / front / angled (+ twin, ground)
+src/design/primitives.ts  headline blocks (5 typographic characters), masthead, chips
+src/templates/*.ts        one file per template: composition rules only
+src/render/html.ts        document shell, font stacks, shared component CSS
 ```
 
-Register it in `src/templates/registry.ts` and add a visual test case +
-baseline (`test/visual/render.test.ts`).
+Templates should compose these layers, not re-derive them.
 
 ## The render context
 
-| Field                               | What it gives you                                                                                            |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `ctx.app`                           | `name`, optional `tagline`/`story`.                                                                          |
-| `ctx.locale`, `ctx.lang`, `ctx.dir` | Resolved locale (`ar`), primary language, `"ltr"`/`"rtl"`.                                                   |
-| `ctx.texts`                         | `{ title?, subtitle? }` already resolved for this locale, HTML-safe handling included (use `textBlockHtml`). |
-| `ctx.theme`                         | `background`, `accent`, `text`, `muted` — user's colors.                                                     |
-| `ctx.image`                         | Screenshot `url` (sandbox-relative), natural `width`/`height`, `alt`.                                        |
-| `ctx.deviceFrame`                   | Whether to draw the phone frame (template default or per-screenshot override).                               |
-| `ctx.settings`                      | User settings — always read through `SETTINGS` accessors.                                                    |
-| `canvas`                            | Exact export pixel size. **All sizes must derive from it** (`w * 0.08` etc.), never absolute pixels.         |
+| Field | What it gives you |
+| --- | --- |
+| `ctx.app` | `name`, optional `tagline`/`story`. |
+| `ctx.locale`, `ctx.lang`, `ctx.dir` | Resolved locale, primary language, `"ltr"`/`"rtl"`. |
+| `ctx.texts` | `{ title?, subtitle? }` resolved for this locale. |
+| `ctx.theme` | User colors + `surface`/`mode` token inputs — always go through `buildTokens(ctx.theme)`. |
+| `ctx.image` | Screenshot `url`, natural `width`/`height`, `alt`. |
+| `ctx.deviceFrame` | The screenshot's frame flag — feed it to `resolveDeviceMode(...)` unless your template has a fixed presentation. |
+| `ctx.settings` | User settings — read only through the `SETTINGS` accessors. |
+| `ctx.index`, `ctx.count` | Sequence position — the ONLY sanctioned source of variation. |
+| `ctx.role` | Optional semantic role from the config (`"hero"`, `"trust"`…). |
+| `ctx.canvas` | Exact export pixel size. Derive every dimension from it. |
 
 ## Hard rules
 
-1. **RTL mirroring is automatic — keep it that way.** Use CSS logical
-   properties (`inset-inline-start`, `padding-inline-end`,
-   `margin-block-start`, `text-align: start`). The page already carries
-   `dir="rtl"` for RTL locales. If you must differ per direction, use
-   `[dir="rtl"]` selectors — never re-order or reverse user text.
-2. **Never clamp text.** Emit kicker/title/subtitle through
-   `textBlockHtml(ctx, sizes, lines)`; it adds the `data-field` and
-   `data-max-height` attributes the overflow validator measures. Text blocks
-   must not use `overflow: hidden`, fixed heights or `-webkit-line-clamp`.
-3. **Never crop the app screenshot.** The screenshot is the user's real UI.
-   Use `object-fit: contain`, or the shared `deviceFrame()` helper which
-   sizes the frame to the image's exact aspect ratio.
-4. **No network, no external files.** Only `ctx.image.url` and the injected
-   `@font-face` families. Anything else is aborted at render time.
-5. **Derive every size from the canvas.** The same template must look right
-   at 720×1280 and 2064×2752.
-6. **Round to whole pixels** with `px()` — sub-pixel layout is a source of
-   cross-platform drift.
-7. **Don't `letter-spacing` Arabic.** Tracking breaks glyph connections.
-   Use `[dir="ltr"] { letter-spacing: … }` and keep RTL at `0.01em` or none.
+1. **RTL is structural.** Use CSS logical properties; the page carries
+   `dir`. Do not mirror the app screenshot, device hardware, or rotations
+   that represent physical objects. Split per-direction styling with
+   `[dir="rtl"]` selectors. Never reorder or reverse user text.
+2. **Text goes through `headline()`**, which attaches the `data-field` /
+   `data-max-height` measurement attributes. Never clamp, shrink or
+   line-clamp text — the validator fails the build instead.
+3. **The screenshot is sacred.** `object-fit: cover` only inside
+   `renderDevice` (the slot is sized to the exact aspect, so nothing is
+   cropped). Never stretch, filter into illegibility, or cover UI without a
+   deliberate, documented reason.
+4. **All sizes derive from the canvas** and round through `px()`. The same
+   template must look right at 720×1280 and 2064×2752.
+5. **Variation comes from `ctx.index` only.** Deterministic in, identical
+   pixels out — no randomness, no dates, no environment reads.
+6. **No network, no absolute paths.** Only `ctx.image.url` and the injected
+   `@font-face` families.
+7. **No letter-spacing on Arabic** (`[dir="ltr"]` selectors only) — tracking
+   breaks glyph connections.
 
-## Typography helpers
+## Device modes
 
-- `textBlockHtml(ctx, sizes, lines)` — kicker (app name) + title + subtitle
-  with measurement attributes. `sizes` are font sizes in px, `lines` the
-  per-field line budgets.
-- `fontStack(dir)` from `src/render/html.ts` already orders the Arabic and
-  Latin families correctly for the page direction.
-- Available weights: 400, 600, 700 (`regular`, `semibold`, `bold`).
+```ts
+import { renderDevice, resolveDeviceMode } from "../design/device.js";
 
-## Settings
+const mode = resolveDeviceMode(
+  stringSetting(SETTINGS, ctx.settings, "deviceMode"),
+  ctx.deviceFrame,
+  "front", // what "auto + deviceFrame" means for this template
+);
 
-Declare every setting with type, default and (for numbers) a range. Read
-values only through `numberSetting` / `boolSetting`; unknown keys produce a
-validation warning automatically via `unknownSettingKeys`.
+const device = renderDevice({
+  image: ctx.image,
+  mode,
+  maxWidth: w * 0.6,
+  maxHeight: h * 0.47,
+  ...(mode === "angled" ? { rotateY: tilt, rotateZ: -3 } : {}),
+});
+```
 
-## Testing your template
+`renderDevice` guarantees: exact screen aspect, chrome stays inside the
+slot, layered realistic shadows, optional glare/island/home-indicator/back
+layer/ground shadow. `device.html` is a self-contained block you position
+with absolute/flow layout; `device.width/height` tell you what it measured.
 
-1. Add a case to `cases` in `test/visual/render.test.ts`.
-2. `npm run test:visual:update` to write baselines for your platform.
-3. `npm test` — the suite asserts exact dimensions, loaded fonts, no
-   overflow, non-blank output, determinism and baseline parity.
+## Headlines
 
-Look at `src/templates/minimal.ts` (smallest), `gradient.ts` (decorations)
-and `device-focus.ts` (device frame) for working examples.
+```ts
+import { headline, headlineVars } from "../design/primitives.js";
+
+const head = headline({
+  ctx, tokens, style: "editorial",       // editorial|swiss|campaign|cinematic|display
+  kicker: "overline",                    // overline|chip|masthead|none
+  sizes: { kicker: w * 0.024, title: w * 0.092, subtitle: w * 0.03 },
+  lines: { title: 3, subtitle: 2 },      // layout budgets — be honest here
+  scale: headlineScale,
+  subtitleMaxWidth: w * 0.62,
+});
+// css: `.shot-x { ${headlineVars(tokens, "editorial", gap, gapS)} ... }`
+```
+
+The display font (`--font-display`) is Fraunces on LTR pages and IBM Plex
+Sans Arabic on RTL pages, with graceful cross-fallthrough for mixed text.
+
+## Testing
+
+1. Add a case to `cases` in `test/visual/render.test.ts` (use `title`/
+   `subtitle`/`theme` overrides for Arabic long-copy and light-mode cases).
+2. `npm run test:visual:update` writes per-platform baselines; commit them.
+3. `npm test` asserts dimensions, fonts loaded, no overflow, non-blank
+   output, determinism and baseline parity.
+
+Working examples, smallest to largest: `showcase.ts`, `swiss.ts`,
+`cinematic.ts`, `editorial.ts`.

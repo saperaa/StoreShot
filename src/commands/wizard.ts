@@ -27,37 +27,17 @@ export interface ThemePreset {
   accent: string;
   text: string;
   mutedText: string;
+  surface?: string;
+  mode?: "light" | "dark";
 }
 
 export const THEME_PRESETS: ThemePreset[] = [
-  {
-    label: "Midnight + Mint",
-    background: "#0E1524",
-    accent: "#62E6B5",
-    text: "#FFFFFF",
-    mutedText: "#9AA7BD",
-  },
-  {
-    label: "Deep Violet",
-    background: "#151029",
-    accent: "#9F8CFF",
-    text: "#FFFFFF",
-    mutedText: "#A79FC6",
-  },
-  {
-    label: "Charcoal + Coral",
-    background: "#17181C",
-    accent: "#FF7A66",
-    text: "#FFFFFF",
-    mutedText: "#A5A7B0",
-  },
-  {
-    label: "Daylight",
-    background: "#F2F5FA",
-    accent: "#0E9F6E",
-    text: "#111827",
-    mutedText: "#5B6472",
-  },
+  { label: "Noir Mint", background: "#0E1524", accent: "#62E6B5", text: "#FFFFFF", mutedText: "#9AA7BD" },
+  { label: "Paper & Ink (light)", background: "#F4F1EA", accent: "#0E7A5F", text: "#1A1D24", mutedText: "#6B6F7B", mode: "light" },
+  { label: "Violet Hour", background: "#161029", accent: "#9F8CFF", text: "#FFFFFF", mutedText: "#A79FC6" },
+  { label: "Terracotta Studio", background: "#1D1512", accent: "#E8865A", text: "#F7F1EA", mutedText: "#B7A79B" },
+  { label: "Nordic Light", background: "#EEF2F6", accent: "#2359E0", text: "#16202B", mutedText: "#5D6A78", mode: "light" },
+  { label: "Coral Night", background: "#131722", accent: "#FF7A66", text: "#FFFFFF", mutedText: "#A5A7B0" },
 ];
 
 const RTL_HINT = "ar, he, fa, ur and more are laid out right-to-left automatically";

@@ -98,7 +98,26 @@ export async function validateProject(
         code: "invalid-template-setting",
         message: `Setting "${def.key}" of template "${template.id}" expects a boolean, got ${typeof value}. Using the default (${def.default}).`,
       });
+    } else if (def.type === "string") {
+      if (typeof value !== "string") {
+        issues.push({
+          severity: "warning",
+          code: "invalid-template-setting",
+          message: `Setting "${def.key}" of template "${template.id}" expects a string, got ${typeof value}. Using the default (${def.default}).`,
+        });
+      } else if (def.values !== undefined && !def.values.includes(value)) {
+        issues.push({
+          severity: "warning",
+          code: "invalid-template-setting",
+          message: `Setting "${def.key}" of template "${template.id}" must be one of ${def.values.map((v) => `"${v}"`).join(", ")}; got "${value}". Using the default (${def.default}).`,
+        });
+      }
     }
+  }
+
+  // --- deprecations --------------------------------------------------------------
+  for (const notice of resolved.deprecations) {
+    issues.push({ severity: "warning", code: "deprecated-template", message: notice });
   }
 
   // --- fonts --------------------------------------------------------------------
@@ -207,7 +226,7 @@ export async function validateProject(
         overflowChecked = true;
         for (const exportEntry of resolved.exports) {
           for (const locale of resolved.locales) {
-            for (const screenshot of resolved.screenshots) {
+            for (const [index, screenshot] of resolved.screenshots.entries()) {
               const info = imageInfos.get(screenshot.id);
               if (!info) continue;
               const request = buildRenderRequest({
@@ -217,6 +236,8 @@ export async function validateProject(
                 imageInfo: info,
                 size: { width: exportEntry.width, height: exportEntry.height },
                 deviceFrame: deviceFrameFor(resolved, screenshot),
+                index,
+                count: resolved.screenshots.length,
               });
               const result = await renderer.render(request);
               for (const family of Object.keys(result.diagnostics.fontChecks)) {

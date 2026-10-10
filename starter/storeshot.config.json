@@ -3,10 +3,11 @@
   "configVersion": 1,
   "app": {
     "name": "Qamar",
-    "tagline": "Tasks that flow with your day"
+    "tagline": "Tasks that flow with your day",
+    "story": "A calm task manager for people who plan tomorrow the night before."
   },
   "locales": ["en-US", "ar"],
-  "template": "gradient",
+  "template": "editorial",
   "theme": {
     "background": "#0E1524",
     "accent": "#62E6B5",
@@ -19,38 +20,67 @@
   "screenshots": [
     {
       "id": "home",
+      "role": "hero",
       "image": "./screens/home.png",
       "title": {
-        "en-US": "Everything in one place",
-        "ar": "كل مهامك في مكان واحد"
+        "en-US": "Your day, beautifully under control",
+        "ar": "يومك تحت سيطرتك، بأناقة"
       },
       "subtitle": {
-        "en-US": "Plan your day in seconds",
-        "ar": "خطّط يومك في ثوانٍ"
+        "en-US": "Plan the night before, glide through tomorrow",
+        "ar": "خطّط من الليلة، وأنجز براحة غدًا"
       }
     },
     {
       "id": "insights",
+      "role": "feature",
       "image": "./screens/stats.png",
       "title": {
-        "en-US": "See your progress",
-        "ar": "تابع تقدّمك"
+        "en-US": "Progress you can actually see",
+        "ar": "تقدّم تراه بعينك"
       },
       "subtitle": {
-        "en-US": "Insights that keep you going",
-        "ar": "رؤى تحفّزك على الاستمرار"
+        "en-US": "Weekly insights and streaks that keep you going",
+        "ar": "رؤى أسبوعية وسلاسل إنجاز تحفّزك"
       }
     },
     {
       "id": "compose",
+      "role": "capture",
       "image": "./screens/compose.png",
       "title": {
-        "en-US": "Capture it instantly",
-        "ar": "سجّلها في لحظتها"
+        "en-US": "Capture it the moment you think of it",
+        "ar": "سجّلها في لحظة خطرت لك"
       },
       "subtitle": {
-        "en-US": "Quick, natural task entry",
-        "ar": "إضافة سريعة وبسيطة للمهام"
+        "en-US": "Quick, natural task entry in Arabic or English",
+        "ar": "إضافة سريعة وطبيعية بالعربية أو الإنجليزية"
+      }
+    },
+    {
+      "id": "focus",
+      "role": "workflow",
+      "image": "./screens/focus.png",
+      "title": {
+        "en-US": "Deep work, gently scheduled",
+        "ar": "عمل عميق، بجدول لطيف"
+      },
+      "subtitle": {
+        "en-US": "Focus sessions that respect your energy",
+        "ar": "جلسات تركيز تحترم طاقتك"
+      }
+    },
+    {
+      "id": "plan",
+      "role": "trust",
+      "image": "./screens/plan.png",
+      "title": {
+        "en-US": "A whole week on one screen",
+        "ar": "أسبوع كامل في شاشة واحدة"
+      },
+      "subtitle": {
+        "en-US": "Plan by day, adjust as life happens",
+        "ar": "خطّط يومًا بيوم، وعدّل كما تتغيّر الظروف"
       }
     }
   ],

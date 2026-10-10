@@ -53,6 +53,19 @@
           "default": "#9AA7BD",
           "type": "string",
           "pattern": "^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$"
+        },
+        "surface": {
+          "type": "string",
+          "pattern": "^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$"
+        },
+        "mode": {
+          "default": "auto",
+          "type": "string",
+          "enum": [
+            "auto",
+            "light",
+            "dark"
+          ]
         }
       }
     },
@@ -77,6 +90,23 @@
           }
         },
         "arabic": {
+          "type": "object",
+          "properties": {
+            "regular": {
+              "type": "string",
+              "minLength": 1
+            },
+            "semibold": {
+              "type": "string",
+              "minLength": 1
+            },
+            "bold": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "display": {
           "type": "object",
           "properties": {
             "regular": {
@@ -208,6 +238,10 @@
           },
           "deviceFrame": {
             "type": "boolean"
+          },
+          "role": {
+            "type": "string",
+            "minLength": 1
           }
         },
         "required": [

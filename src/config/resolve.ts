@@ -26,6 +26,8 @@ export interface ResolvedScreenshot {
   imagePath: string;
   /** Per-screenshot device-frame override (undefined = template default). */
   deviceFrame: boolean | undefined;
+  /** Optional semantic role from the config ("hero", "feature", …). */
+  role: string | undefined;
   /** Resolved text per locale tag. */
   texts: Record<string, { title?: string; subtitle?: string }>;
 }
@@ -46,13 +48,22 @@ export interface ResolvedConfig {
   configPath: string;
   configDir: string;
   app: { name: string; tagline?: string; story?: string };
-  theme: { background: string; accent: string; text: string; muted: string };
+  theme: {
+    background: string;
+    accent: string;
+    text: string;
+    muted: string;
+    surface?: string;
+    mode: "auto" | "light" | "dark";
+  };
   fonts: ResolvedFonts;
   locales: ResolvedLocale[];
   template: { definition: TemplateDefinition; settings: Record<string, unknown> };
   screenshots: ResolvedScreenshot[];
   exports: ResolvedExport[];
   output: { dir: string; clean: boolean };
+  /** Deprecation notices surfaced to the CLI (never fatal). */
+  deprecations: string[];
 }
 
 /**
@@ -101,6 +112,7 @@ export function resolveConfig(loaded: LoadedConfig): ResolvedConfig {
   }
 
   // --- template --------------------------------------------------------------
+  const deprecations: string[] = [];
   const templateRef =
     typeof raw.template === "string"
       ? { id: raw.template, settings: raw.templateSettings ?? {} }
@@ -109,6 +121,11 @@ export function resolveConfig(loaded: LoadedConfig): ResolvedConfig {
   if (!definition) {
     errors.push(
       `Unknown template "${templateRef.id}". Available templates: ${templateIds().join(", ")}.`,
+    );
+  } else if (definition.id !== templateRef.id) {
+    deprecations.push(
+      `Template "${templateRef.id}" was redesigned in v0.2 and now renders as ` +
+        `"${definition.id}". Update "template" to "${definition.id}" to silence this notice.`,
     );
   }
 
@@ -148,6 +165,7 @@ export function resolveConfig(loaded: LoadedConfig): ResolvedConfig {
       id: shot.id,
       imagePath: resolveFromConfigDir(loaded.dir, shot.image),
       deviceFrame: shot.deviceFrame,
+      role: shot.role,
       texts,
     });
   }
@@ -218,6 +236,8 @@ export function resolveConfig(loaded: LoadedConfig): ResolvedConfig {
       accent: raw.theme.accent,
       text: raw.theme.text,
       muted: raw.theme.mutedText,
+      surface: raw.theme.surface,
+      mode: raw.theme.mode,
     },
     fonts: resolveFontFiles(loaded.dir, raw.fonts),
     locales,
@@ -228,5 +248,6 @@ export function resolveConfig(loaded: LoadedConfig): ResolvedConfig {
     screenshots,
     exports,
     output: { dir: resolveFromConfigDir(loaded.dir, raw.output.dir), clean: raw.output.clean },
+    deprecations,
   };
 }

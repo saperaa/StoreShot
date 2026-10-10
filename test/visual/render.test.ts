@@ -37,18 +37,49 @@ interface Case {
   template: string;
   screenshot: string;
   deviceFrame?: boolean;
+  index?: number;
+  /** Text overrides for regression scenarios (long copy, mixed content). */
+  title?: string;
+  subtitle?: string;
+  /** Theme override for light/dark coverage. */
+  theme?: Record<string, string>;
 }
 
 const cases: Case[] = [
-  { name: "gradient-en", locale: "en-US", template: "gradient", screenshot: "home" },
-  { name: "gradient-ar", locale: "ar", template: "gradient", screenshot: "home" },
-  { name: "spotlight-ar", locale: "ar", template: "spotlight", screenshot: "compose" },
+  { name: "editorial-en", locale: "en-US", template: "editorial", screenshot: "home" },
+  { name: "editorial-ar", locale: "ar", template: "editorial", screenshot: "compose", index: 2 },
   {
-    name: "devicefocus-en",
+    name: "editorial-ar-long",
+    locale: "ar",
+    template: "editorial",
+    screenshot: "plan",
+    title: "كل ما تحتاجه لتخطيط يومك بالكامل وتنظيم مهامك المهمة", // 3 lines of headline
+    subtitle: "خطط يومًا بيوم، وعدّل كما تتغير الظروف — حتى مع الأرقام 123 والتواريخ 2026/10/10",
+  },
+  { name: "cinematic-en", locale: "en-US", template: "cinematic", screenshot: "home" },
+  {
+    name: "cinematic-ar",
+    locale: "ar",
+    template: "cinematic",
+    screenshot: "compose",
+    index: 1,
+    title: "سجّلها في لحظتها (متصل بـ 12 تطبيقًا)",
+    subtitle: "إضافة سريعة بالعربية أو English — حتى 40% أسرع",
+  },
+  { name: "swiss-en", locale: "en-US", template: "swiss", screenshot: "insights" },
+  { name: "swiss-ar", locale: "ar", template: "swiss", screenshot: "insights" },
+  { name: "campaign-en", locale: "en-US", template: "campaign", screenshot: "compose", index: 1 },
+  { name: "campaign-ar", locale: "ar", template: "campaign", screenshot: "compose" },
+  { name: "immersive-en", locale: "en-US", template: "immersive", screenshot: "home" },
+  { name: "immersive-ar", locale: "ar", template: "immersive", screenshot: "home", index: 1 },
+  { name: "showcase-en", locale: "en-US", template: "showcase", screenshot: "compose" },
+  { name: "showcase-ar", locale: "ar", template: "showcase", screenshot: "compose", index: 1 },
+  {
+    name: "editorial-paper-en",
     locale: "en-US",
-    template: "device-focus",
-    screenshot: "insights",
-    deviceFrame: true,
+    template: "editorial",
+    screenshot: "home",
+    theme: { background: "#F4F1EA", accent: "#0E7A5F", text: "#1A1D24", mutedText: "#6B6F7B" },
   },
 ];
 
@@ -70,16 +101,38 @@ beforeAll(async () => {
     };
     const locale = resolved.locales.find((l) => l.tag === caseDef.locale)!;
     const screenshot = resolved.screenshots.find((s) => s.id === caseDef.screenshot)!;
+    if (caseDef.theme) {
+      patched.theme = { ...patched.theme, ...caseDef.theme, mode: "auto" };
+    }
+    if (caseDef.title || caseDef.subtitle) {
+      patched.screenshots = resolved.screenshots.map((shot) =>
+        shot === screenshot
+          ? {
+              ...shot,
+              texts: {
+                ...shot.texts,
+                [locale.tag]: {
+                  title: caseDef.title ?? shot.texts[locale.tag]?.title,
+                  subtitle: caseDef.subtitle ?? shot.texts[locale.tag]?.subtitle,
+                },
+              },
+            }
+          : shot,
+      );
+    }
+    const target = patched.screenshots.find((sc) => sc.id === screenshot.id)!;
     const imageInfo = await readImageInfo(screenshot.imagePath);
     jobs.set(
       caseDef.name,
       buildRenderRequest({
         resolved: patched,
         locale,
-        screenshot,
+        screenshot: target,
         imageInfo,
         size: CANVAS,
         deviceFrame: caseDef.deviceFrame ?? deviceFrameFor(resolved, screenshot),
+        index: caseDef.index ?? 0,
+        count: resolved.screenshots.length,
       }),
     );
   }
@@ -169,7 +222,7 @@ describe.each(cases)("visual: $name", (caseDef) => {
 
 it("Arabic and English renders of the same job differ substantially", async () => {
   const render = async (locale: string) => {
-    const request = jobs.get(locale === "ar" ? "gradient-ar" : "gradient-en")!;
+    const request = jobs.get(locale === "ar" ? "editorial-ar" : "editorial-en")!;
     return PNG.sync.read((await renderer.render(request)).png);
   };
   const en = await render("en-US");

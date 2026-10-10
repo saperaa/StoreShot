@@ -20,10 +20,14 @@ export interface TemplateTheme {
   accent: string;
   text: string;
   muted: string;
+  /** Elevated panel color (design token input; optional). */
+  surface?: string;
+  /** "light" | "dark" | "auto" token override (optional). */
+  mode?: "light" | "dark" | "auto";
 }
 
 export interface TemplateContext {
-  app: { name: string; tagline?: string };
+  app: { name: string; tagline?: string; story?: string };
   locale: string;
   /** Primary language subtag, lowercase. */
   lang: string;
@@ -34,6 +38,12 @@ export interface TemplateContext {
   deviceFrame: boolean;
   settings: Record<string, unknown>;
   canvas: { width: number; height: number };
+  /** Zero-based position of this screenshot in the configured sequence. */
+  index: number;
+  /** Total screenshots in the sequence. */
+  count: number;
+  /** Optional semantic role from the config (e.g. "hero", "feature"). */
+  role?: string;
 }
 
 export interface TemplateRender {
@@ -45,11 +55,13 @@ export interface TemplateRender {
 
 export interface TemplateSettingDef {
   key: string;
-  type: "boolean" | "number";
-  default: number | boolean;
+  type: "boolean" | "number" | "string";
+  default: number | boolean | string;
   /** For numbers. */
   min?: number;
   max?: number;
+  /** For strings: the accepted values. */
+  values?: readonly string[];
   description: string;
 }
 

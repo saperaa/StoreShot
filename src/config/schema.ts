@@ -23,6 +23,19 @@ export const fontFilesSchema = z.object({
   bold: z.string().trim().min(1).optional(),
 });
 
+export const themeSchema = z
+  .object({
+    background: hexColor.default("#0E1524"),
+    accent: hexColor.default("#62E6B5"),
+    text: hexColor.default("#FFFFFF"),
+    mutedText: hexColor.default("#9AA7BD"),
+    /** Elevated panel color (design token). */
+    surface: hexColor.optional(),
+    /** Force light/dark token behavior instead of deriving from the background. */
+    mode: z.enum(["auto", "light", "dark"]).default("auto"),
+  })
+  .prefault({});
+
 /** Either a single string for all locales, or a per-locale map. */
 export const localizedTextSchema = z.union([
   z.string().trim().min(1),
@@ -48,6 +61,8 @@ export const screenshotSchema = z.object({
   subtitle: localizedTextSchema.optional(),
   /** Per-screenshot override of the template's device-frame default. */
   deviceFrame: z.boolean().optional(),
+  /** Optional semantic role in the campaign ("hero", "feature", "trust"…). */
+  role: z.string().trim().min(1).optional(),
 });
 
 export const exportSchema = z.object({
@@ -84,18 +99,13 @@ export const storeshotConfigSchema = z.object({
      */
     story: z.string().trim().min(1).optional(),
   }),
-  theme: z
-    .object({
-      background: hexColor.default("#0E1524"),
-      accent: hexColor.default("#62E6B5"),
-      text: hexColor.default("#FFFFFF"),
-      mutedText: hexColor.default("#9AA7BD"),
-    })
-    .prefault({}),
+  theme: themeSchema,
   fonts: z
     .object({
       latin: fontFilesSchema.optional(),
       arabic: fontFilesSchema.optional(),
+      /** Display/headline family (bundled default: Fraunces, a variable font). */
+      display: fontFilesSchema.optional(),
     })
     .optional(),
   locales: z.array(localeTag).min(1).default(["en-US"]),

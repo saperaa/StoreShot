@@ -22,6 +22,7 @@ export interface FontFiles {
 export interface ResolvedFonts {
   latin: FontFiles;
   arabic: FontFiles;
+  display: FontFiles;
   warnings: string[];
 }
 
@@ -30,7 +31,7 @@ export const PACKAGED_FONT_DIR = path.resolve(
   "../../assets/fonts",
 );
 
-export const DEFAULT_FONTS: Record<"latin" | "arabic", FontFiles> = {
+export const DEFAULT_FONTS: Record<"latin" | "arabic" | "display", FontFiles> = {
   latin: {
     regular: "IBMPlexSans-Regular.ttf",
     semibold: "IBMPlexSans-SemiBold.ttf",
@@ -41,6 +42,8 @@ export const DEFAULT_FONTS: Record<"latin" | "arabic", FontFiles> = {
     semibold: "IBMPlexSansArabic-SemiBold.ttf",
     bold: "IBMPlexSansArabic-Bold.ttf",
   },
+  // Variable font: one file covers the whole weight range.
+  display: { regular: "Fraunces-Display.ttf" },
 };
 
 export function packagedFontPath(fileName: string): string {
@@ -54,7 +57,7 @@ export function resolveFontFiles(
   const warnings: string[] = [];
 
   const resolveFamily = (
-    family: "latin" | "arabic",
+    family: "latin" | "arabic" | "display",
     userFiles: FontFiles | undefined,
   ): FontFiles => {
     if (!userFiles) {
@@ -107,13 +110,15 @@ export function resolveFontFiles(
   return {
     latin: resolveFamily("latin", fonts?.latin),
     arabic: resolveFamily("arabic", fonts?.arabic),
+    display: resolveFamily("display", fonts?.display),
     warnings,
   };
 }
 
 export interface PlannedFontFace {
-  family: "StoreShot Latin" | "StoreShot Arabic";
-  weight: 400 | 600 | 700;
+  family: "StoreShot Latin" | "StoreShot Arabic" | "StoreShot Display";
+  /** Numeric weight, or a variable-font range like "100 900". */
+  weight: number | string;
   sandboxName: string;
 }
 
@@ -130,14 +135,20 @@ export function planFontAssets(fonts: ResolvedFonts): {
   const assets: RenderAsset[] = [];
   const seen = new Map<string, string>(); // absolute path -> sandbox name
 
-  const addFamily = (family: "StoreShot Latin" | "StoreShot Arabic", files: FontFiles) => {
+  const shortName = (family: PlannedFontFace["family"]) =>
+    family === "StoreShot Latin" ? "latin" : family === "StoreShot Arabic" ? "arabic" : "display";
+
+  const addFamily = (
+    family: "StoreShot Latin" | "StoreShot Arabic" | "StoreShot Display",
+    files: FontFiles,
+  ) => {
     for (const weight of [400, 600, 700] as const) {
       const file = files[weight === 400 ? "regular" : weight === 600 ? "semibold" : "bold"];
       if (!file) continue;
       let sandboxName = seen.get(file);
       if (!sandboxName) {
         const ext = path.extname(file) || ".ttf";
-        sandboxName = `${family === "StoreShot Latin" ? "latin" : "arabic"}-${weight}${ext}`;
+        sandboxName = `${shortName(family)}-${weight}${ext}`;
         seen.set(file, sandboxName);
         assets.push({ name: `fonts/${sandboxName}`, source: file });
       }
@@ -147,5 +158,22 @@ export function planFontAssets(fonts: ResolvedFonts): {
 
   addFamily("StoreShot Latin", fonts.latin);
   addFamily("StoreShot Arabic", fonts.arabic);
+
+  // Display family: a lone "regular" file is treated as a variable font
+  // covering the whole weight range (the bundled Fraunces); otherwise the
+  // provided weights are declared as-is.
+  if (fonts.display.bold || fonts.display.semibold) {
+    addFamily("StoreShot Display", fonts.display);
+  } else if (fonts.display.regular) {
+    const file = fonts.display.regular;
+    const ext = path.extname(file) || ".ttf";
+    const sandboxName = `display-var${ext}`;
+    if (!seen.has(file)) {
+      seen.set(file, sandboxName);
+      assets.push({ name: `fonts/${sandboxName}`, source: file });
+    }
+    faces.push({ family: "StoreShot Display", weight: "100 900", sandboxName });
+  }
+
   return { faces, assets };
 }

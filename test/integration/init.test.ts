@@ -27,7 +27,7 @@ describe("storeshot init", () => {
   it("ships example screenshots and a project README", async () => {
     const dir = path.join(workRoot, "demo-app");
     const screens = await fs.readdir(path.join(dir, "screens"));
-    expect(screens.filter((f) => f.endsWith(".png")).length).toBe(3);
+    expect(screens.filter((f) => f.endsWith(".png")).length).toBe(5);
     const readme = await fs.readFile(path.join(dir, "README.md"), "utf8");
     expect(readme).toMatch(/storeshot generate/);
   });

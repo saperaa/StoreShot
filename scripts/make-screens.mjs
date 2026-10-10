@@ -219,10 +219,87 @@ ${SHARED}
 </div>
 </body></html>`;
 
+const focusHtml = `<!DOCTYPE html><html lang="en" dir="ltr"><head><meta charset="utf-8"><style>
+${SHARED}
+.focus-hero { text-align: center; padding: 120px 70px 40px; }
+.f-label { font-size: 34px; color: #8A94A8; font-weight: 600; }
+.f-time { font-family: "QL"; font-size: 200px; font-weight: 700; letter-spacing: -4px; line-height: 1.1; margin: 22px 0 10px; }
+.f-time span { color: #62E6B5; }
+.f-chip { display: inline-block; font-size: 30px; padding: 16px 34px; border-radius: 999px; background: rgba(98,230,181,0.14); color: #62E6B5; font-weight: 700; margin-top: 20px; }
+.f-ring { width: 500px; height: 500px; margin: 66px auto 0; border-radius: 50%;
+  background: conic-gradient(#62E6B5 0 68%, rgba(255,255,255,0.07) 68% 100%);
+  display: flex; align-items: center; justify-content: center; }
+.f-ring i { width: 384px; height: 384px; border-radius: 50%; background: #0B1220; display: flex; flex-direction: column; align-items: center; justify-content: center; font-style: normal; gap: 14px; }
+.f-ring i b { font-size: 64px; font-weight: 700; }
+.f-ring i span { font-size: 30px; color: #8A94A8; }
+.f-pause { width: 130px; height: 130px; border-radius: 40px; background: #62E6B5; margin: 76px auto 0;
+  display: flex; align-items: center; justify-content: center; gap: 16px; }
+.f-pause i { width: 16px; height: 52px; background: #06281B; border-radius: 8px; display: block; }
+</style></head><body>
+<div class="statusbar"><span>10:24</span><div class="sb-icons">
+  <span class="sb-signal"><i></i><i></i><i></i><i></i></span><span class="sb-battery"></span></div></div>
+<div class="focus-hero">
+  <div class="f-label">Deep focus</div>
+  <div class="f-time">24<span>:</span>18</div>
+  <div class="f-chip">2 of 4 sessions</div>
+  <div class="f-ring"><i><b>68%</b><span>of today's goal</span></i></div>
+  <div class="f-pause"><i></i><i></i></div>
+</div>
+<div class="tabbar">
+  <div class="tab"><span class="dot"></span>Home</div>
+  <div class="tab active"><span class="dot" style="border-radius:50%"></span>Insights</div>
+  <div class="tab"><span class="dot" style="border-radius:8px"></span>Calendar</div>
+  <div class="tab"><span class="dot" style="border-radius:50% 50% 8px 8px"></span>Profile</div>
+</div>
+</body></html>`;
+
+const planHtml = `<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><style>
+${SHARED}
+.pl-head { display: flex; justify-content: space-between; align-items: center; padding: 44px 56px 6px; }
+.pl-head h1 { font-size: 56px; font-weight: 700; }
+.pl-head span { font-size: 32px; color: #62E6B5; font-weight: 700; }
+.pl-sub { padding: 10px 56px 26px; font-size: 32px; color: #8A94A8; }
+.pl-days { display: flex; gap: 18px; padding: 0 56px; }
+.pl-day { flex: 1; background: #131C2E; border: 2px solid rgba(255,255,255,0.05); border-radius: 26px; padding: 28px 0 24px; text-align: center; }
+.pl-day span { display: block; font-size: 26px; color: #8A94A8; }
+.pl-day b { display: block; font-size: 38px; font-weight: 700; margin-top: 10px; }
+.pl-day.today { background: rgba(98,230,181,0.14); border-color: rgba(98,230,181,0.5); }
+.pl-day.today span, .pl-day.today b { color: #62E6B5; }
+.pl-card { margin: 26px 56px 0; background: #131C2E; border: 2px solid rgba(255,255,255,0.05); border-radius: 30px; padding: 36px 38px; display: flex; align-items: center; gap: 26px; }
+.pl-card .bar { width: 12px; border-radius: 8px; align-self: stretch; }
+.pl-card h3 { font-size: 38px; font-weight: 600; }
+.pl-card p { font-size: 28px; color: #8A94A8; margin-top: 8px; }
+.pl-card .when { margin-inline-start: auto; font-size: 28px; color: #8A94A8; }
+.pl-card.done h3 { text-decoration: line-through; color: #667088; }
+</style></head><body>
+<div class="statusbar"><span>9:41</span><div class="sb-icons">
+  <span class="sb-signal"><i></i><i></i><i></i><i></i></span><span class="sb-battery"></span></div></div>
+<div class="pl-head"><h1>خطة الأسبوع</h1><span>٥ مهام</span></div>
+<div class="pl-sub">الثلاثاء ٣ مارس</div>
+<div class="pl-days">
+  <div class="pl-day"><span>أحد</span><b>٣</b></div>
+  <div class="pl-day"><span>إثنين</span><b>٤</b></div>
+  <div class="pl-day today"><span>ثلاثاء</span><b>٥</b></div>
+  <div class="pl-day"><span>أربعاء</span><b>٢</b></div>
+  <div class="pl-day"><span>خميس</span><b>٦</b></div>
+</div>
+<div class="pl-card done" style="margin-top:40px"><div class="bar" style="background:#62E6B5"></div><div><h3>اجتماع الفريق الأسبوعي</h3><p>٩:٣٠ صباحًا</p></div><span class="when">تمّت</span></div>
+<div class="pl-card"><div class="bar" style="background:#7C8CF8"></div><div><h3>كتابة تقرير التقدّم</h3><p>١١:٠٠ – ١٢:٠٠</p></div><span class="when">٣٠ د</span></div>
+<div class="pl-card"><div class="bar" style="background:#B28DF7"></div><div><h3>مراجعة التصميم الجديد</h3><p>٢:٠٠ عصرًا</p></div><span class="when">٤٥ د</span></div>
+<div class="tabbar">
+  <div class="tab active"><span class="dot"></span>الرئيسية</div>
+  <div class="tab"><span class="dot" style="border-radius:50%"></span>الإحصاءات</div>
+  <div class="tab"><span class="dot" style="border-radius:8px"></span>التقويم</div>
+  <div class="tab"><span class="dot" style="border-radius:50% 50% 8px 8px"></span>حسابي</div>
+</div>
+</body></html>`;
+
 const screens = [
   { name: "home", html: homeHtml },
   { name: "stats", html: insightsHtml },
   { name: "compose", html: composeHtml },
+  { name: "focus", html: focusHtml },
+  { name: "plan", html: planHtml },
 ];
 
 const sandbox = await fs.mkdtemp(path.join(os.tmpdir(), "storeshot-screens-"));

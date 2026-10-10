@@ -24,6 +24,9 @@ export function buildRenderRequest(input: {
   imageInfo: { width: number; height: number };
   size: { width: number; height: number };
   deviceFrame: boolean;
+  /** Zero-based sequence index and total, for sequence-aware templates. */
+  index: number;
+  count: number;
 }): RenderRequest {
   const { resolved, locale, screenshot, imageInfo, size } = input;
   const template = resolved.template.definition;
@@ -47,6 +50,9 @@ export function buildRenderRequest(input: {
     deviceFrame: input.deviceFrame,
     settings: resolved.template.settings,
     canvas: { width: size.width, height: size.height },
+    index: input.index,
+    count: input.count,
+    role: screenshot.role,
   };
 
   const { css, html } = template.render(ctx);

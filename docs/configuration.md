@@ -2,7 +2,7 @@
 
 StoreShot reads a single JSON file — `storeshot.config.json` (or `storeshot.json`) — from the project directory. Relative paths inside the file resolve against **the config file's directory**, not the working directory.
 
-Editor autocompletion: add `"$schema": "./node_modules/storeshot-cli/schema.json"` as the first key. The schema is also published at `storeshot-cli/schema.json`.
+Editor autocompletion: add `"$schema": "./node_modules/storeshot-cli/schema.json"` as the first key.
 
 ## Complete example
 
@@ -13,96 +13,93 @@ Editor autocompletion: add `"$schema": "./node_modules/storeshot-cli/schema.json
   "app": {
     "name": "Qamar",
     "tagline": "Tasks that flow with your day",
-    "story": "A calm task manager for people who plan tomorrow the night before.",
+    "story": "A calm task manager for people who plan tomorrow the night before."
   },
-  "locales": ["en-US", "ar", "ar-EG"],
-  "direction": { "ar-EG": "rtl" },
-  "template": { "id": "gradient", "settings": { "glow": 0.8 } },
+  "locales": ["en-US", "ar"],
+  "direction": { "ar": "rtl" },
+  "template": { "id": "editorial", "settings": { "headlineScale": 1.1 } },
   "theme": {
     "background": "#0E1524",
     "accent": "#62E6B5",
     "text": "#FFFFFF",
     "mutedText": "#9AA7BD",
+    "mode": "auto"
   },
   "fonts": {
-    "latin": { "regular": "./fonts/Inter-Regular.ttf", "bold": "./fonts/Inter-Bold.ttf" },
-    "arabic": { "regular": "./fonts/Cairo-Regular.ttf", "bold": "./fonts/Cairo-Bold.ttf" },
+    "display": { "regular": "./fonts/MySerif.ttf" }
   },
   "screenshots": [
     {
       "id": "home",
+      "role": "hero",
       "image": "./screens/home.png",
       "title": { "en-US": "Everything in one place", "ar": "كل ما تحتاجه في مكان واحد" },
       "subtitle": { "en-US": "Plan your day in seconds", "ar": "خطّط يومك في ثوانٍ" },
-      "deviceFrame": true,
-    },
+      "deviceFrame": true
+    }
   ],
   "exports": [
-    { "store": "app-store", "profile": "iphone-6-3", "name": "ios", "outputDir": "./store/ios" },
-    { "store": "google-play", "profile": "phone", "size": { "width": 1080, "height": 1920 } },
+    { "store": "app-store", "profile": "iphone-6-3", "name": "ios" },
+    { "store": "google-play", "profile": "phone", "size": { "width": 1080, "height": 1920 } }
   ],
-  "output": { "dir": "./storeshots", "clean": false },
+  "output": { "dir": "./storeshots", "clean": false }
 }
 ```
 
 ## Top-level fields
 
-| Field           | Type             | Default      | Description                                                             |
-| --------------- | ---------------- | ------------ | ----------------------------------------------------------------------- |
-| `$schema`       | string           | —            | JSON Schema path for editor support.                                    |
-| `configVersion` | `1`              | `1`          | Schema version. Only `1` exists.                                        |
-| `app`           | object           | required     | App identity, see below.                                                |
-| `locales`       | string[]         | `["en-US"]`  | BCP-47 style tags, e.g. `en-US`, `ar`, `ar-EG`, `fr`.                   |
-| `direction`     | map              | `{}`         | Per-locale direction overrides (`"ltr"`/`"rtl"`). Keys are locale tags. |
-| `template`      | string \| object | `"gradient"` | Template id, or `{ "id", "settings" }`.                                 |
-| `theme`         | object           | see below    | Colors.                                                                 |
-| `fonts`         | object           | bundled Plex | Per-script font files.                                                  |
-| `screenshots`   | array            | required     | ≥ 1 entry, ordered — order defines output numbering.                    |
-| `exports`       | array            | required     | ≥ 1 export profile.                                                     |
-| `output`        | object           | see below    | Output location.                                                        |
-
-### `app`
-
-- `name` (required) — appears as the kicker above every title.
-- `tagline` (optional) — reserved branding metadata; not rendered.
-- `story` (optional) — one or two sentences about what the app does and for whom. Kept with the project so copy editors and translators have context. Not rendered.
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `$schema` | string | — | JSON Schema path for editor support. |
+| `configVersion` | `1` | `1` | Schema version. Only `1` exists. |
+| `app` | object | required | `name` (rendered as the kicker), optional `tagline` and `story` (kept for editors/translators, not rendered). |
+| `locales` | string[] | `["en-US"]` | BCP-47 style tags. `ar`, `he`, `fa`, `ur` and more default to RTL automatically. |
+| `direction` | map | `{}` | Per-locale direction overrides (`"ltr"`/`"rtl"`); a language key (`"ar"`) covers regional tags (`"ar-EG"`). |
+| `template` | string \| object | `"gradient"` (alias of `campaign`) | Template id or `{ "id", "settings" }`. |
+| `theme` | object | see below | Design-token inputs. |
+| `fonts` | object | bundled | Per-family font files: `latin`, `arabic`, `display`. |
+| `screenshots` | array | required | ≥ 1 entry; **order defines both output numbering and the sequence position** templates vary against. |
+| `exports` | array | required | ≥ 1 export profile. |
+| `output` | object | see below | Output location. |
 
 ### `theme`
 
-All values are hex colors (`#RGB` or `#RRGGBB`).
+All colors are hex (`#RGB`/`#RRGGBB`).
 
-- `background` (default `#0E1524`) — canvas background.
-- `accent` (default `#62E6B5`) — highlights, chips, rules, decorations.
-- `text` (default `#FFFFFF`) — title color.
-- `mutedText` (default `#9AA7BD`) — subtitle color.
-
-The validator warns when `text` on `background` has a WCAG contrast ratio below 3:1.
+- `background` (default `#0E1524`)
+- `accent` (default `#62E6B5`)
+- `text` (default `#FFFFFF`) — headline color
+- `mutedText` (default `#9AA7BD`) — subtitle color
+- `surface` (optional) — elevated-panel token; defaults to a stepped shade of the background
+- `mode` (default `"auto"`) — `"light"`/`"dark"` forces shadow depth, hairline opacity and contrast behavior instead of deriving them from the background luminance
 
 ### `fonts`
 
-Each family accepts `regular`, `semibold` and `bold` file paths (TTF/OTF). Missing files fall back to the bundled font for that weight with a warning. If your custom font contains both Latin and Arabic glyphs you can point both families at the same files.
-
-Bundled defaults: **IBM Plex Sans** (Latin) and **IBM Plex Sans Arabic**, both SIL OFL 1.1.
+Each family accepts `regular`, `semibold`, `bold` file paths. Bundled defaults: IBM Plex Sans (latin), IBM Plex Sans Arabic (arabic), and **Fraunces** — a variable font — for `display` headlines. A lone `display.regular` file is treated as a variable font covering the full weight range; provide `bold`/`semibold` for static families. Missing files fall back to the bundled font with a warning.
 
 ### `screenshots[]`
 
-- `id` (required) — slug used in output file names: letters, digits, `-`, `_`.
-- `image` (required) — path to a PNG/JPEG/WebP screenshot of _your app_. StoreShot never modifies the image content; it composes the marketing frame around it.
-- `title`, `subtitle` (optional) — a plain string (applies to all locales) or a per-locale map. When a map, every configured locale must have an entry (exact tag or primary language, e.g. `ar` covers `ar-EG`); missing ones fail validation.
-- `deviceFrame` (optional) — per-screenshot override of the template default.
+- `id` (required) — slug for output names: letters, digits, `-`, `_`
+- `image` (required) — PNG/JPEG/WebP screenshot of your app. StoreShot never alters its content.
+- `role` (optional) — semantic role in the campaign (`"hero"`, `"feature"`, `"workflow"`, `"trust"`…). Templates surface it in captions; use it to describe your sequence, not to switch templates.
+- `title`, `subtitle` — plain string (all locales) or per-locale map; every configured locale needs an entry (exact tag or primary language).
+- `deviceFrame` (optional) — what the template's `"auto"` device mode resolves to (`true` → the template's framed presentation, `false` → frameless). Override completely with the template's `deviceMode` setting.
 
-### `exports[]`
+### Template settings (v0.2)
 
-- `store` — `"app-store"` or `"google-play"`.
-- `profile` — a profile id from the table in [`store-profiles.md`](store-profiles.md).
-- `size` (optional) — custom `{ "width", "height" }` in pixels (16–8000). Google Play's published limits (320–3840px per side, longest ≤ 2× shortest) are enforced; App Store custom sizes produce a warning.
-- `name` (optional) — sub-directory name inside the output root. Defaults to `<store>-<profile>`. Must be unique across exports.
-- `outputDir` (optional) — per-export output directory override.
+All templates: `headlineScale` (0.8–1.25), `deviceScale` (0.8–1.15), `deviceMode` (`"auto"|"bare"|"front"|"angled"`).
 
-### `output`
+| Template | Extra settings |
+| --- | --- |
+| `cinematic` | `reflection` (bool, default true) |
+| `swiss` | `grid` (bool, default true) |
+| `campaign` | `band` (bool, default true) |
+| `immersive` | `twin` (bool, default true) |
+| `showcase` | `layers` (bool, default true), `shotScale` instead of `deviceScale` |
 
-- `dir` (default `./storeshots`) — output root.
-- `clean` (default `false`) — delete each export's output directory before generating.
+### `exports[]` and `output`
+
+Same as v0.1: `store` (`app-store`/`google-play`), `profile`, optional `size`/`name`/`outputDir`; `output.dir`, `output.clean`. Profiles and their verification dates: [`store-profiles.md`](store-profiles.md).
 
 ## Output layout
 
@@ -111,14 +108,18 @@ Bundled defaults: **IBM Plex Sans** (Latin) and **IBM Plex Sans Arabic**, both S
 storeshots/app-store-iphone-6-3/ar/01-home.png
 ```
 
-`NN` is the 1-based, zero-padded position in `screenshots` — stable, deterministic ordering.
+## Breaking changes in v0.2 (and how to migrate)
 
-## Exit codes
+- **Template library replaced.** Old ids still render via aliases — `minimal`→`swiss`, `gradient`→`campaign`, `device-focus`→`immersive`, `spotlight`→`cinematic` — and both `generate` and `validate` print a deprecation notice. Rename `template` in your config to silence it.
+- **Template settings changed.** v0.1 settings (e.g. `gradient`'s `glow`/`ring`) no longer exist; unknown keys are validation warnings. See the table above for the new sets.
+- Everything else (CLI, schema fields, output naming, profiles, fonts config) is unchanged; new fields are additive and optional.
 
-| Code | Meaning                                                            |
-| ---- | ------------------------------------------------------------------ |
-| 0    | Success (warnings allowed).                                        |
-| 1    | Configuration or validation error — fix the project.               |
-| 2    | Rendering/runtime error (browser missing, asset IO during render). |
+## Exit codes & environment
 
-Environment variables: `STORESHOT_BROWSER_CHANNEL` (use an installed browser, e.g. `msedge`), `STORESHOT_DEBUG=1` (stack traces).
+| Code | Meaning |
+| --- | --- |
+| 0 | Success (warnings allowed). |
+| 1 | Configuration or validation error. |
+| 2 | Rendering/runtime error (browser missing, asset IO during render). |
+
+`STORESHOT_BROWSER_CHANNEL` (use an installed browser, e.g. `msedge`), `STORESHOT_DEBUG=1` (stack traces).

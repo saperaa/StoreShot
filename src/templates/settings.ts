@@ -28,6 +28,21 @@ export function numberSetting(
   return n;
 }
 
+/** Read a string setting, falling back to the template's declared default. */
+export function stringSetting(
+  defs: readonly TemplateSettingDef[],
+  settings: Record<string, unknown>,
+  key: string,
+): string {
+  const def = defs.find((d) => d.key === key);
+  if (!def || typeof def.default !== "string") return "";
+  const value = settings[key];
+  if (typeof value === "string" && (def.values === undefined || def.values.includes(value))) {
+    return value;
+  }
+  return def.default;
+}
+
 /** Setting keys the template does not know about (reported as warnings). */
 export function unknownSettingKeys(
   defs: readonly TemplateSettingDef[],
