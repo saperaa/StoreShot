@@ -1,0 +1,294 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "configVersion": {
+      "default": 1,
+      "type": "number",
+      "const": 1
+    },
+    "app": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tagline": {
+          "type": "string",
+          "minLength": 1
+        },
+        "story": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "theme": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "background": {
+          "default": "#0E1524",
+          "type": "string",
+          "pattern": "^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$"
+        },
+        "accent": {
+          "default": "#62E6B5",
+          "type": "string",
+          "pattern": "^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$"
+        },
+        "text": {
+          "default": "#FFFFFF",
+          "type": "string",
+          "pattern": "^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$"
+        },
+        "mutedText": {
+          "default": "#9AA7BD",
+          "type": "string",
+          "pattern": "^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$"
+        }
+      }
+    },
+    "fonts": {
+      "type": "object",
+      "properties": {
+        "latin": {
+          "type": "object",
+          "properties": {
+            "regular": {
+              "type": "string",
+              "minLength": 1
+            },
+            "semibold": {
+              "type": "string",
+              "minLength": 1
+            },
+            "bold": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "arabic": {
+          "type": "object",
+          "properties": {
+            "regular": {
+              "type": "string",
+              "minLength": 1
+            },
+            "semibold": {
+              "type": "string",
+              "minLength": 1
+            },
+            "bold": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "locales": {
+      "default": [
+        "en-US"
+      ],
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "^[A-Za-z]{2,3}(?:[-_][A-Za-z0-9]{2,8})*$"
+      }
+    },
+    "direction": {
+      "default": {},
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "type": "string",
+        "enum": [
+          "ltr",
+          "rtl"
+        ]
+      }
+    },
+    "template": {
+      "default": "gradient",
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "settings": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {}
+            }
+          },
+          "required": [
+            "id"
+          ]
+        }
+      ]
+    },
+    "templateSettings": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {}
+    },
+    "screenshots": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+          },
+          "image": {
+            "type": "string",
+            "minLength": 1
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            ]
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            ]
+          },
+          "deviceFrame": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "image"
+        ]
+      }
+    },
+    "exports": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "store": {
+            "type": "string",
+            "enum": [
+              "app-store",
+              "google-play"
+            ]
+          },
+          "profile": {
+            "type": "string",
+            "minLength": 1
+          },
+          "size": {
+            "type": "object",
+            "properties": {
+              "width": {
+                "type": "integer",
+                "minimum": 16,
+                "maximum": 8000
+              },
+              "height": {
+                "type": "integer",
+                "minimum": 16,
+                "maximum": 8000
+              }
+            },
+            "required": [
+              "width",
+              "height"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+          },
+          "outputDir": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "store",
+          "profile"
+        ]
+      }
+    },
+    "output": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "dir": {
+          "default": "./storeshots",
+          "type": "string",
+          "minLength": 1
+        },
+        "clean": {
+          "default": false,
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "required": [
+    "app",
+    "screenshots",
+    "exports"
+  ],
+  "$id": "https://unpkg.com/storeshot-cli/schema.json",
+  "title": "StoreShot configuration",
+  "description": "Configuration for StoreShot — App Store / Google Play screenshot generator with first-class Arabic and RTL support."
+}

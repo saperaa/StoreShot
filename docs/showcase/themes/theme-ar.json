@@ -1,0 +1,23 @@
+{
+  "$schema": "./node_modules/storeshot-cli/schema.json",
+  "configVersion": 1,
+  "app": { "name": "Qamar", "tagline": "مهام تنسجم مع يومك" },
+  "locales": ["ar"],
+  "template": "gradient",
+  "theme": {
+    "background": "#151029",
+    "accent": "#9F8CFF",
+    "text": "#FFFFFF",
+    "mutedText": "#A79FC6"
+  },
+  "direction": { "ar": "rtl" },
+  "screenshots": [
+    {
+      "id": "compose",
+      "image": "../../../starter/screens/compose.png",
+      "title": "سجّلها في لحظتها",
+      "subtitle": "إضافة سريعة وبسيطة للمهام"
+    }
+  ],
+  "exports": [{ "store": "app-store", "profile": "iphone-6-3", "name": "violet-gradient" }]
+}

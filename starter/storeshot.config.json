@@ -1,0 +1,70 @@
+{
+  "$schema": "./node_modules/storeshot-cli/schema.json",
+  "configVersion": 1,
+  "app": {
+    "name": "Qamar",
+    "tagline": "Tasks that flow with your day"
+  },
+  "locales": ["en-US", "ar"],
+  "template": "gradient",
+  "theme": {
+    "background": "#0E1524",
+    "accent": "#62E6B5",
+    "text": "#FFFFFF",
+    "mutedText": "#9AA7BD"
+  },
+  "direction": {
+    "ar": "rtl"
+  },
+  "screenshots": [
+    {
+      "id": "home",
+      "image": "./screens/home.png",
+      "title": {
+        "en-US": "Everything in one place",
+        "ar": "كل مهامك في مكان واحد"
+      },
+      "subtitle": {
+        "en-US": "Plan your day in seconds",
+        "ar": "خطّط يومك في ثوانٍ"
+      }
+    },
+    {
+      "id": "insights",
+      "image": "./screens/stats.png",
+      "title": {
+        "en-US": "See your progress",
+        "ar": "تابع تقدّمك"
+      },
+      "subtitle": {
+        "en-US": "Insights that keep you going",
+        "ar": "رؤى تحفّزك على الاستمرار"
+      }
+    },
+    {
+      "id": "compose",
+      "image": "./screens/compose.png",
+      "title": {
+        "en-US": "Capture it instantly",
+        "ar": "سجّلها في لحظتها"
+      },
+      "subtitle": {
+        "en-US": "Quick, natural task entry",
+        "ar": "إضافة سريعة وبسيطة للمهام"
+      }
+    }
+  ],
+  "exports": [
+    {
+      "store": "app-store",
+      "profile": "iphone-6-3"
+    },
+    {
+      "store": "google-play",
+      "profile": "phone"
+    }
+  ],
+  "output": {
+    "dir": "./storeshots"
+  }
+}

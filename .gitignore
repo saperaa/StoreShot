@@ -1,0 +1,10 @@
+node_modules/
+dist/
+*.tsbuildinfo
+coverage/
+.vitest/
+storeshots/
+examples/**/storeshots/
+*.log
+.DS_Store
+Thumbs.db

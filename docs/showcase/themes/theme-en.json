@@ -1,0 +1,22 @@
+{
+  "$schema": "./node_modules/storeshot-cli/schema.json",
+  "configVersion": 1,
+  "app": { "name": "Qamar", "tagline": "Tasks that flow with your day" },
+  "locales": ["en-US"],
+  "template": "spotlight",
+  "theme": {
+    "background": "#F2F5FA",
+    "accent": "#0E9F6E",
+    "text": "#111827",
+    "mutedText": "#5B6472"
+  },
+  "screenshots": [
+    {
+      "id": "home",
+      "image": "../../../starter/screens/home.png",
+      "title": "A calmer way to run your day",
+      "subtitle": "Everything in one place"
+    }
+  ],
+  "exports": [{ "store": "app-store", "profile": "iphone-6-3", "name": "daylight-spotlight" }]
+}

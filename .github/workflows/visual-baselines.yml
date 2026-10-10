@@ -1,0 +1,27 @@
+name: Refresh visual baselines
+
+# Text rasterization differs per OS, so baselines are platform-suffixed.
+# Maintainers run this (Actions tab → Run workflow) after intentional
+# rendering changes, download the artifact, drop the PNGs into
+# test/visual/baselines/ and commit them in a PR for pixel review.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  linux-baselines:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright-core install chromium
+      - run: npx cross-env UPDATE_SNAPSHOTS=1 vitest run test/visual
+      - uses: actions/upload-artifact@v4
+        with:
+          name: visual-baselines-linux
+          path: test/visual/baselines/*-linux.png

@@ -1,0 +1,88 @@
+{
+  "name": "storeshot-cli",
+  "version": "0.1.0",
+  "description": "Generate professional, RTL-ready App Store and Google Play screenshots from a JSON config. Local, deterministic, Arabic-first.",
+  "keywords": [
+    "app-store",
+    "google-play",
+    "screenshots",
+    "screenshot-generator",
+    "arabic",
+    "rtl",
+    "cli",
+    "marketing",
+    "store-listing"
+  ],
+  "type": "module",
+  "license": "MIT",
+  "author": "StoreShot contributors",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/storeshot/storeshot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/storeshot/storeshot/issues"
+  },
+  "homepage": "https://github.com/storeshot/storeshot#readme",
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "storeshot": "dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./schema.json": "./schema.json"
+  },
+  "files": [
+    "dist",
+    "assets",
+    "starter/storeshot.config.json",
+    "starter/README.md",
+    "starter/screens",
+    "schema.json",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/cli.ts",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "schema": "tsx scripts/gen-schema.ts",
+    "test": "npm run build && vitest run",
+    "test:unit": "vitest run test/unit",
+    "test:integration": "npm run build && vitest run test/integration",
+    "test:visual": "npm run build && vitest run test/visual",
+    "test:visual:update": "cross-env UPDATE_SNAPSHOTS=1 npm run test:visual",
+    "prepublishOnly": "npm run lint && npm run typecheck && npm run schema && npm run test"
+  },
+  "dependencies": {
+    "commander": "^15.0.0",
+    "picocolors": "^1.1.1",
+    "playwright-core": "^1.64.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.0.0",
+    "@types/pngjs": "^6.0.5",
+    "cross-env": "^10.1.0",
+    "eslint": "^10.12.0",
+    "pixelmatch": "^8.0.0",
+    "pngjs": "^7.0.0",
+    "prettier": "^3.9.10",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.0",
+    "typescript-eslint": "^8.71.1",
+    "vitest": "^5.0.3"
+  }
+}
