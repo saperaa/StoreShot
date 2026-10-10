@@ -6,5 +6,7 @@ coverage/
 storeshots/
 examples/**/storeshots/
 *.log
+*.tgz
+package/
 .DS_Store
 Thumbs.db
