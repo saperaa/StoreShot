@@ -44,6 +44,8 @@ interface Case {
   prompt?: string;
   /** Theme override for light/dark coverage. */
   theme?: Record<string, string>;
+  /** Marketing prompt override for the search-layer cases. */
+  prompt?: string;
   /** Canvas override; landscape sizes exercise the landscape compositions. */
   size?: { width: number; height: number };
 }
@@ -140,8 +142,9 @@ beforeAll(async () => {
     if (caseDef.theme) {
       patched.theme = { ...patched.theme, ...caseDef.theme, mode: "auto" };
     }
-    if (caseDef.name === "discovery-en") (caseDef as any).prompt = "plan my week";
-    if (caseDef.name === "discovery-ar") (caseDef as any).prompt = "أضف مهمة";
+    caseDef.prompt = "plan my week";
+    
+    if (caseDef.name === "discovery-ar") caseDef.prompt = "أضف مهمة";
     if (caseDef.title || caseDef.subtitle) {
       patched.screenshots = resolved.screenshots.map((shot) =>
         shot === screenshot
