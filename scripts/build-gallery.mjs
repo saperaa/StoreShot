@@ -20,7 +20,7 @@ const screens = path.join(root, "starter", "screens");
 
 // Clean ONLY the directories this script rebuilds. A blanket gallery wipe
 // once deleted showcases it does not own (families/, cinematic-3d/,
-// campaign-cinematic/) right out of the committed tree.
+// flagship/) right out of the committed tree.
 const OWNED_DIRS = [
   "cinematic",
   "editorial",
