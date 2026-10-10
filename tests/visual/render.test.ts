@@ -64,7 +64,7 @@ const cases: Case[] = [
     name: "cinematic-ar",
     locale: "ar",
     template: "cinematic",
-    screenshot: "compose",
+    screenshot: "focus",
     index: 1,
     title: "سجّلها في لحظتها (متصل بـ 12 تطبيقًا)",
     subtitle: "إضافة سريعة بالعربية أو English — حتى 40% أسرع",

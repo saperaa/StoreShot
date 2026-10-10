@@ -248,8 +248,8 @@ function renderPortraitB(ctx: TemplateContext) {
   const device = renderDevice({
     image: ctx.image,
     mode,
-    maxWidth: w * 0.8 * deviceScale,
-    maxHeight: h * 1.02 * deviceScale,
+    maxWidth: w * 0.78 * deviceScale,
+    maxHeight: h * 0.84 * deviceScale,
   });
 
   const head = headline({
@@ -258,8 +258,8 @@ function renderPortraitB(ctx: TemplateContext) {
     style: "cinematic",
     kicker: "chip",
     align: "center",
-    sizes: { kicker: w * 0.023, title: w * 0.086, subtitle: w * 0.032 },
-    lines: { title: 2, subtitle: 2 },
+    sizes: { kicker: w * 0.023, title: w * 0.078, subtitle: w * 0.032 },
+    lines: { title: 3, subtitle: 2 },
     scale: headlineScale,
     subtitleMaxWidth: w * 0.74,
   });
