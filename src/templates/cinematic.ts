@@ -248,8 +248,8 @@ function renderPortraitB(ctx: TemplateContext) {
   const device = renderDevice({
     image: ctx.image,
     mode,
-    maxWidth: w * 0.78 * deviceScale,
-    maxHeight: h * 0.84 * deviceScale,
+    maxWidth: w * 0.86 * deviceScale,
+    maxHeight: h * 0.92 * deviceScale,
   });
 
   const head = headline({
@@ -258,7 +258,7 @@ function renderPortraitB(ctx: TemplateContext) {
     style: "cinematic",
     kicker: "chip",
     align: "center",
-    sizes: { kicker: w * 0.023, title: w * 0.078, subtitle: w * 0.032 },
+    sizes: { kicker: w * 0.023, title: w * 0.084, subtitle: w * 0.032 },
     lines: { title: 3, subtitle: 2 },
     scale: headlineScale,
     subtitleMaxWidth: w * 0.74,
@@ -267,7 +267,7 @@ function renderPortraitB(ctx: TemplateContext) {
   const css = [
     ".shot-cinematic.b {",
     "  background:",
-    "    radial-gradient(90% 45% at 50% 18%, " + tokens.accentGlow(0.17) + " 0%, transparent 65%),",
+    "    radial-gradient(95% 50% at 50% 30%, " + tokens.accentGlow(0.22) + " 0%, transparent 68%),",
     "    linear-gradient(" + tokens.bg + " 40%, " + darken(tokens.bg, 0.5) + " 130%);",
     "  " + headlineVars(tokens, "cinematic", h * 0.018, h * 0.02),
     "}",
