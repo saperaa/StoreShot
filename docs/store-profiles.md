@@ -25,6 +25,26 @@ Rules from the same page:
   portrait profiles only (landscape is a matter of swapping width/height
   via `exports[].size` if you need it today).
 
+## Creative assets — product page header & search results
+
+Source: [Creative assets specifications — App Store Connect Help](https://developer.apple.com/help/app-store-connect/reference/app-information/creative-assets-specifications)
+Verified: **2026-10-10**
+
+| Profile | Pixels | Placement / notes |
+| --- | --- | --- |
+| `header-21-9` | 3840 × 1646 | Product page header (21:9). JPEG or PNG, no alpha. A video variant also exists — StoreShot renders stills only. |
+| `header-16-9` | 5244 × 2950 | Universal 16:9 PNG accepted for BOTH the header and search results (PNG only for this size, no alpha). |
+| `search-results-3-2` | 3840 × 2560 | Dedicated search-results creative (3:2). Apple accepts 1920×1280 up to 3840×2560; this is the maximum. JPEG or PNG, no alpha. |
+
+Also new: `iphone-6-1` (1179 × 2556, the alternative size for the 6.1"/6.3"
+screenshot slot) and `preview-frame-6-3` (886 × 1920 — a still image at the
+app-preview aspect; the preview itself must be a video you produce elsewhere).
+
+These are **landscape** compositions: StoreShot templates automatically
+switch to their landscape layouts when the export is wider than tall.
+Landscape headlines want short copy — the overflow validator reports when a
+headline is too long for the banner column.
+
 ## Google Play
 
 Source: [Use store listings to showcase your app — Play Console Help](https://support.google.com/googleplay/android-developer/answer/1078870)

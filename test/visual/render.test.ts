@@ -29,7 +29,7 @@ import { readImageInfo } from "../../src/util/imageSize.js";
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const baselinesDir = path.join(repoRoot, "test", "visual", "baselines");
 const updateSnapshots = process.env.UPDATE_SNAPSHOTS === "1";
-const CANVAS = { width: 720, height: 1280 };
+const CANVAS = { width: 720, height: 1280 }; // default portrait canvas
 
 interface Case {
   name: string;
@@ -43,6 +43,8 @@ interface Case {
   subtitle?: string;
   /** Theme override for light/dark coverage. */
   theme?: Record<string, string>;
+  /** Canvas override; landscape sizes exercise the landscape compositions. */
+  size?: { width: number; height: number };
 }
 
 const cases: Case[] = [
@@ -74,6 +76,22 @@ const cases: Case[] = [
   { name: "immersive-ar", locale: "ar", template: "immersive", screenshot: "home", index: 1 },
   { name: "showcase-en", locale: "en-US", template: "showcase", screenshot: "compose" },
   { name: "showcase-ar", locale: "ar", template: "showcase", screenshot: "compose", index: 1 },
+  {
+    name: "editorial-header-en",
+    locale: "en-US",
+    template: "editorial",
+    screenshot: "home",
+    title: "Beautifully in control",
+    subtitle: "Plan the night before, glide through tomorrow",
+    size: { width: 960, height: 412 }, // 21:9 header aspect
+  },
+  {
+    name: "cinematic-search-ar",
+    locale: "ar",
+    template: "cinematic",
+    screenshot: "compose",
+    size: { width: 960, height: 640 }, // 3:2 search-results aspect
+  },
   {
     name: "editorial-paper-en",
     locale: "en-US",
@@ -129,7 +147,7 @@ beforeAll(async () => {
         locale,
         screenshot: target,
         imageInfo,
-        size: CANVAS,
+        size: caseDef.size ?? CANVAS,
         deviceFrame: caseDef.deviceFrame ?? deviceFrameFor(resolved, screenshot),
         index: caseDef.index ?? 0,
         count: resolved.screenshots.length,
@@ -158,9 +176,10 @@ describe.each(cases)("visual: $name", (caseDef) => {
   it("renders with exact dimensions, loaded fonts, no overflow, and is not blank", async () => {
     const request = jobs.get(caseDef.name)!;
     const result = await renderer.render(request);
+    const canvas = caseDef.size ?? CANVAS;
 
-    expect(result.width).toBe(CANVAS.width);
-    expect(result.height).toBe(CANVAS.height);
+    expect(result.width).toBe(canvas.width);
+    expect(result.height).toBe(canvas.height);
 
     for (const [family, loaded] of Object.entries(result.diagnostics.fontChecks)) {
       expect(loaded, `font ${family} must load`).toBe(true);
@@ -207,8 +226,9 @@ describe.each(cases)("visual: $name", (caseDef) => {
 
     const actual = PNG.sync.read(result.png);
     const baseline = PNG.sync.read(baselineBuffer);
-    expect(baseline.width).toBe(CANVAS.width);
-    expect(baseline.height).toBe(CANVAS.height);
+    const canvas = caseDef.size ?? CANVAS;
+    expect(baseline.width).toBe(canvas.width);
+    expect(baseline.height).toBe(canvas.height);
     const diffPixels = pixelmatch(baseline.data, actual.data, null, actual.width, actual.height, {
       threshold: 0.12,
     });

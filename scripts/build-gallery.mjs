@@ -138,5 +138,52 @@ run(frameConfig("cinematic", "compose", "ar", violet), path.join(gallery, "theme
 run(frameConfig("swiss", "insights", "ar", paper), path.join(gallery, "themes", "swiss-paper"));
 console.log("gallery: themes");
 
+// Apple creative assets: product page header (21:9 + 16:9 universal) and the
+// dedicated search-results asset (3:2), in landscape compositions.
+const landscapeConfigs = [
+  ["editorial", "home", "en-US", dark, "header-21-9", { title: "Beautifully in control", subtitle: "Plan the night before, glide through tomorrow" }],
+  ["editorial", "home", "en-US", dark, "header-16-9", { title: "Beautifully in control", subtitle: "Plan the night before, glide through tomorrow" }],
+  ["editorial", "home", "en-US", dark, "search-results-3-2", { title: "Beautifully in control", subtitle: "Plan the night before, glide through tomorrow" }],
+  ["cinematic", "compose", "ar", violet, "header-21-9", { title: "سجّلها في لحظتها", subtitle: "إضافة سريعة وطبيعية للمهام" }],
+];
+for (const [template, screen, locale, theme, profile, copy] of landscapeConfigs) {
+  const [file] = [screenFile[screen]];
+  fs.mkdirSync(path.join(gallery, ".work"), { recursive: true });
+  fs.writeFileSync(
+    path.join(gallery, ".work", "storeshot.config.json"),
+    JSON.stringify(
+      {
+        ...base,
+        locales: [locale],
+        direction: locale === "ar" ? { ar: "rtl" } : {},
+        template,
+        theme,
+        screenshots: [
+          {
+            id: screen,
+            role: "hero",
+            image: path.resolve(screens, file + ".png"),
+            title: copy.title,
+            subtitle: copy.subtitle,
+          },
+        ],
+        exports: [{ store: "app-store", profile, name: "frame" }],
+      },
+      null,
+      2,
+    ),
+  );
+  execFileSync(process.execPath, [
+    cli,
+    "generate",
+    "-e",
+    "frame",
+    "-o",
+    path.join(gallery, "landscape", profile + (locale === "ar" ? "-ar" : "")),
+  ], { cwd: path.join(gallery, ".work"), stdio: "inherit" });
+  fs.rmSync(path.join(gallery, ".work"), { recursive: true, force: true });
+  console.log("gallery: landscape/" + profile + (locale === "ar" ? "-ar" : ""));
+}
+
 fs.rmSync(path.join(gallery, ".work"), { recursive: true, force: true });
 console.log("done");

@@ -115,6 +115,20 @@ Replace the five example screenshots in `screens/` with your real app UI (PNG/JP
 
 Full reference: [`docs/configuration.md`](docs/configuration.md) · Template API & authoring: [`docs/templates.md`](docs/templates.md).
 
+## Apple creative assets: headers & search results
+
+Apple's new product-page **header** and **search results** creatives are first-class exports — and because they are landscape, every template automatically switches to a dedicated landscape composition (text column + device column, RTL-aware):
+
+| Header 21:9 (3840×1646) | Search results 3:2 (3840×2560) |
+| --- | --- |
+| ![Header 21:9](docs/gallery/landscape/header-21-9/frame/en-US/01-home.png) | ![Search 3:2](docs/gallery/landscape/search-results-3-2/frame/en-US/01-home.png) |
+
+| Header in Arabic (RTL landscape) | Universal 16:9 (5244×2950, PNG-only) |
+| --- | --- |
+| ![Header AR](docs/gallery/landscape/header-21-9-ar/frame/ar/01-compose.png) | ![Header 16:9](docs/gallery/landscape/header-16-9/frame/en-US/01-home.png) |
+
+Profiles: `header-21-9`, `header-16-9` (one PNG covers header **and** search), `search-results-3-2`, plus `iphone-6-1` (1179×2556) and `preview-frame-6-3` (888×1920 poster frames — the preview itself must be video). Verified against Apple's official specifications on 2026-10-10 — see [`docs/store-profiles.md`](docs/store-profiles.md).
+
 ## Store profiles
 
 Verified against official Apple/Google documentation (sources + dates in [`docs/store-profiles.md`](docs/store-profiles.md)): `iphone-6-3` 1206×2622 (required iPhone class), `iphone-6-9` 1320×2868, `ipad-13` 2064×2752, `phone` 1080×1920, `tablet` 1600×2560, plus validated custom sizes. Correct dimensions ≠ full compliance — the docs list what StoreShot cannot check.

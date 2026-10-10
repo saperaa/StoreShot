@@ -1,6 +1,7 @@
 import { buildTokens } from "../design/tokens.js";
 import { headline, headlineVars } from "../design/primitives.js";
 import { renderDevice, resolveDeviceMode } from "../design/device.js";
+import { landscapeMetrics, landscapeSizes } from "../design/layout.js";
 import { numberSetting, stringSetting } from "./settings.js";
 import { px, type TemplateContext, type TemplateDefinition } from "./types.js";
 
@@ -46,6 +47,67 @@ const SETTINGS = [
 ] as const;
 
 function render(ctx: TemplateContext) {
+  if (ctx.canvas.width > ctx.canvas.height) return renderLandscape(ctx);
+  return renderPortrait(ctx);
+}
+
+function renderLandscape(ctx: TemplateContext) {
+  const { width: w, height: h } = ctx.canvas;
+  const tokens = buildTokens(ctx.theme);
+  const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
+  const deviceScale = numberSetting(SETTINGS, ctx.settings, "deviceScale");
+  const twin = ctx.settings["twin"] !== false;
+  const mode = resolveDeviceMode(stringSetting(SETTINGS, ctx.settings, "deviceMode"), ctx.deviceFrame, "angled");
+  const flip = ctx.index % 2 === 1;
+  const { pad, textWidth, deviceMaxH } = landscapeMetrics(w, h);
+
+  const device = renderDevice({
+    image: ctx.image,
+    mode,
+    maxWidth: w * 0.3 * deviceScale,
+    maxHeight: deviceMaxH * 0.92 * deviceScale,
+    ...(mode === "angled" ? { rotateY: flip ? 8 : -8, rotateZ: 0, backLayer: twin } : {}),
+  });
+
+  const head = headline({
+    ctx,
+    tokens,
+    style: "display",
+    kicker: "overline",
+    sizes: landscapeSizes(h),
+    lines: { title: 3, subtitle: 3 },
+    scale: headlineScale,
+    subtitleMaxWidth: textWidth,
+  });
+
+  const css = `
+.shot-immersive.landscape {
+  background:
+    radial-gradient(30% 60% at 72% 55%, ${tokens.accentGlow(0.14)} 0%, transparent 72%),
+    ${tokens.bg};
+  ${headlineVars(tokens, "display", h * 0.03, h * 0.034)}
+}
+.iml-head { position: absolute; inset-inline-start: ${px(pad)}; top: 50%; transform: translateY(-52%); width: ${px(textWidth)}; z-index: 3; }
+.iml-horizon { position: absolute; top: ${px(h * 0.72)}; left: ${px(w * 0.42)}; right: ${px(pad)}; height: 1px; background: ${tokens.line}; z-index: 0; }
+.iml-device { position: absolute; inset-inline-end: ${px(w * 0.075)}; top: 50%; transform: translateY(-50%); z-index: 2; display: flex; justify-content: center; }
+.iml-tick { position: absolute; width: ${px(h * 0.045)}; height: ${px(h * 0.045)}; border-color: ${tokens.accent}; border-style: solid; border-width: 0; z-index: 1; }
+.iml-tick.tl { top: ${px(pad * 0.45)}; inset-inline-start: ${px(pad * 0.45)}; border-top-width: 2px; border-inline-start-width: 2px; }
+.iml-tick.br { bottom: ${px(pad * 0.45)}; inset-inline-end: ${px(pad * 0.45)}; border-bottom-width: 2px; border-inline-end-width: 2px; }
+`;
+
+  const html = `
+<div class="shot shot-immersive landscape">
+  <div class="iml-horizon"></div>
+  <div class="iml-tick tl"></div>
+  <div class="iml-tick br"></div>
+  <div class="iml-head">${head}</div>
+  <div class="iml-device">${device.html}</div>
+</div>`;
+
+  return { css, html };
+}
+
+function renderPortrait(ctx: TemplateContext) {
   const { width: w, height: h } = ctx.canvas;
   const tokens = buildTokens(ctx.theme);
   const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");

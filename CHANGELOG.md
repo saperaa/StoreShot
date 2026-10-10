@@ -4,6 +4,26 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.3.0] — 2026-10-10
+
+Apple creative assets + landscape compositions.
+
+### Added
+
+- New App Store export profiles, verified against Apple's creative-assets
+  specifications on 2026-10-10: `header-21-9` (3840×1646 product page
+  header), `header-16-9` (5244×2950 universal PNG for header AND search
+  results), `search-results-3-2` (3840×2560 dedicated search creative),
+  `iphone-6-1` (1179×2556 alternative screenshot size) and
+  `preview-frame-6-3` (886×1920 still for app-preview production).
+- Landscape compositions for every template: when the export canvas is
+  wider than tall, templates switch to art-directed landscape layouts
+  (text column + device column, RTL-mirrored, per-template character
+  preserved — masthead/column rule, key light/reflection, grid, brand
+  band, horizon/twin, slab).
+- Landscape gallery in `docs/gallery/landscape`; visual-regression cases
+  for the 21:9 and 3:2 aspects in English and Arabic; an integration test
+  rendering the real 3840×1646 header through the CLI.
 ## [0.2.0] — 2026-10-10
 
 The creative redesign. Generated screenshots are now art-directed marketing

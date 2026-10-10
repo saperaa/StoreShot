@@ -2,6 +2,7 @@ import { buildTokens } from "../design/tokens.js";
 import { escapeHtml } from "../util/escapeHtml.js";
 import { headline, headlineVars, masthead, mastheadVars } from "../design/primitives.js";
 import { renderDevice, resolveDeviceMode } from "../design/device.js";
+import { landscapeMetrics, landscapeSizes } from "../design/layout.js";
 import { numberSetting, stringSetting } from "./settings.js";
 import { px, type TemplateContext, type TemplateDefinition } from "./types.js";
 
@@ -46,6 +47,77 @@ const SETTINGS = [
 ] as const;
 
 function render(ctx: TemplateContext) {
+  if (ctx.canvas.width > ctx.canvas.height) return renderLandscape(ctx);
+  return renderPortrait(ctx);
+}
+
+function renderLandscape(ctx: TemplateContext) {
+  const { width: w, height: h } = ctx.canvas;
+  const tokens = buildTokens(ctx.theme);
+  const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
+  const deviceScale = numberSetting(SETTINGS, ctx.settings, "deviceScale");
+  const grid = ctx.settings["grid"] !== false;
+  const mode = resolveDeviceMode(stringSetting(SETTINGS, ctx.settings, "deviceMode"), ctx.deviceFrame, "bare");
+  const { pad, textWidth, deviceMaxH } = landscapeMetrics(w, h);
+
+  const device = renderDevice({
+    image: ctx.image,
+    mode,
+    maxWidth: w * 0.26 * deviceScale,
+    maxHeight: deviceMaxH * 0.88 * deviceScale,
+  });
+
+  const head = headline({
+    ctx,
+    tokens,
+    style: "swiss",
+    kicker: "overline",
+    sizes: landscapeSizes(h),
+    lines: { title: 3, subtitle: 3 },
+    scale: headlineScale,
+    subtitleMaxWidth: textWidth,
+  });
+
+  const columns = grid
+    ? [1, 2, 3]
+        .map(
+          (i) =>
+            `<div class="swl-col" style="inset-inline-start: ${px((w / 4) * i)}"></div>`,
+        )
+        .join("\n    ")
+    : "";
+
+  const css = `
+.shot-swiss.landscape {
+  background: ${tokens.bg};
+  ${headlineVars(tokens, "swiss", h * 0.03, h * 0.034)}
+  ${mastheadVars(tokens)}
+}
+.swl-bar { position: absolute; top: 0; left: 0; right: 0; height: ${px(Math.max(10, h * 0.014))}; background: ${tokens.accent}; }
+.swl-col { position: absolute; top: ${px(pad * 1.3)}; bottom: ${px(pad * 0.9)}; width: 1px; background: ${tokens.lineSoft}; }
+.swl-meta { position: absolute; top: ${px(pad * 0.55)}; inset-inline-start: ${px(pad)}; width: calc(100% - ${px(pad * 2)}); }
+.swl-head { position: absolute; inset-inline-start: ${px(pad)}; top: 50%; transform: translateY(-52%); width: ${px(textWidth)}; z-index: 2; }
+.swl-baseline { position: absolute; bottom: ${px(pad)}; inset-inline-start: ${px(pad)}; width: calc(100% - ${px(pad * 2)}); height: 1px; background: ${tokens.line}; z-index: 1; }
+.swl-device { position: absolute; inset-inline-end: ${px(w * 0.08)}; bottom: ${px(pad * 1.7)}; z-index: 2; }
+.swl-caption { position: absolute; bottom: ${px(pad * 0.55)}; inset-inline-end: ${px(w * 0.08)}; font-size: ${px(h * 0.024)}; color: ${tokens.muted}; letter-spacing: 0.1em; z-index: 2; font-weight: 500; }
+[dir="ltr"] .swl-caption { text-transform: uppercase; }
+`;
+
+  const html = `
+<div class="shot shot-swiss landscape">
+  <div class="swl-bar"></div>
+    ${columns}
+  <div class="swl-meta">${masthead(ctx, tokens, h * 0.026)}</div>
+  <div class="swl-head">${head}</div>
+  <div class="swl-baseline"></div>
+  <div class="swl-device">${device.html}</div>
+  <div class="swl-caption">FIG. ${String(ctx.index + 1).padStart(2, "0")} — ${escapeHtml((ctx.role ?? ctx.app.name).toUpperCase())}</div>
+</div>`;
+
+  return { css, html };
+}
+
+function renderPortrait(ctx: TemplateContext) {
   const { width: w, height: h } = ctx.canvas;
   const tokens = buildTokens(ctx.theme);
   const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");

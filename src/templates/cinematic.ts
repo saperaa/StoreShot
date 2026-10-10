@@ -2,6 +2,7 @@ import { darken } from "../util/colors.js";
 import { buildTokens } from "../design/tokens.js";
 import { headline, headlineVars } from "../design/primitives.js";
 import { renderDevice, resolveDeviceMode } from "../design/device.js";
+import { landscapeMetrics, landscapeSizes } from "../design/layout.js";
 import { numberSetting, stringSetting } from "./settings.js";
 import { px, type TemplateContext, type TemplateDefinition } from "./types.js";
 
@@ -47,6 +48,74 @@ const SETTINGS = [
 ] as const;
 
 function render(ctx: TemplateContext) {
+  if (ctx.canvas.width > ctx.canvas.height) return renderLandscape(ctx);
+  return renderPortrait(ctx);
+}
+
+function renderLandscape(ctx: TemplateContext) {
+  const { width: w, height: h } = ctx.canvas;
+  const tokens = buildTokens(ctx.theme);
+  const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
+  const deviceScale = numberSetting(SETTINGS, ctx.settings, "deviceScale");
+  const reflection = ctx.settings["reflection"] !== false;
+  const mode = resolveDeviceMode(stringSetting(SETTINGS, ctx.settings, "deviceMode"), ctx.deviceFrame, "front");
+  const { pad, textWidth, deviceMaxH } = landscapeMetrics(w, h);
+
+  const device = renderDevice({
+    image: ctx.image,
+    mode,
+    maxWidth: w * 0.34 * deviceScale,
+    maxHeight: deviceMaxH * 0.92 * deviceScale,
+  });
+
+  const head = headline({
+    ctx,
+    tokens,
+    style: "cinematic",
+    kicker: "chip",
+    align: "start",
+    sizes: landscapeSizes(h),
+    lines: { title: 3, subtitle: 3 },
+    scale: headlineScale,
+    subtitleMaxWidth: textWidth,
+  });
+
+  const keyLight = tokens.accentGlow(0.16);
+  const css = [
+    ".shot-cinematic.landscape {",
+    "  background:",
+    "    radial-gradient(42% 75% at 74% 38%, " + keyLight + " 0%, transparent 70%),",
+    "    radial-gradient(70% 120% at 50% -30%, " + darken(tokens.bg, 0.5) + " 0%, transparent 60%),",
+    "    " + tokens.bg + ";",
+    "  " + headlineVars(tokens, "cinematic", h * 0.03, h * 0.034),
+    "}",
+    ".cil-head { position: absolute; inset-inline-start: " + px(pad) + "px; top: 50%; transform: translateY(-52%); width: " + px(textWidth) + "px; z-index: 3; }",
+    ".cil-device { position: absolute; inset-inline-end: " + px(w * 0.075) + "px; top: 50%; transform: translateY(-50%); z-index: 2; }",
+    ".cil-reflection {",
+    "  position: absolute;",
+    "  inset-inline-end: " + px(w * 0.075) + "px;",
+    "  top: calc(50% + " + px(deviceMaxH * 0.92 * deviceScale * 0.5) + "px);",
+    "  width: " + px(device.width) + "px;",
+    "  height: " + px(device.height * 0.14) + "px;",
+    "  overflow: hidden; opacity: 0.2; filter: blur(5px);",
+    '  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent 80%);',
+    "  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent 80%);",
+    "}",
+    ".cil-reflection img { width: " + px(device.width) + "px; transform: translateY(-" + px(device.height * 0.86) + "px) scaleY(-1); }",
+  ].join("\n");
+
+  const html = [
+    '<div class="shot shot-cinematic landscape">',
+    '  <div class="cil-head">' + head + "</div>",
+    '  <div class="cil-device">' + device.html + "</div>",
+    reflection ? '  <div class="cil-reflection"><img src="' + ctx.image.url + '" alt=""></div>' : "",
+    "</div>",
+  ].join("\n");
+
+  return { css, html };
+}
+
+function renderPortrait(ctx: TemplateContext) {
   const { width: w, height: h } = ctx.canvas;
   const tokens = buildTokens(ctx.theme);
   const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");

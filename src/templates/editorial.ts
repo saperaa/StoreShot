@@ -1,6 +1,7 @@
 import { buildTokens } from "../design/tokens.js";
 import { headline, headlineVars, masthead, mastheadVars } from "../design/primitives.js";
 import { renderDevice, resolveDeviceMode } from "../design/device.js";
+import { landscapeMetrics, landscapeSizes } from "../design/layout.js";
 import { escapeHtml } from "../util/escapeHtml.js";
 import { numberSetting, stringSetting } from "./settings.js";
 import { px, type TemplateContext, type TemplateDefinition } from "./types.js";
@@ -41,6 +42,81 @@ const SETTINGS = [
 ] as const;
 
 function render(ctx: TemplateContext) {
+  if (ctx.canvas.width > ctx.canvas.height) return renderLandscape(ctx);
+  return renderPortrait(ctx);
+}
+
+function renderLandscape(ctx: TemplateContext) {
+  const { width: w, height: h } = ctx.canvas;
+  const tokens = buildTokens(ctx.theme);
+  const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
+  const deviceScale = numberSetting(SETTINGS, ctx.settings, "deviceScale");
+  const mode = resolveDeviceMode(stringSetting(SETTINGS, ctx.settings, "deviceMode"), ctx.deviceFrame, "front");
+  const { pad, textWidth, deviceMaxH } = landscapeMetrics(w, h);
+
+  const device = renderDevice({
+    image: ctx.image,
+    mode,
+    maxWidth: w * 0.3 * deviceScale,
+    maxHeight: deviceMaxH * deviceScale,
+  });
+
+  const head = headline({
+    ctx,
+    tokens,
+    style: "editorial",
+    kicker: "overline",
+    sizes: landscapeSizes(h),
+    lines: { title: 3, subtitle: 3 },
+    scale: headlineScale,
+    subtitleMaxWidth: textWidth,
+  });
+
+  const folio = String(ctx.index + 1).padStart(2, "0");
+
+  const css = `
+.shot-editorial.landscape {
+  background:
+    radial-gradient(60% 90% at 78% 50%, ${tokens.mode === "dark" ? tokens.accentGlow(0.04) : "rgba(255,255,255,0.5)"} 0%, transparent 65%),
+    ${tokens.bg};
+  ${headlineVars(tokens, "editorial", h * 0.032, h * 0.036)}
+  ${mastheadVars(tokens)}
+}
+.edl-numeral {
+  position: absolute;
+  bottom: ${px(-h * 0.012)};
+  inset-inline-start: ${px(pad * 0.5)};
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: ${px(h * 0.6)};
+  line-height: 1;
+  color: ${tokens.surfaceAlt};
+  z-index: 0;
+}
+.edl-masthead { position: absolute; top: ${px(pad * 0.55)}; inset-inline-start: ${px(pad)}; width: calc(100% - ${px(pad * 2)}); z-index: 3; }
+.edl-rule { position: absolute; top: ${px(pad * 1.4)}; inset-inline-start: ${px(pad)}; width: calc(100% - ${px(pad * 2)}); height: 1px; background: ${tokens.line}; z-index: 3; }
+.edl-head { position: absolute; inset-inline-start: ${px(pad)}; top: 50%; transform: translateY(-52%); width: ${px(textWidth)}; z-index: 2; }
+.edl-columnrule { position: absolute; top: ${px(pad * 1.7)}; bottom: ${px(pad * 0.9)}; inset-inline-start: ${px(pad + textWidth + pad * 0.65)}; width: 1px; background: ${tokens.lineSoft}; z-index: 1; }
+.edl-device { position: absolute; inset-inline-end: ${px(w * 0.055)}; top: 50%; transform: translateY(-50%); z-index: 2; }
+.edl-caption { position: absolute; bottom: ${px(pad * 0.5)}; inset-inline-start: ${px(pad)}; font-size: ${px(h * 0.024)}; color: ${tokens.muted}; letter-spacing: 0.08em; z-index: 2; }
+[dir="ltr"] .edl-caption { text-transform: uppercase; }
+`;
+
+  const html = `
+<div class="shot shot-editorial landscape">
+  <div class="edl-numeral">${folio}</div>
+  <div class="edl-masthead">${masthead(ctx, tokens, h * 0.026)}</div>
+  <div class="edl-rule"></div>
+  <div class="edl-head">${head}</div>
+  <div class="edl-columnrule"></div>
+  <div class="edl-device">${device.html}</div>
+  <div class="edl-caption">FIG. ${folio} — ${escapeHtml((ctx.role ?? ctx.app.name).toUpperCase())}</div>
+</div>`;
+
+  return { css, html };
+}
+
+function renderPortrait(ctx: TemplateContext) {
   const { width: w, height: h } = ctx.canvas;
   const tokens = buildTokens(ctx.theme);
   const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");

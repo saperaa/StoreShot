@@ -23,6 +23,8 @@ export interface StoreProfileDef {
 
 const APPLE_SOURCE =
   "https://developer.apple.com/help/app-store-connect/reference/screenshot-specifications";
+const APPLE_CREATIVE_SOURCE =
+  "https://developer.apple.com/help/app-store-connect/reference/app-information/creative-assets-specifications";
 const GOOGLE_SOURCE = "https://support.google.com/googleplay/android-developer/answer/1078870";
 
 export const STORE_PROFILES: readonly StoreProfileDef[] = [
@@ -40,6 +42,18 @@ export const STORE_PROFILES: readonly StoreProfileDef[] = [
   },
   {
     store: "app-store",
+    id: "iphone-6-1",
+    label: 'iPhone 6.1"',
+    width: 1179,
+    height: 2556,
+    notes:
+      'Alternative size accepted for the 6.1"/6.3" screenshot slot ' +
+      "(1206x2622 via the iphone-6-3 profile is the other accepted size).",
+    verifiedOn: "2026-10-10",
+    sourceUrl: APPLE_SOURCE,
+  },
+  {
+    store: "app-store",
     id: "iphone-6-9",
     label: 'iPhone 6.9" (Dynamic Island, large display)',
     width: 1320,
@@ -47,6 +61,56 @@ export const STORE_PROFILES: readonly StoreProfileDef[] = [
     notes:
       'Highest resolution of the 6.9" class (1260x2736 and 1290x2796 are also accepted). ' +
       "Provide the largest size; App Store Connect scales down automatically.",
+    verifiedOn: "2026-10-10",
+    sourceUrl: APPLE_SOURCE,
+  },
+  {
+    store: "app-store",
+    id: "header-21-9",
+    label: "Product page header (21:9)",
+    width: 3840,
+    height: 1646,
+    notes:
+      "The wide banner at the top of the product page. JPEG or PNG, no alpha. " +
+      "Apple also accepts a video here; StoreShot renders still images only. " +
+      "Landscape composition.",
+    verifiedOn: "2026-10-10",
+    sourceUrl: APPLE_CREATIVE_SOURCE,
+  },
+  {
+    store: "app-store",
+    id: "header-16-9",
+    label: "Universal header / search asset (16:9)",
+    width: 5244,
+    height: 2950,
+    notes:
+      "One 16:9 PNG covers BOTH the product page header and the search results asset " +
+      "(PNG only for this size, no alpha). Landscape composition.",
+    verifiedOn: "2026-10-10",
+    sourceUrl: APPLE_CREATIVE_SOURCE,
+  },
+  {
+    store: "app-store",
+    id: "search-results-3-2",
+    label: "Search results asset (3:2)",
+    width: 3840,
+    height: 2560,
+    notes:
+      "The dedicated search-results creative. Apple accepts 1920x1280 up to 3840x2560; " +
+      "this is the maximum. JPEG or PNG, no alpha. Landscape composition.",
+    verifiedOn: "2026-10-10",
+    sourceUrl: APPLE_CREATIVE_SOURCE,
+  },
+  {
+    store: "app-store",
+    id: "preview-frame-6-3",
+    label: 'App preview poster frame (6.3")',
+    width: 886,
+    height: 1920,
+    notes:
+      'Still image at the 6.1"/6.3" app-preview aspect. The actual preview must be a ' +
+      "video (.mov/.m4v/.mp4) you produce elsewhere; use this as its poster frame or " +
+      "design starting point.",
     verifiedOn: "2026-10-10",
     sourceUrl: APPLE_SOURCE,
   },

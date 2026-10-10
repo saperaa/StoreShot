@@ -24,6 +24,20 @@ const smallConfig = {
   exports: [{ store: "google-play", profile: "phone", size: { width: 360, height: 720 } }],
 };
 
+/** Apple creative assets render in landscape composition through the CLI. */
+const headerConfig = {
+  ...smallConfig,
+  template: "editorial",
+  screenshots: [
+    {
+      id: "home",
+      image: "./screens/home.png",
+      title: { "en-US": "Beautifully in control", ar: "بأناقة وتحكّم" },
+    },
+  ],
+  exports: [{ store: "app-store", profile: "header-21-9", name: "header" }],
+};
+
 describe("storeshot generate", () => {
   beforeAll(async () => {
     await fs.mkdir(projectDir, { recursive: true });
@@ -84,6 +98,19 @@ describe("storeshot generate", () => {
     expect(result.stderr).toMatch(/"home"/);
     expect(result.stderr).toMatch(/\[ar\]/);
     expect(result.stderr).toMatch(/title/);
+  });
+
+  it("renders the 21:9 product page header at exact dimensions", async () => {
+    await fs.writeFile(
+      path.join(projectDir, "header.config.json"),
+      JSON.stringify(headerConfig, null, 2),
+    );
+    const result = await runCli(["generate", "-c", "header.config.json", "-o", "header-out"], projectDir);
+    expect(result.code, result.stderr).toBe(0);
+    const info = await readImageInfo(
+      path.join(projectDir, "header-out", "header", "en-US", "01-home.png"),
+    );
+    expect(info).toEqual({ width: 3840, height: 1646, type: "png" });
   });
 
   it("fails up front when a source image is missing", async () => {

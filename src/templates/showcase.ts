@@ -1,6 +1,7 @@
 import { buildTokens } from "../design/tokens.js";
 import { headline, headlineVars } from "../design/primitives.js";
 import { renderDevice } from "../design/device.js";
+import { landscapeMetrics, landscapeSizes } from "../design/layout.js";
 import { numberSetting } from "./settings.js";
 import { px, type TemplateContext, type TemplateDefinition } from "./types.js";
 
@@ -39,6 +40,98 @@ const SETTINGS = [
 ] as const;
 
 function render(ctx: TemplateContext) {
+  if (ctx.canvas.width > ctx.canvas.height) return renderLandscape(ctx);
+  return renderPortrait(ctx);
+}
+
+function renderLandscape(ctx: TemplateContext) {
+  const { width: w, height: h } = ctx.canvas;
+  const tokens = buildTokens(ctx.theme);
+  const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
+  const shotScale = numberSetting(SETTINGS, ctx.settings, "shotScale");
+  const layers = ctx.settings["layers"] !== false;
+  const flip = ctx.index % 2 === 1;
+  const { pad, textWidth } = landscapeMetrics(w, h);
+
+  const front = renderDevice({
+    image: ctx.image,
+    mode: "bare",
+    maxWidth: w * 0.2 * shotScale,
+    maxHeight: h * 0.62 * shotScale,
+  });
+  const back = renderDevice({
+    image: ctx.image,
+    mode: "bare",
+    maxWidth: w * 0.24 * shotScale,
+    maxHeight: h * 0.74 * shotScale,
+  });
+
+  const head = headline({
+    ctx,
+    tokens,
+    style: "display",
+    kicker: "chip",
+    sizes: landscapeSizes(h),
+    lines: { title: 3, subtitle: 3 },
+    scale: headlineScale,
+    subtitleMaxWidth: textWidth,
+  });
+
+  const slabW = w * 0.46;
+
+  const css = `
+.shot-showcase.landscape {
+  background: ${tokens.bg};
+  ${headlineVars(tokens, "display", h * 0.03, h * 0.034)}
+}
+.shl-head { position: absolute; inset-inline-start: ${px(pad)}; top: 50%; transform: translateY(-52%); width: ${px(textWidth)}; z-index: 3; }
+.shl-slab {
+  position: absolute;
+  top: ${px(h * 0.1)};
+  bottom: ${px(h * 0.1)};
+  inset-inline-end: ${px(pad)};
+  width: ${px(slabW)};
+  background: ${tokens.surface};
+  border: 1px solid ${tokens.line};
+  border-radius: ${px(h * 0.09)};
+  box-shadow: 0 ${px(h * 0.03)}px ${px(h * 0.1)}px ${tokens.blackShadow(tokens.mode === "dark" ? 0.4 : 0.14)};
+}
+.shl-back {
+  position: absolute;
+  top: ${px(-h * 0.06)};
+  ${flip ? "inset-inline-end" : "inset-inline-start"}: ${px(-slabW * 0.1)};
+  z-index: 1;
+  filter: brightness(0.62) saturate(0.9);
+}
+.shl-back::after {
+  content: "";
+  position: absolute; inset: 0; border-radius: inherit;
+  background: linear-gradient(to ${flip ? "inline-start" : "inline-end"}, transparent 40%, ${tokens.surface} 96%);
+  opacity: 0.55;
+}
+.shl-front {
+  position: absolute;
+  bottom: ${px(h * 0.05)};
+  ${flip ? "inset-inline-start" : "inset-inline-end"}: ${px(slabW * 0.1)};
+  z-index: 2;
+}
+.shl-devicecol { position: absolute; top: 0; bottom: 0; inset-inline-end: ${px(pad)}; width: ${px(slabW)}; display: flex; align-items: center; justify-content: center; }
+`;
+
+  const html = `
+<div class="shot shot-showcase landscape">
+  <div class="shl-head">${head}</div>
+  <div class="shl-slab"></div>
+  <div class="shl-devicecol">
+    ${layers ? `<div class="shl-back">${back.html}</div>` : ""}
+    <div class="shl-front">${front.html}</div>
+  </div>
+</div>`;
+
+  return { css, html };
+}
+
+function renderPortrait(ctx: TemplateContext) {
   const { width: w, height: h } = ctx.canvas;
   const tokens = buildTokens(ctx.theme);
   const headlineScale = numberSetting(SETTINGS, ctx.settings, "headlineScale");
