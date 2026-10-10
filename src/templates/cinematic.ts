@@ -96,27 +96,19 @@ const { pad, textWidth } = landscapeMetrics(w, h, { rtl: isRtl, longTitle });
     "  " + headlineVars(tokens, "cinematic", h * 0.03, h * 0.034),
     "}",
     ".cil-head { position: absolute; inset-inline-start: " +
-      px(pad) +
-      "px; top: 50%; transform: translateY(-52%); width: " +
-      px(textWidth) +
-      "px; z-index: 3; }",
+      px(pad) + "; top: 50%; transform: translateY(-52%); width: " +
+      px(textWidth) + "; z-index: 3; }",
     ".cil-device { position: absolute; inset-inline-end: " +
-      px(w * 0.09) +
-      "px; bottom: " +
-      px(-h * 0.26) +
-      "px; z-index: 2; }",
+      px(w * 0.09) + "; bottom: " +
+      px(-h * 0.26) + "; z-index: 2; }",
     ".cil-floor { position: absolute; left: 0; right: 0; bottom: 0; height: " +
-      px(h * 0.42) +
-      "px; background: linear-gradient(to top, " +
+      px(h * 0.42) + "; background: linear-gradient(to top, " +
       tokens.blackShadow(0.38) +
       ", transparent); z-index: 1; }",
     ".cil-rail { position: absolute; top: " +
-      px(h * 0.66) +
-      "px; inset-inline-start: " +
-      px(w * 0.46) +
-      "px; width: " +
-      px(w * 0.42) +
-      "px; height: 1px; background: " +
+      px(h * 0.66) + "; inset-inline-start: " +
+      px(w * 0.46) + "; width: " +
+      px(w * 0.42) + "; height: 1px; background: " +
       tokens.line +
       "; z-index: 1; }",
   ].join("\n");
@@ -197,7 +189,9 @@ function renderPortrait(ctx: TemplateContext) {
 }
 .ci-reflection img { width: 100%; transform: translateY(-${px(device.height * 0.84)}) scaleY(-1); }
 .ci-reflection img { width: ${px(device.width)}; }
-.ci-head-top { position: absolute; top: ${px(h * 0.085)}; left: 0; right: 0; display: flex; justify-content: center; }
+.ci-head-top { position: absolute; top: ${px(h * 0.085)}; left: ${px(w * 0.08)}; right: ${px(
+    w * 0.08,
+  )}; display: flex; justify-content: center; }
 .ci-head-bottom {
   position: absolute;
   bottom: ${px(h * 0.055)};
@@ -274,18 +268,13 @@ function renderPortraitB(ctx: TemplateContext) {
     "  " + headlineVars(tokens, "cinematic", h * 0.018, h * 0.02),
     "}",
     ".cib-device { position: absolute; bottom: " +
-      px(-h * 0.3) +
-      "px; left: 50%; transform: translateX(-50%); z-index: 2; }",
+      px(-h * 0.3) + "; left: 50%; transform: translateX(-50%); z-index: 2; }",
     ".cib-scrim { position: absolute; bottom: 0; left: 0; right: 0; height: " +
-      px(h * 0.4) +
-      "px; background: linear-gradient(to top, rgba(3,5,9,0.9) 0%, rgba(3,5,9,0.5) 55%, transparent 100%); z-index: 3; }",
+      px(h * 0.4) + "; background: linear-gradient(to top, rgba(3,5,9,0.9) 0%, rgba(3,5,9,0.5) 55%, transparent 100%); z-index: 3; }",
     ".cib-head { position: absolute; bottom: " +
-      px(h * 0.075) +
-      "px; left: " +
-      px(w * 0.1) +
-      "px; right: " +
-      px(w * 0.1) +
-      "px; display: flex; justify-content: center; z-index: 4; }",
+      px(h * 0.075) + "; left: " +
+      px(w * 0.1) + "; right: " +
+      px(w * 0.1) + "; display: flex; justify-content: center; z-index: 4; }",
   ].join("\n");
 
   const html = [

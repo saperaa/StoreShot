@@ -140,6 +140,10 @@ function renderPortrait(ctx: TemplateContext) {
     "angled",
   );
   const flip = ctx.index % 2 === 1;
+  // Arabic-first + content-aware: Arabic titles get their own optical scale
+  // and a deeper line budget so real marketing copy fits without shrinking.
+  const rtl = ctx.dir === "rtl";
+  const longTitle = isLongTitle(ctx);
 
   const tilt = flip ? 9 : -11;
   const device = renderDevice({
@@ -155,8 +159,12 @@ function renderPortrait(ctx: TemplateContext) {
     tokens,
     style: "campaign",
     kicker: "chip",
-    sizes: { kicker: w * 0.022, title: w * 0.092, subtitle: w * 0.028 },
-    lines: { title: 3, subtitle: 2 },
+    sizes: {
+      kicker: w * 0.022,
+      title: w * 0.092 * (rtl ? 0.86 : 1) * (longTitle ? 0.85 : 1),
+      subtitle: w * 0.028,
+    },
+    lines: { title: rtl ? (longTitle ? 5 : 4) : longTitle ? 4 : 3, subtitle: 2 },
     scale: headlineScale,
     subtitleMaxWidth: w * 0.7,
   });
@@ -259,8 +267,12 @@ function renderPortraitB(ctx: TemplateContext) {
     tokens,
     style: "campaign",
     kicker: "chip",
-    sizes: { kicker: w * 0.022, title: w * 0.092, subtitle: w * 0.027 },
-    lines: { title: 3, subtitle: 2 },
+    sizes: {
+      kicker: w * 0.022,
+      title: w * 0.092 * (ctx.dir === "rtl" ? 0.86 : 1) * (isLongTitle(ctx) ? 0.85 : 1),
+      subtitle: w * 0.027,
+    },
+    lines: { title: ctx.dir === "rtl" ? (isLongTitle(ctx) ? 5 : 4) : isLongTitle(ctx) ? 4 : 3, subtitle: 2 },
     scale: headlineScale,
     subtitleMaxWidth: w * 0.7,
   });
@@ -272,12 +284,12 @@ function renderPortraitB(ctx: TemplateContext) {
     "}",
     ".cpb-giantword {",
     "  position: absolute;",
-    "  top: " + px(h * 0.31) + "px;",
+    "  top: " + px(h * 0.31) + ";",
     "  left: 50%;",
     "  transform: translateX(-50%);",
     "  font-family: var(--font-sans);",
     "  font-weight: 700;",
-    "  font-size: " + px(w * 0.3) + "px;",
+    "  font-size: " + px(w * 0.3) + ";",
     "  line-height: 0.95;",
     "  letter-spacing: -0.02em;",
     "  color: " + tokens.text + ";",
@@ -286,24 +298,17 @@ function renderPortraitB(ctx: TemplateContext) {
     "  z-index: 0;",
     "}",
     ".cpb-head { position: absolute; top: " +
-      px(h * 0.085) +
-      "px; inset-inline-start: " +
-      px(w * 0.09) +
-      "px; inset-inline-end: " +
-      px(w * 0.09) +
-      "px; z-index: 3; }",
+      px(h * 0.085) + "; inset-inline-start: " +
+      px(w * 0.09) + "; inset-inline-end: " +
+      px(w * 0.09) + "; z-index: 3; }",
     ".cpb-device { position: absolute; bottom: " +
-      px(-h * 0.08) +
-      "px; left: 50%; transform: translateX(-50%); z-index: 2; display: flex; justify-content: center; }",
+      px(-h * 0.08) + "; left: 50%; transform: translateX(-50%); z-index: 2; display: flex; justify-content: center; }",
     ".cpb-underline { width: " +
-      px(w * 0.2) +
-      "px; height: " +
-      px(Math.max(8, h * 0.006)) +
-      "px; border-radius: 999px; background: " +
+      px(w * 0.2) + "; height: " +
+      px(Math.max(8, h * 0.006)) + "; border-radius: 999px; background: " +
       tokens.accent +
       "; margin-block-start: " +
-      px(h * 0.028) +
-      "px; }",
+      px(h * 0.028) + "; }",
     ".cpb-chip-solid { display: inline-flex; align-items: center; gap: 0.6em; background: " +
       tokens.accent +
       "; color: " +

@@ -267,33 +267,24 @@ function renderPortraitB(ctx: TemplateContext) {
       headlineVars(tokens, "display", h * 0.018, h * 0.02) +
       " }",
     ".shb-slab { position: absolute; inset: " +
-      px(margin) +
-      "px; background: " +
+      px(margin) + "; background: " +
       tokens.surface +
       "; border: 1px solid " +
       tokens.line +
       "; border-radius: " +
-      px(w * 0.06) +
-      "px; box-shadow: " +
+      px(w * 0.06) + "; box-shadow: " +
       tokens.shadowLg +
       "; overflow: hidden; }",
     ".shb-head { position: absolute; top: " +
-      px(h * 0.105) +
-      "px; left: " +
-      px(margin) +
-      "px; right: " +
-      px(margin) +
-      "px; display: flex; flex-direction: column; align-items: center; z-index: 3; }",
+      px(h * 0.105) + "; left: " +
+      px(margin) + "; right: " +
+      px(margin) + "; display: flex; flex-direction: column; align-items: center; z-index: 3; }",
     ".shb-stack { position: absolute; bottom: " +
-      px(-h * 0.1) +
-      "px; left: 0; right: 0; height: " +
-      px(h * 0.6) +
-      "px; z-index: 2; }",
+      px(-h * 0.1) + "; left: 0; right: 0; height: " +
+      px(h * 0.6) + "; z-index: 2; }",
     ".shb-back { position: absolute; bottom: " +
-      px(h * 0.02) +
-      "px; inset-inline-start: " +
-      px(-w * 0.1) +
-      "px; z-index: 1; filter: brightness(0.6) saturate(0.9); transform: rotate(2.5deg); }",
+      px(h * 0.02) + "; inset-inline-start: " +
+      px(-w * 0.1) + "; z-index: 1; filter: brightness(0.6) saturate(0.9); transform: rotate(2.5deg); }",
     ".shb-front { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); z-index: 2; }",
   ].join("\n");
 

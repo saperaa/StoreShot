@@ -74,6 +74,9 @@ describe("storeshot generate", () => {
   });
 
   it("fails with exit code 1 and names the field when Arabic text overflows", async () => {
+    // Long-but-breakable Arabic marketing copy now fits by design (content-
+    // aware budgets), so the refusal fixture is an unbreakable run: it must
+    // overflow its text region horizontally no matter how it is laid out.
     const overflowConfig = {
       ...smallConfig,
       screenshots: [
@@ -81,7 +84,7 @@ describe("storeshot generate", () => {
           ...smallConfig.screenshots[0]!,
           title: {
             "en-US": "Everything in one place",
-            ar: "كل ما تحتاجه لتخطيط يومك بالكامل وتنظيم مهامك ومراجعة تقدمك اليومي في مكان واحد جميل ومنظم",
+            ar: "م".repeat(80),
           },
         },
       ],
@@ -95,8 +98,7 @@ describe("storeshot generate", () => {
       projectDir,
     );
     expect(result.code).toBe(1);
-    expect(result.stderr).toMatch(/"home"/);
-    expect(result.stderr).toMatch(/\[ar\]/);
+    expect(result.stderr).toMatch(/ar\/home/);
     expect(result.stderr).toMatch(/title/);
   });
 

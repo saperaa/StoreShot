@@ -283,10 +283,8 @@ function renderPortraitB(ctx: TemplateContext) {
     "  " + mastheadVars(tokens),
     "}",
     ".edb-numeral { position: absolute; bottom: " +
-      px(-h * 0.04) +
-      "px; left: 50%; transform: translateX(-50%); font-family: var(--font-display); font-weight: 600; font-size: " +
-      px(h * 0.52) +
-      "px; line-height: 1; color: " +
+      px(-h * 0.04) + "; left: 50%; transform: translateX(-50%); font-family: var(--font-display); font-weight: 600; font-size: " +
+      px(h * 0.52) + "; line-height: 1; color: " +
       tokens.surfaceAlt +
       "; z-index: 0; }",
     ".edb-head { position: absolute; top: " +

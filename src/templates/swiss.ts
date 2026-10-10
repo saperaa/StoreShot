@@ -256,56 +256,37 @@ function renderPortraitB(ctx: TemplateContext) {
     "  " + mastheadVars(tokens),
     "}",
     ".swb-bar { position: absolute; top: 0; left: 0; right: 0; height: " +
-      px(Math.max(10, h * 0.007)) +
-      "px; background: " +
+      px(Math.max(10, h * 0.007)) + "; background: " +
       tokens.accent +
       "; }",
     ".swb-meta { position: absolute; top: " +
-      px(h * 0.085) +
-      "px; inset-inline-start: " +
-      px(margin) +
-      "px; width: calc(100% - " +
-      px(margin * 2) +
-      "px); }",
+      px(h * 0.085) + "; inset-inline-start: " +
+      px(margin) + "; width: calc(100% - " +
+      px(margin * 2) + "); }",
     ".swb-head { position: absolute; top: " +
-      px(h * 0.16) +
-      "px; inset-inline-start: " +
-      px(margin) +
-      "px; z-index: 2; max-width: " +
-      px(w * 0.86) +
-      "px; }",
+      px(h * 0.16) + "; inset-inline-start: " +
+      px(margin) + "; z-index: 2; max-width: " +
+      px(w * 0.86) + "; }",
     ".swb-baseline { position: absolute; bottom: " +
-      px(h * 0.14) +
-      "px; inset-inline-start: " +
-      px(margin) +
-      "px; width: calc(100% - " +
-      px(margin * 2) +
-      "px); height: 1px; background: " +
+      px(h * 0.14) + "; inset-inline-start: " +
+      px(margin) + "; width: calc(100% - " +
+      px(margin * 2) + "); height: 1px; background: " +
       tokens.line +
       "; z-index: 1; }",
     ".swb-device { position: absolute; bottom: " +
-      px(h * 0.155) +
-      "px; inset-inline-start: " +
-      px(margin) +
-      "px; z-index: 2; }",
+      px(h * 0.155) + "; inset-inline-start: " +
+      px(margin) + "; z-index: 2; }",
     ".swb-block { position: absolute; bottom: " +
-      px(h * 0.14) +
-      "px; inset-inline-end: " +
-      px(margin) +
-      "px; width: " +
-      px(w * 0.028) +
-      "px; height: " +
-      px(w * 0.028) +
-      "px; background: " +
+      px(h * 0.14) + "; inset-inline-end: " +
+      px(margin) + "; width: " +
+      px(w * 0.028) + "; height: " +
+      px(w * 0.028) + "; background: " +
       tokens.accent +
       "; z-index: 3; }",
     ".swb-caption { position: absolute; bottom: " +
-      px(h * 0.085) +
-      "px; inset-inline-end: " +
-      px(margin) +
-      "px; font-size: " +
-      px(w * 0.0185) +
-      "px; color: " +
+      px(h * 0.085) + "; inset-inline-end: " +
+      px(margin) + "; font-size: " +
+      px(w * 0.0185) + "; color: " +
       tokens.muted +
       "; letter-spacing: 0.1em; z-index: 2; font-weight: 500; text-align: end; }",
     '[dir="ltr"] .swb-caption { text-transform: uppercase; }',

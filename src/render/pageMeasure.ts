@@ -47,6 +47,9 @@ interface PageElementLike {
     width: number;
     height: number;
   };
+  scrollWidth: number;
+  clientWidth: number;
+  closest(selector: string): PageElementLike | null;
 }
 
 declare const document: {
@@ -113,9 +116,9 @@ export async function measurePage(): Promise<PageMeasurement> {
   const check = (
     selector: string,
     el: PageElementLike,
-    rect: { top: number; right: number; bottom: number; left: number },
+    rect: { top: number; right: number; left: number; bottom: number },
   ) => {
-    const bleedAncestor = (el as unknown as { closest(s: string): PageElementLike | null }).closest("[data-bleed]");
+    const bleedAncestor = el.closest("[data-bleed]");
     if (el.dataset.bleed === "true" || bleedAncestor) return; // intentional crop
     if (
       rect.left < -SAFE_MARGIN ||
@@ -137,8 +140,53 @@ export async function measurePage(): Promise<PageMeasurement> {
     }
   };
 
-  for (const el of Array.from(document.querySelectorAll("[data-field]"))) {
-    check("[data-field]", el, el.getBoundingClientRect());
+  // Text is stricter than chrome: a headline that survives inside the canvas
+  // but touches its edge is still broken — Arabic RTL compositions failed
+  // exactly this way (glyphs at the reading edge). Marketing text must keep
+  // a deliberate margin on every side.
+  const TEXT_EDGE_MARGIN = Math.max(8, Math.round(canvasW * 0.004));
+  const checkText = (el: PageElementLike, rect: { top: number; right: number; bottom: number; left: number }) => {
+    if (el.dataset.bleed === "true" || el.closest("[data-bleed]")) return;
+    const touching =
+      rect.left < TEXT_EDGE_MARGIN ||
+      rect.top < TEXT_EDGE_MARGIN ||
+      rect.right > canvasW - TEXT_EDGE_MARGIN ||
+      rect.bottom > canvasH - TEXT_EDGE_MARGIN;
+    if (touching) {
+      outOfBounds.push({
+        selector: "[data-field]",
+        field: el.dataset.field,
+        issue: `text-at-canvas-edge (margin < ${TEXT_EDGE_MARGIN}px)`,
+        rect: {
+          top: Math.round(rect.top),
+          right: Math.round(rect.right),
+          bottom: Math.round(rect.bottom),
+          left: Math.round(rect.left),
+        },
+      });
+    }
+  };
+
+  const textFields = Array.from(document.querySelectorAll("[data-field]"));
+  for (const el of textFields) {
+    const rect = el.getBoundingClientRect();
+    check("[data-field]", el, rect);
+    checkText(el, rect);
+    // A line that runs past its own box (un-wrapped or unbreakable content)
+    // overflows the designated region even when it stays on the canvas.
+    if (el.scrollWidth > el.clientWidth + 2) {
+      outOfBounds.push({
+        selector: "[data-field]",
+        field: el.dataset.field,
+        issue: "overflows-region-horizontally",
+        rect: {
+          top: Math.round(rect.top),
+          right: Math.round(rect.right),
+          bottom: Math.round(rect.bottom),
+          left: Math.round(rect.left),
+        },
+      });
+    }
   }
   for (const el of Array.from(document.querySelectorAll(".dc-search"))) {
     check(".dc-search", el, el.getBoundingClientRect());

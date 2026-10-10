@@ -239,43 +239,29 @@ function renderPortraitB(ctx: TemplateContext) {
     "  " + headlineVars(tokens, "display", h * 0.018, h * 0.02),
     "}",
     ".imb-head { position: absolute; top: " +
-      px(h * 0.105) +
-      "px; inset-inline-start: " +
-      px(w * 0.085) +
-      "px; z-index: 3; max-width: " +
-      px(w * 0.52) +
-      "px; }",
+      px(h * 0.105) + "; inset-inline-start: " +
+      px(w * 0.085) + "; z-index: 3; max-width: " +
+      px(w * 0.52) + "; }",
     ".imb-vline { position: absolute; top: " +
-      px(h * 0.12) +
-      "px; bottom: " +
-      px(h * 0.12) +
-      "px; inset-inline-start: " +
-      px(w * 0.52) +
-      "px; width: 1px; background: " +
+      px(h * 0.12) + "; bottom: " +
+      px(h * 0.12) + "; inset-inline-start: " +
+      px(w * 0.52) + "; width: 1px; background: " +
       tokens.line +
       "; z-index: 0; }",
     ".imb-device { position: absolute; bottom: " +
-      px(-h * 0.1) +
-      "px; inset-inline-end: " +
-      px(-w * 0.16) +
-      "px; z-index: 2; }",
+      px(-h * 0.1) + "; inset-inline-end: " +
+      px(-w * 0.16) + "; z-index: 2; }",
     ".imb-tick { position: absolute; width: " +
-      px(w * 0.045) +
-      "px; height: " +
-      px(w * 0.045) +
-      "px; border-color: " +
+      px(w * 0.045) + "; height: " +
+      px(w * 0.045) + "; border-color: " +
       tokens.accent +
       "; border-style: solid; border-width: 0; z-index: 1; }",
     ".imb-tick.tl { top: " +
-      px(h * 0.045) +
-      "px; inset-inline-start: " +
-      px(w * 0.045) +
-      "px; border-top-width: 2px; border-inline-start-width: 2px; }",
+      px(h * 0.045) + "; inset-inline-start: " +
+      px(w * 0.045) + "; border-top-width: 2px; border-inline-start-width: 2px; }",
     ".imb-tick.br { bottom: " +
-      px(h * 0.045) +
-      "px; inset-inline-end: " +
-      px(w * 0.045) +
-      "px; border-bottom-width: 2px; border-inline-end-width: 2px; }",
+      px(h * 0.045) + "; inset-inline-end: " +
+      px(w * 0.045) + "; border-bottom-width: 2px; border-inline-end-width: 2px; }",
   ].join("\n");
 
   const html = [

@@ -256,6 +256,39 @@ const cases: Case[] = [
     size: { width: 960, height: 412 },
   },
   {
+    // Regression: campaign variant B head CSS was entirely invalid (doubled
+    // px units) — the headline rendered at the canvas origin, full width,
+    // and Arabic glyphs touched the right edge. Long title, portrait, B.
+    name: "campaign-ar-portrait-b-long",
+    locale: "ar",
+    template: "campaign",
+    screenshot: "compose",
+    index: 1,
+    title: "كل ما تحتاجه لتخطيط يومك بالكامل وتنظيم مهامك المهمة بدون مجهود",
+    subtitle: "رؤى أسبوعية واضحة، وتنبيهات ذكية تلازم إيقاع حياتك اليومي.",
+  },
+  {
+    // Regression: same failure class on the landscape header.
+    name: "campaign-ar-landscape-long",
+    locale: "ar",
+    template: "campaign",
+    screenshot: "compose",
+    index: 1,
+    title: "كل ما تحتاجه لتخطيط يومك بالكامل وتنظيم مهامك المهمة بدون مجهود",
+    subtitle: "رؤى أسبوعية واضحة، وتنبيهات ذكية تلازم إيقاع حياتك اليومي.",
+    size: { width: 960, height: 412 },
+  },
+  {
+    // English comparison for the same compositions.
+    name: "campaign-en-portrait-b",
+    locale: "en-US",
+    template: "campaign",
+    screenshot: "compose",
+    index: 1,
+    title: "Everything you need to plan your whole day without effort",
+    subtitle: "Weekly insight and gentle reminders that follow your rhythm.",
+  },
+  {
     name: "aurora-landscape-en",
     locale: "en-US",
     template: "aurora",

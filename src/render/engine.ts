@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { chromium, type Browser, type BrowserContext } from "playwright-core";
-import { RenderError } from "../errors.js";
+import { LayoutError, RenderError } from "../errors.js";
 import { assertPngDimensions } from "../util/imageSize.js";
 import { measurePage } from "./pageMeasure.js";
 
@@ -164,9 +164,9 @@ export class Renderer {
 
       if (diagnostics.outOfBounds.length > 0) {
         const first = diagnostics.outOfBounds[0]!;
-        throw new RenderError(
+        throw new LayoutError(
           `Layout violation while rendering ${request.label}: ${first.selector}${first.field ? ` (${first.field})` : ""} ` +
-            `is clipped outside the canvas (rect ${JSON.stringify(first.rect)}). ` +
+            `${first.issue} (rect ${JSON.stringify(first.rect)}). ` +
             `${diagnostics.outOfBounds.length} element(s) affected.`,
         );
       }
