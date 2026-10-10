@@ -11,3 +11,4 @@ package/
 .DS_Store
 Thumbs.db
 .work/
+.zcodeignore
