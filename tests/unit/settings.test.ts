@@ -53,7 +53,7 @@ describe("template settings", () => {
 });
 
 describe("template registry", () => {
-  it("ships eleven art-directed templates", () => {
+  it("ships fourteen art-directed templates", () => {
     expect(templateIds()).toEqual([
       "editorial",
       "cinematic",
@@ -66,8 +66,11 @@ describe("template registry", () => {
       "atelier",
       "aurora",
       "linea",
+      "tilt",
+      "float",
+      "strata",
     ]);
-    expect(listTemplates().length).toBe(11);
+    expect(listTemplates().length).toBe(14);
   });
 
   it("every template has metadata, settings and a render function", () => {

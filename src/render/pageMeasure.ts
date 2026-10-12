@@ -67,9 +67,6 @@ declare const document: {
 declare const requestAnimationFrame: (callback: () => void) => number;
 declare const window: { innerWidth: number; innerHeight: number };
 
-
-
-
 export async function measurePage(): Promise<PageMeasurement> {
   // px of sub-pixel tolerance before something is "outside" (inlined: this
   // function is serialized into the page and closes over nothing).
@@ -145,7 +142,10 @@ export async function measurePage(): Promise<PageMeasurement> {
   // exactly this way (glyphs at the reading edge). Marketing text must keep
   // a deliberate margin on every side.
   const TEXT_EDGE_MARGIN = Math.max(8, Math.round(canvasW * 0.004));
-  const checkText = (el: PageElementLike, rect: { top: number; right: number; bottom: number; left: number }) => {
+  const checkText = (
+    el: PageElementLike,
+    rect: { top: number; right: number; bottom: number; left: number },
+  ) => {
     if (el.dataset.bleed === "true" || el.closest("[data-bleed]")) return;
     const touching =
       rect.left < TEXT_EDGE_MARGIN ||
@@ -194,6 +194,12 @@ export async function measurePage(): Promise<PageMeasurement> {
   for (const el of Array.from(document.querySelectorAll(".dev"))) {
     check(".dev", el, el.getBoundingClientRect());
   }
+  // Decorative layers get the same bounds treatment as devices: measured
+  // post-transform, exempt only when a data-bleed ancestor marks the crop
+  // intentional.
+  for (const el of Array.from(document.querySelectorAll(".deco"))) {
+    check(".deco", el, el.getBoundingClientRect());
+  }
 
   // Screen-fill detection: every image must fill its clipping slot (the
   // device screen), otherwise the device shows empty bands — the empty-
@@ -205,13 +211,14 @@ export async function measurePage(): Promise<PageMeasurement> {
     const img = image as unknown as PageElementLike;
     const rect = img.getBoundingClientRect();
     if (rect.width < 2 || rect.height < 2) continue;
-    const slot = (image as unknown as { closest(s: string): PageElementLike | null }).closest(".dev-screen, .dev-bare, .dev");
+    const slot = (image as unknown as { closest(s: string): PageElementLike | null }).closest(
+      ".dev-screen, .dev-bare, .dev",
+    );
     if (slot) {
       const s = slot.getBoundingClientRect();
       // 3px covers the 1px wrapper border on each side plus rounding;
       // genuine letterboxing is orders of magnitude larger.
-      const fills =
-        Math.abs(rect.width - s.width) <= 3 && Math.abs(rect.height - s.height) <= 3;
+      const fills = Math.abs(rect.width - s.width) <= 3 && Math.abs(rect.height - s.height) <= 3;
       if (!fills) {
         letterboxed.push({
           selector: image.getAttribute("src") ?? "<img>",

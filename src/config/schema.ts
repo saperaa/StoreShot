@@ -50,6 +50,22 @@ export const templateRefSchema = z.union([
   }),
 ]);
 
+/**
+ * A decorative asset for compositions that support floating objects
+ * (transparent PNG/WebP — product shots, badges, brand marks). Position,
+ * rotation and depth are the template's job; the config only supplies the
+ * artwork. Templates must compose cleanly without any decor.
+ */
+export const decorItemSchema = z.object({
+  /** Stable identifier the template can address (e.g. "tomato"). */
+  id: z
+    .string()
+    .trim()
+    .regex(/^[A-Za-z0-9][A-Za-z0-9_-]*$/, "may contain letters, digits, dashes and underscores"),
+  /** Transparent PNG or WebP, resolved relative to the config file. */
+  image: z.string().trim().min(1),
+});
+
 export const screenshotSchema = z.object({
   /** Stable identifier used in output file names. */
   id: z
@@ -57,6 +73,8 @@ export const screenshotSchema = z.object({
     .trim()
     .regex(/^[A-Za-z0-9][A-Za-z0-9_-]*$/, "may contain letters, digits, dashes and underscores"),
   image: z.string().trim().min(1),
+  /** Optional decorative assets for composition templates (see `decorItemSchema`). */
+  decor: z.array(decorItemSchema).max(16).optional(),
   title: localizedTextSchema.optional(),
   subtitle: localizedTextSchema.optional(),
   /** Per-screenshot override of the template's device-frame default. */
@@ -70,6 +88,25 @@ export const screenshotSchema = z.object({
   /** Focal point for cover cropping: { "x": 0.5, "y": 0.4 } (0-1, default center-top). */
   focalPoint: z.object({ x: z.number().min(0).max(1), y: z.number().min(0).max(1) }).optional(),
 });
+
+/**
+ * Declared app categories for deterministic art direction. Used only when
+ * the project opts in (`"template": "auto"`) — StoreShot never guesses a
+ * category from free text.
+ */
+export const APP_CATEGORIES = [
+  "food",
+  "shopping",
+  "finance",
+  "productivity",
+  "games",
+  "health",
+  "education",
+  "travel",
+  "social",
+  "other",
+] as const;
+export type AppCategory = (typeof APP_CATEGORIES)[number];
 
 export const exportSchema = z.object({
   store: z.enum(["app-store", "google-play"]),
@@ -104,6 +141,11 @@ export const storeshotConfigSchema = z.object({
      * translations has the full context. Not rendered on screenshots.
      */
     story: z.string().trim().min(1).optional(),
+    /**
+     * Declared store category. Feeds the deterministic art-direction rules
+     * when `"template": "auto"`; no effect otherwise.
+     */
+    category: z.enum(APP_CATEGORIES).optional(),
   }),
   theme: themeSchema,
   fonts: z

@@ -7,6 +7,8 @@ import {
   type StoreId,
 } from "../profiles/storeProfiles.js";
 import { getTemplate, templateIds } from "../templates/registry.js";
+import { selectComposition } from "../design/direct.js";
+import type { AppCategory } from "./schema.js";
 import type { TemplateDefinition } from "../templates/types.js";
 import { htmlLang, normalizeLocaleTag, resolveDirection } from "../i18n/direction.js";
 import { resolveLocalizedText, type LocalizedText } from "../i18n/text.js";
@@ -24,6 +26,8 @@ export interface ResolvedScreenshot {
   id: string;
   /** Absolute path of the source screenshot. */
   imagePath: string;
+  /** Decorative assets (transparent PNG/WebP), resolved to absolute paths. */
+  decor: Array<{ id: string; imagePath: string }>;
   /** Per-screenshot device-frame override (undefined = template default). */
   deviceFrame: boolean | undefined;
   /** Optional semantic role from the config ("hero", "feature", …). */
@@ -50,7 +54,7 @@ export interface ResolvedExport {
 export interface ResolvedConfig {
   configPath: string;
   configDir: string;
-  app: { name: string; tagline?: string; story?: string };
+  app: { name: string; tagline?: string; story?: string; category?: AppCategory };
   theme: {
     background: string;
     accent: string;
@@ -61,7 +65,12 @@ export interface ResolvedConfig {
   };
   fonts: ResolvedFonts;
   locales: ResolvedLocale[];
-  template: { definition: TemplateDefinition; settings: Record<string, unknown> };
+  template: {
+    definition: TemplateDefinition;
+    settings: Record<string, unknown>;
+    /** Set when "template": "auto" chose this definition — carries the rule reason. */
+    autoSelected?: { id: string; reason: string };
+  };
   screenshots: ResolvedScreenshot[];
   exports: ResolvedExport[];
   output: { dir: string; clean: boolean };
@@ -120,12 +129,38 @@ export function resolveConfig(loaded: LoadedConfig): ResolvedConfig {
     typeof raw.template === "string"
       ? { id: raw.template, settings: raw.templateSettings ?? {} }
       : { id: raw.template.id, settings: raw.template.settings ?? raw.templateSettings ?? {} };
-  const definition = getTemplate(templateRef.id);
+
+  // "auto" delegates to the deterministic art-direction rules: declared
+  // category + assets actually present + export orientation. An explicit
+  // template id is the user's override and never re-routed.
+  let autoSelected: { id: string; reason: string } | undefined;
+  let wantedId = templateRef.id;
+  if (wantedId === "auto") {
+    const hasDecor = raw.screenshots.some((shot) => (shot.decor?.length ?? 0) > 0);
+    const firstExport = raw.exports[0];
+    const firstProfile = firstExport
+      ? getProfile(firstExport.store, firstExport.profile)
+      : undefined;
+    const landscape = firstExport?.size
+      ? firstExport.size.width > firstExport.size.height
+      : firstProfile
+        ? firstProfile.width > firstProfile.height
+        : false;
+    const choice = selectComposition({
+      category: raw.app.category,
+      hasDecor,
+      orientation: landscape ? "landscape" : "portrait",
+    });
+    wantedId = choice.templateId;
+    autoSelected = { id: choice.templateId, reason: choice.reason };
+  }
+
+  const definition = getTemplate(wantedId);
   if (!definition) {
     errors.push(
-      `Unknown template "${templateRef.id}". Available templates: ${templateIds().join(", ")}.`,
+      `Unknown template "${wantedId}". Available templates: ${templateIds().join(", ")}, auto.`,
     );
-  } else if (definition.id !== templateRef.id) {
+  } else if (definition.id !== wantedId) {
     deprecations.push(
       `Template "${templateRef.id}" was redesigned in v0.2 and now renders as ` +
         `"${definition.id}". Update "template" to "${definition.id}" to silence this notice.`,
@@ -164,9 +199,21 @@ export function resolveConfig(loaded: LoadedConfig): ResolvedConfig {
       }
       texts[locale.tag] = entry;
     }
+    const decor: Array<{ id: string; imagePath: string }> = [];
+    const seenDecor = new Set<string>();
+    for (const item of shot.decor ?? []) {
+      if (seenDecor.has(item.id)) {
+        errors.push(`Screenshot "${shot.id}": duplicate decor id "${item.id}".`);
+        continue;
+      }
+      seenDecor.add(item.id);
+      decor.push({ id: item.id, imagePath: resolveFromConfigDir(loaded.dir, item.image) });
+    }
+
     screenshots.push({
       id: shot.id,
       imagePath: resolveFromConfigDir(loaded.dir, shot.image),
+      decor,
       deviceFrame: shot.deviceFrame,
       role: shot.role,
       fit: shot.fit,
@@ -235,7 +282,12 @@ export function resolveConfig(loaded: LoadedConfig): ResolvedConfig {
   return {
     configPath: loaded.path,
     configDir: loaded.dir,
-    app: { name: raw.app.name, tagline: raw.app.tagline, story: raw.app.story },
+    app: {
+      name: raw.app.name,
+      tagline: raw.app.tagline,
+      story: raw.app.story,
+      category: raw.app.category,
+    },
     theme: {
       background: raw.theme.background,
       accent: raw.theme.accent,
@@ -249,6 +301,7 @@ export function resolveConfig(loaded: LoadedConfig): ResolvedConfig {
     template: {
       definition: definition!,
       settings: templateRef.settings,
+      autoSelected,
     },
     screenshots,
     exports,

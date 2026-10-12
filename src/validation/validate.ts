@@ -127,6 +127,7 @@ export async function validateProject(
 
   // --- images -------------------------------------------------------------------
   const imageInfos = new Map<string, ImageInfo>();
+  const decorInfos = new Map<string, Record<string, ImageInfo>>();
   for (const screenshot of resolved.screenshots) {
     if (!hasSupportedImageExtension(screenshot.imagePath)) {
       issues.push({
@@ -151,6 +152,32 @@ export async function validateProject(
         hint: "Paths resolve relative to the configuration file.",
       });
     }
+
+    const perShot: Record<string, ImageInfo> = {};
+    for (const item of screenshot.decor) {
+      if (!hasSupportedImageExtension(item.imagePath)) {
+        issues.push({
+          severity: "error",
+          code: "unsupported-image-format",
+          message: `Screenshot "${screenshot.id}" decor "${item.id}": unsupported file format ${item.imagePath}.`,
+          hint: "Use transparent PNG or WebP assets.",
+        });
+        continue;
+      }
+      try {
+        const stat = await fs.stat(item.imagePath);
+        if (!stat.isFile()) throw new Error("not a file");
+        perShot[item.id] = await readImageInfo(item.imagePath);
+      } catch {
+        issues.push({
+          severity: "error",
+          code: "missing-image",
+          message: `Screenshot "${screenshot.id}" decor "${item.id}": image not found or unreadable: ${item.imagePath}.`,
+          hint: "Paths resolve relative to the configuration file.",
+        });
+      }
+    }
+    decorInfos.set(screenshot.id, perShot);
   }
 
   const maxExportWidth = Math.max(...resolved.exports.map((e) => e.width));
@@ -234,6 +261,7 @@ export async function validateProject(
                 locale,
                 screenshot,
                 imageInfo: info,
+                decorInfo: decorInfos.get(screenshot.id),
                 size: { width: exportEntry.width, height: exportEntry.height },
                 deviceFrame: deviceFrameFor(resolved, screenshot),
                 index,

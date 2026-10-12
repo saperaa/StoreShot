@@ -22,6 +22,8 @@ export function buildRenderRequest(input: {
   locale: ResolvedLocale;
   screenshot: ResolvedScreenshot;
   imageInfo: { width: number; height: number };
+  /** Measured dimensions for each decorative asset id (empty = no decor). */
+  decorInfo?: Record<string, { width: number; height: number }>;
   size: { width: number; height: number };
   deviceFrame: boolean;
   /** Zero-based sequence index and total, for sequence-aware templates. */
@@ -33,6 +35,19 @@ export function buildRenderRequest(input: {
 
   const ext = path.extname(screenshot.imagePath) || ".png";
   const imageUrl = `${IMAGE_ASSET_DIR}/shot${ext}`;
+
+  const decorItems = (screenshot.decor ?? []).map((item) => {
+    const itemExt = path.extname(item.imagePath) || ".png";
+    const info = input.decorInfo?.[item.id];
+    return {
+      id: item.id,
+      url: `${IMAGE_ASSET_DIR}/decor-${item.id}${itemExt}`,
+      width: info?.width ?? 0,
+      height: info?.height ?? 0,
+      alt: escapeHtml(`${resolved.app.name} — ${item.id}`),
+      source: item.imagePath,
+    };
+  });
 
   const ctx: TemplateContext = {
     app: resolved.app,
@@ -49,6 +64,11 @@ export function buildRenderRequest(input: {
       fit: screenshot.fit,
       focalPoint: screenshot.focalPoint,
     },
+    // Templates must handle zero decor; items without measured dimensions
+    // are dropped rather than guessed.
+    decor: decorItems
+      .filter((item) => item.width > 0 && item.height > 0)
+      .map(({ id, url, width, height, alt }) => ({ id, url, width, height, alt })),
     deviceFrame: input.deviceFrame,
     settings: resolved.template.settings,
     canvas: { width: size.width, height: size.height },
@@ -63,6 +83,7 @@ export function buildRenderRequest(input: {
   const assets: RenderAsset[] = [
     ...fontPlan.assets,
     { name: imageUrl, source: screenshot.imagePath },
+    ...decorItems.map((item) => ({ name: item.url, source: item.source })),
   ];
 
   const document = buildDocument(

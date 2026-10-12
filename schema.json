@@ -24,6 +24,21 @@
         "story": {
           "type": "string",
           "minLength": 1
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "food",
+            "shopping",
+            "finance",
+            "productivity",
+            "games",
+            "health",
+            "education",
+            "travel",
+            "social",
+            "other"
+          ]
         }
       },
       "required": [
@@ -199,6 +214,27 @@
           "image": {
             "type": "string",
             "minLength": 1
+          },
+          "decor": {
+            "maxItems": 16,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+                },
+                "image": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "id",
+                "image"
+              ]
+            }
           },
           "title": {
             "anyOf": [

@@ -10,6 +10,9 @@ import { discoveryTemplate } from "./discovery.js";
 import { atelierTemplate } from "./atelier.js";
 import { auroraTemplate } from "./aurora.js";
 import { lineaTemplate } from "./linea.js";
+import { tiltTemplate } from "./tilt.js";
+import { floatTemplate } from "./float.js";
+import { strataTemplate } from "./strata.js";
 
 export const TEMPLATES: readonly TemplateDefinition[] = [
   editorialTemplate,
@@ -23,6 +26,9 @@ export const TEMPLATES: readonly TemplateDefinition[] = [
   atelierTemplate,
   auroraTemplate,
   lineaTemplate,
+  tiltTemplate,
+  floatTemplate,
+  strataTemplate,
 ];
 
 /**

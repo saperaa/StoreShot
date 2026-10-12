@@ -44,6 +44,7 @@ export async function runGenerate(options: GenerateOptions): Promise<void> {
 
   // --- source image checks (fail before touching the browser) ------------------
   const imageInfos = new Map<string, ImageInfo>();
+  const decorInfos = new Map<string, Record<string, ImageInfo>>();
   const missing: string[] = [];
   for (const screenshot of resolved.screenshots) {
     try {
@@ -52,6 +53,16 @@ export async function runGenerate(options: GenerateOptions): Promise<void> {
     } catch {
       missing.push(`"${screenshot.id}": ${screenshot.imagePath}`);
     }
+    const perShot: Record<string, ImageInfo> = {};
+    for (const item of screenshot.decor) {
+      try {
+        if (!hasSupportedImageExtension(item.imagePath)) throw new Error("unsupported");
+        perShot[item.id] = await readImageInfo(item.imagePath);
+      } catch {
+        missing.push(`"${screenshot.id}" decor "${item.id}": ${item.imagePath}`);
+      }
+    }
+    decorInfos.set(screenshot.id, perShot);
   }
   if (missing.length > 0) {
     throw new ConfigError(
@@ -70,6 +81,12 @@ export async function runGenerate(options: GenerateOptions): Promise<void> {
     `Generating ${total} screenshot${total === 1 ? "" : "s"} ` +
       `(${resolved.template.definition.id} template, ${locales.map((l) => l.tag).join(" + ")})`,
   );
+  if (resolved.template.autoSelected) {
+    log.info(
+      `Art direction "auto" selected the "${resolved.template.autoSelected.id}" template — ` +
+        `${resolved.template.autoSelected.reason}. Set an explicit "template" id to override.`,
+    );
+  }
 
   const renderer = await Renderer.launch();
   const written: WrittenFile[] = [];
@@ -96,6 +113,7 @@ export async function runGenerate(options: GenerateOptions): Promise<void> {
             locale,
             screenshot,
             imageInfo: imageInfos.get(screenshot.id)!,
+            decorInfo: decorInfos.get(screenshot.id),
             size: { width: exportEntry.width, height: exportEntry.height },
             deviceFrame: deviceFrameFor(resolved, screenshot),
             index: shotIndex,

@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { PNG } from "pngjs";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { runCli, starterDir } from "../helpers/cli.js";
 import { readImageInfo } from "../../src/util/imageSize.js";
@@ -130,5 +131,84 @@ describe("storeshot generate", () => {
     const result = await runCli(["generate", "-c", "missing.config.json"], projectDir);
     expect(result.code).toBe(1);
     expect(result.stderr).toMatch(/nope\.png/);
+  });
+
+  it("renders decorative assets end-to-end through the float template", async () => {
+    // A transparent PNG the float template drops into an orbital slot.
+    const decorPng = new PNG({ width: 160, height: 160 });
+    for (let i = 0; i < decorPng.data.length; i += 4) {
+      decorPng.data[i] = 255;
+      decorPng.data[i + 1] = 120;
+      decorPng.data[i + 2] = 40;
+      decorPng.data[i + 3] = 230;
+    }
+    await fs.mkdir(path.join(projectDir, "decor"), { recursive: true });
+    await fs.writeFile(path.join(projectDir, "decor", "dot.png"), PNG.sync.write(decorPng));
+
+    const decorConfig = {
+      ...smallConfig,
+      template: "float",
+      screenshots: [
+        {
+          ...smallConfig.screenshots[0]!,
+          decor: [{ id: "dot", image: "./decor/dot.png" }],
+        },
+      ],
+    };
+    await fs.writeFile(
+      path.join(projectDir, "decor.config.json"),
+      JSON.stringify(decorConfig, null, 2),
+    );
+    const result = await runCli(
+      ["generate", "-c", "decor.config.json", "-o", "decor-out"],
+      projectDir,
+    );
+    expect(result.code, result.stderr).toBe(0);
+    const info = await readImageInfo(
+      path.join(projectDir, "decor-out", "google-play-phone", "en-US", "01-home.png"),
+    );
+    expect(info).toEqual({ width: 360, height: 720, type: "png" });
+  });
+
+  it("fails up front when a decorative asset is missing", async () => {
+    const missingDecor = {
+      ...smallConfig,
+      template: "float",
+      screenshots: [
+        {
+          ...smallConfig.screenshots[0]!,
+          decor: [{ id: "dot", image: "./decor/nope.png" }],
+        },
+      ],
+    };
+    await fs.writeFile(
+      path.join(projectDir, "missing-decor.config.json"),
+      JSON.stringify(missingDecor, null, 2),
+    );
+    const result = await runCli(["generate", "-c", "missing-decor.config.json"], projectDir);
+    expect(result.code).toBe(1);
+    expect(result.stderr).toMatch(/decor "dot"/);
+  });
+
+  it('"auto" template picks a composition from declared metadata and says why', async () => {
+    const autoConfig = {
+      ...smallConfig,
+      app: { name: "Ledger", category: "finance" },
+      template: "auto",
+    };
+    await fs.writeFile(
+      path.join(projectDir, "auto.config.json"),
+      JSON.stringify(autoConfig, null, 2),
+    );
+    const result = await runCli(
+      ["generate", "-c", "auto.config.json", "-o", "auto-out"],
+      projectDir,
+    );
+    expect(result.code, result.stderr).toBe(0);
+    expect(result.stderr).toMatch(/"swiss" template/);
+    const info = await readImageInfo(
+      path.join(projectDir, "auto-out", "google-play-phone", "en-US", "01-home.png"),
+    );
+    expect(info).toEqual({ width: 360, height: 720, type: "png" });
   });
 });

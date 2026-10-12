@@ -27,7 +27,11 @@ export { buildRenderRequest } from "./render/pipeline.js";
 export { planFontAssets, resolveFontFiles } from "./render/assets.js";
 export { buildDocument } from "./render/html.js";
 export { TEMPLATES, getTemplate, listTemplates, templateIds } from "./templates/registry.js";
-export type { TemplateDefinition, TemplateContext } from "./templates/types.js";
+export type { TemplateDefinition, TemplateContext, TemplateDecorItem } from "./templates/types.js";
+export { selectComposition, recommendCompositions } from "./design/direct.js";
+export type { CompositionInput, CompositionChoice } from "./design/direct.js";
+export { APP_CATEGORIES } from "./config/schema.js";
+export type { AppCategory } from "./config/schema.js";
 export {
   STORE_PROFILES,
   STORE_RULES,

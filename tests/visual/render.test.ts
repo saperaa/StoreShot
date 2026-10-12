@@ -8,6 +8,7 @@ import { Renderer, type Renderer as RendererType } from "../../src/render/engine
 import { loadConfigFile } from "../../src/config/load.js";
 import { resolveConfig } from "../../src/config/resolve.js";
 import { buildRenderRequest, deviceFrameFor } from "../../src/render/pipeline.js";
+import { buildDocument } from "../../src/render/html.js";
 import { readImageInfo } from "../../src/util/imageSize.js";
 
 /**
@@ -47,6 +48,8 @@ interface Case {
   prompt?: string;
   /** Canvas override; landscape sizes exercise the landscape compositions. */
   size?: { width: number; height: number };
+  /** Decorative asset ids; the harness generates transparent PNGs for them. */
+  decor?: string[];
 }
 
 const cases: Case[] = [
@@ -304,15 +307,102 @@ const cases: Case[] = [
     theme: { background: "#FAFAF8", accent: "#14161A", text: "#14161A", mutedText: "#8A8F98" },
     size: { width: 960, height: 412 },
   },
+  {
+    // Dynamic Composition family: 2D-rotated device bleeding the far corner.
+    name: "tilt-en",
+    locale: "en-US",
+    template: "tilt",
+    screenshot: "home",
+    theme: { background: "#101A2E", accent: "#FF6B4A", text: "#FFFFFF", mutedText: "#A8B4CC" },
+  },
+  {
+    // Tilt variation B (mirrored corner) on an Arabic composition.
+    name: "tilt-ar",
+    locale: "ar",
+    template: "tilt",
+    screenshot: "compose",
+    index: 1,
+    theme: { background: "#101A2E", accent: "#FF6B4A", text: "#FFFFFF", mutedText: "#A8B4CC" },
+  },
+  {
+    name: "tilt-landscape-en",
+    locale: "en-US",
+    template: "tilt",
+    screenshot: "home",
+    theme: { background: "#101A2E", accent: "#FF6B4A", text: "#FFFFFF", mutedText: "#A8B4CC" },
+    size: { width: 960, height: 412 },
+  },
+  {
+    // Floating product with real transparent decor assets in the slots.
+    name: "float-en-decor",
+    locale: "en-US",
+    template: "float",
+    screenshot: "home",
+    decor: ["leaf", "badge"],
+    theme: { background: "#F3F6FB", accent: "#2E7D5B", text: "#14202B", mutedText: "#5E6B7A" },
+  },
+  {
+    // The no-asset fallback: geometric rings hold the constellation.
+    name: "float-ar",
+    locale: "ar",
+    template: "float",
+    screenshot: "focus",
+    index: 1,
+    theme: { background: "#F3F6FB", accent: "#2E7D5B", text: "#14202B", mutedText: "#5E6B7A" },
+  },
+  {
+    // Layered showcase: slab, ring, device, raised headline card.
+    name: "strata-en",
+    locale: "en-US",
+    template: "strata",
+    screenshot: "home",
+  },
+  {
+    name: "strata-ar",
+    locale: "ar",
+    template: "strata",
+    screenshot: "insights",
+    index: 1,
+  },
+  {
+    name: "strata-landscape-en",
+    locale: "en-US",
+    template: "strata",
+    screenshot: "home",
+    size: { width: 960, height: 412 },
+  },
 ];
 
 let renderer: RendererType;
 const jobs = new Map<string, ReturnType<typeof buildRenderRequest>>();
 
+/** Write a simple transparent PNG (filled circle) for decor test cases. */
+async function writeDecorPng(file: string, rgba: [number, number, number, number]): Promise<void> {
+  const size = 400;
+  const png = new PNG({ width: size, height: size });
+  const r = size / 2 - 4;
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const i = (y * size + x) * 4;
+      const d = Math.hypot(x - size / 2, y - size / 2);
+      if (d < r) {
+        png.data[i] = rgba[0];
+        png.data[i + 1] = rgba[1];
+        png.data[i + 2] = rgba[2];
+        png.data[i + 3] = rgba[3];
+      }
+    }
+  }
+  await fs.writeFile(file, PNG.sync.write(png));
+}
+
 beforeAll(async () => {
   renderer = await Renderer.launch();
   const { getTemplate } = await import("../../src/templates/registry.js");
   const configPath = path.join(repoRoot, "starter", "storeshot.config.json");
+  const decorDir = await fs.mkdtemp(
+    path.join((await import("node:os")).tmpdir(), "storeshot-decor-"),
+  );
 
   for (const caseDef of cases) {
     const loaded = await loadConfigFile(configPath);
@@ -328,7 +418,7 @@ beforeAll(async () => {
       patched.theme = { ...patched.theme, ...caseDef.theme, mode: "auto" };
     }
     caseDef.prompt = "plan my week";
-    
+
     if (caseDef.name === "discovery-ar") caseDef.prompt = "أضف مهمة";
     if (caseDef.title || caseDef.subtitle) {
       patched.screenshots = resolved.screenshots.map((shot) =>
@@ -347,8 +437,20 @@ beforeAll(async () => {
           : shot,
       );
     }
-    const target = patched.screenshots.find((sc) => sc.id === screenshot.id)!;
+    let target = patched.screenshots.find((sc) => sc.id === screenshot.id)!;
     const imageInfo = await readImageInfo(screenshot.imagePath);
+    const decorInfo: Record<string, { width: number; height: number }> = {};
+    if (caseDef.decor) {
+      const decor: Array<{ id: string; imagePath: string }> = [];
+      for (const id of caseDef.decor) {
+        const file = path.join(decorDir, `${id}.png`);
+        await writeDecorPng(file, id === "leaf" ? [46, 125, 91, 235] : [255, 107, 74, 235]);
+        decor.push({ id, imagePath: file });
+        decorInfo[id] = { width: 400, height: 400 };
+      }
+      target = { ...target, decor };
+      patched.screenshots = patched.screenshots.map((sc) => (sc.id === target.id ? target : sc));
+    }
     jobs.set(
       caseDef.name,
       buildRenderRequest({
@@ -356,6 +458,7 @@ beforeAll(async () => {
         locale,
         screenshot: target,
         imageInfo,
+        decorInfo,
         size: caseDef.size ?? CANVAS,
         deviceFrame: caseDef.deviceFrame ?? deviceFrameFor(resolved, screenshot),
         index: caseDef.index ?? 0,
@@ -447,6 +550,46 @@ describe.each(cases)("visual: $name", (caseDef) => {
       `${caseDef.name}: ${diffPixels} differing pixels vs baseline (${(ratio * 100).toFixed(3)}%)`,
     ).toBeLessThan(0.005);
   }, 120_000);
+});
+
+describe("geometry safety for decor layers", () => {
+  const shotPng = path.join(repoRoot, "starter", "screens", "home.png");
+  const request = (body: string) => ({
+    html: buildDocument(
+      { lang: "en", dir: "ltr" as const, width: 400, height: 400, fonts: [], fontFamilies: [] },
+      ".deco { position: absolute; }",
+      body,
+    ),
+    assets: [{ name: "img/d.png", source: shotPng }],
+    width: 400,
+    height: 400,
+    label: "geometry-check",
+  });
+
+  it("rejects a decor layer that accidentally leaves the canvas", async () => {
+    const bad = request(
+      '<div class="shot"><div class="deco" style="left:-80px;top:100px;width:200px">' +
+        '<img class="deco-img" src="img/d.png" style="width:200px;height:200px"></div></div>',
+    );
+    await expect(renderer.render(bad)).rejects.toThrow(/outside-canvas/);
+  });
+
+  it("allows the same element when it opts into intentional bleed", async () => {
+    const good = request(
+      '<div class="shot"><div class="deco" style="left:-80px;top:100px;width:200px" data-bleed="true">' +
+        '<img class="deco-img" src="img/d.png" style="width:200px;height:200px"></div></div>',
+    );
+    const result = await renderer.render(good);
+    expect(result.width).toBe(400);
+  });
+
+  it("rejects an off-canvas device that was not marked as bleed", async () => {
+    const bad = request(
+      '<div class="shot"><div class="dev" style="position:absolute;left:360px;top:100px;width:200px;height:200px;overflow:hidden">' +
+        '<img src="img/d.png" style="width:200px;height:200px"></div></div>',
+    );
+    await expect(renderer.render(bad)).rejects.toThrow(/outside-canvas/);
+  });
 });
 
 it("Arabic and English renders of the same job differ substantially", async () => {

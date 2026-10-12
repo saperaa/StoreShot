@@ -21,6 +21,21 @@ export interface TemplateImage {
   focalPoint?: { x: number; y: number };
 }
 
+/**
+ * A decorative asset supplied by the config (transparent PNG/WebP): floating
+ * product shots, badges, marks. Templates position them through decorLayer;
+ * every template must still compose cleanly when the list is empty.
+ */
+export interface TemplateDecorItem {
+  /** Config-supplied identifier (also usable in template settings). */
+  id: string;
+  url: string;
+  /** Natural pixel size — used to preserve aspect and transparency. */
+  width: number;
+  height: number;
+  alt: string;
+}
+
 export interface TemplateTheme {
   background: string;
   accent: string;
@@ -41,6 +56,8 @@ export interface TemplateContext {
   texts: TemplateTexts;
   theme: TemplateTheme;
   image: TemplateImage;
+  /** Optional decorative assets for this screenshot (empty when unconfigured). */
+  decor: TemplateDecorItem[];
   deviceFrame: boolean;
   settings: Record<string, unknown>;
   canvas: { width: number; height: number };
