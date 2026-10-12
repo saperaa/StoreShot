@@ -35,6 +35,10 @@ jobs:
       - name: Install rendering browser (tests render real frames)
         run: npx playwright-core install chromium
 
-      # prepublishOnly runs the whole gate: lint, typecheck, schema, tests.
+      # The release gate runs explicitly here (lint, typecheck, schema, all
+      # tests) — kept out of npm lifecycle scripts so installs never spawn it.
+      - name: Verify release
+        run: npm run verify:release
+
       - name: Publish with provenance
         run: npm publish --provenance

@@ -73,7 +73,7 @@
     "test:integration": "npm run build && vitest run tests/integration",
     "test:visual": "npm run build && vitest run tests/visual",
     "test:visual:update": "cross-env UPDATE_SNAPSHOTS=1 npm run test:visual",
-    "prepublishOnly": "npm run lint && npm run typecheck && npm run schema && npm run test"
+    "verify:release": "npm run lint && npm run typecheck && npm run schema && npm run test"
   },
   "dependencies": {
     "commander": "^15.0.0",
