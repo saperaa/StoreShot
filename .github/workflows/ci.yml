@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
 
 jobs:
@@ -42,6 +42,9 @@ jobs:
 
       - name: Visual regression tests
         run: npx vitest run tests/visual
+
+      - name: Smoke-test packaged CLI on the starter project
+        run: node dist/cli.js generate -c starter/storeshot.config.json -o "${{ runner.temp }}/storeshots" -l en-US
 
       - name: Verify npm package contents
         run: npm pack --dry-run
