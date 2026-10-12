@@ -40,5 +40,26 @@ jobs:
       - name: Verify release
         run: npm run verify:release
 
+      - name: Check whether this version is already published
+        id: check
+        run: |
+          v=$(node -p "require('./package.json').version")
+          if npm view "storeshot-cli@$v" version >/dev/null 2>&1; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::storeshot-cli@$v is already on the registry — nothing to publish"
+          else
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # A GitHub release with an already-published version is an operator
+      # error (forgotten version bump) — fail loudly. A manual re-dispatch
+      # of a published version is a harmless no-op — skip quietly.
+      - name: Fail a release cut on an already-published version
+        if: github.event_name == 'release' && steps.check.outputs.published == 'true'
+        run: |
+          echo "::error::package.json is still at an already-published version — bump it before cutting a release."
+          exit 1
+
       - name: Publish with provenance
+        if: steps.check.outputs.published != 'true'
         run: npm publish --provenance

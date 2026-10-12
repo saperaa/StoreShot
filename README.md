@@ -9,7 +9,7 @@ An open-source CLI that turns your real app screenshots into art-directed store 
 [![npm version](https://img.shields.io/npm/v/storeshot-cli)](https://www.npmjs.com/package/storeshot-cli)
 [![npm downloads](https://img.shields.io/npm/dm/storeshot-cli)](https://www.npmjs.com/package/storeshot-cli)
 [![CI](https://github.com/saperaa/StoreShot/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/saperaa/StoreShot/actions/workflows/ci.yml?query=branch%3Amaster)
-[![Publish](https://github.com/saperaa/StoreShot/actions/workflows/publish.yml/badge.svg)](https://github.com/saperaa/StoreShot/actions/workflows/publish.yml)
+[![Publish](https://github.com/saperaa/StoreShot/actions/workflows/publish.yml/badge.svg?event=release)](https://github.com/saperaa/StoreShot/actions/workflows/publish.yml?query=event%3Arelease)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%E2%89%A520-blue)](./package.json)
 
