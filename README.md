@@ -8,7 +8,7 @@ An open-source CLI that turns your real app screenshots into art-directed store 
 
 [![npm version](https://img.shields.io/npm/v/storeshot-cli)](https://www.npmjs.com/package/storeshot-cli)
 [![npm downloads](https://img.shields.io/npm/dm/storeshot-cli)](https://www.npmjs.com/package/storeshot-cli)
-[![CI](https://github.com/saperaa/StoreShot/actions/workflows/ci.yml/badge.svg)](https://github.com/saperaa/StoreShot/actions/workflows/ci.yml)
+[![CI](https://github.com/saperaa/StoreShot/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/saperaa/StoreShot/actions/workflows/ci.yml?query=branch%3Amaster)
 [![Publish](https://github.com/saperaa/StoreShot/actions/workflows/publish.yml/badge.svg)](https://github.com/saperaa/StoreShot/actions/workflows/publish.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%E2%89%A520-blue)](./package.json)
@@ -31,7 +31,7 @@ The complete five-frame listing — value proposition → feature → differenti
 
 - **One config, every asset.** Screenshots × locales × device sizes from a single `storeshot.config.json` — same pixels every run.
 - **Local & free forever.** Renders offline with Chromium. No SaaS subscription, no uploads of your unreleased app, no API keys.
-- **Real design, not frames around rectangles.** Eleven art-directed templates across six design families, with realistic device rendering and sequence-aware layouts.
+- **Real design, not frames around rectangles.** Fourteen art-directed templates across seven design families — including tilted-device posters, floating product scenes and layered depth compositions — with realistic device rendering and sequence-aware layouts.
 - **Arabic/RTL done right.** Connected letterforms, mirrored compositions, mixed Arabic/English text — through Chromium's text engine, never string reversal.
 - **Fails before you ship bad assets.** Validates config, translations, exact store dimensions, and rendered text fit — with browser-measured geometry checks.
 
@@ -51,7 +51,7 @@ Output lands in `storeshots/<store-profile>/<locale>/01-…png` at exact verifie
 
 ## Template gallery
 
-Eleven templates across six art directions — each direction is a distinct design system (typography, composition rules, background treatment, device presentation), not a background swap. The same app, screenshot and copy rendered through each family: [`docs/gallery/families`](docs/gallery/families) (English & Arabic, portrait and landscape headers, Play feature graphics).
+Fourteen templates across seven art directions — each direction is a distinct design system (typography, composition rules, background treatment, device presentation), not a background swap. The same app, screenshot and copy rendered through each family: [`docs/gallery/families`](docs/gallery/families) (English & Arabic, portrait and landscape headers, Play feature graphics).
 
 | Family | Template | Concept |
 | --- | --- | --- |
@@ -61,6 +61,7 @@ Eleven templates across six art directions — each direction is a distinct desi
 | Warm Premium | `atelier` | Cream paper, ink serif typography, hairline plate margins, warm ambient shadows |
 | Vibrant Gradient | `aurora` | A structured two-tone light field with a luminous diagonal ridge — direction, not wallpaper |
 | Minimal Product | `linea` | Near-white field, one hairline line, plinth device presentation, restrained type |
+| Dynamic Composition | `tilt` · `float` · `strata` | 2D-rotated device bleeding off the corner · optional transparent decor orbiting at alternating depths · layered slab, ring, device and raised headline card |
 
 Plus `discovery` (Apple-inspired, localized search layer), `immersive` / `showcase` (perspective twin devices · layered UI on a slab).
 
@@ -72,6 +73,7 @@ Plus `discovery` (Apple-inspired, localized search layer), `immersive` / `showca
 | Vibrant Gradient | ![Aurora EN](docs/gallery/families/vibrant-gradient/p/en-US/01-hero.png) | ![Aurora AR](docs/gallery/families/vibrant-gradient/p/ar/01-hero.png) |
 | Minimal Product | ![Linea EN](docs/gallery/families/minimal-product/p/en-US/01-hero.png) | ![Linea AR](docs/gallery/families/minimal-product/p/ar/01-hero.png) |
 | Editorial Swiss | ![Swiss EN](docs/gallery/families/editorial-swiss/p/en-US/01-hero.png) | ![Swiss AR](docs/gallery/families/editorial-swiss/p/ar/01-hero.png) |
+| Dynamic Composition | ![Tilt EN](docs/gallery/families/dynamic-composition/p/en-US/01-hero.png) | ![Tilt AR](docs/gallery/families/dynamic-composition/p/ar/01-hero.png) |
 
 Arabic landscape headers, rendered through the RTL layout system (dedicated metrics, measured text, no clipped headlines): [`docs/gallery/families/*/l/ar/`](docs/gallery/families) · Landscape banners & Play feature graphics: [`docs/gallery/landscape`](docs/gallery/landscape) · Before/after vs v0.1: [`docs/before-after.md`](docs/before-after.md)
 
@@ -124,6 +126,8 @@ Arabic landscape headers, rendered through the RTL layout system (dedicated metr
 ```
 
 - `screenshots[].role` — optional semantic role (`hero`, `feature`, `workflow`, `trust`…) used by captions and layouts.
+- `screenshots[].decor` — optional transparent PNG/WebP decorative assets (`{ "id", "image" }`) that composition templates place at computed positions and depths; missing files fail the build like missing screenshots.
+- `app.category` + `"template": "auto"` — deterministic art direction: the declared store category, supplied decor and export orientation pick the template and print the rule that fired. An explicit `template` id always overrides.
 - `theme.mode` — `auto` (derived from the background), `light` or `dark` to force shadow/contrast behavior; `theme.surface` overrides the elevated-panel token.
 - Templates accept small, curated setting sets (`headlineScale`, `deviceScale`, `deviceMode`, and one or two template-specific options).
 

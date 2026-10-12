@@ -6,6 +6,33 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Composition primitives (`src/design/composition.ts`): explicit z-ordered
+  `layer()` / `centeredLayer()` wrappers with 2D rotate+scale transforms and
+  an opt-in `data-bleed` contract, `rotatedBounds()` geometry math,
+  `decorLayer()` for transparent PNG/WebP decorative assets, and background
+  treatments (`fieldBackground`, `bandLayer`, `ringLayer`).
+- Decorative assets in config: `screenshots[].decor` supplies transparent
+  artwork to composition templates; validated like source images (existence,
+  format, measured dimensions) and bounds-checked at render time unless a
+  layer opts into intentional bleed.
+- Three new templates in a Dynamic Composition family: `tilt` (angled-device
+  poster — 2D-rotated device bleeding off the far corner over a cropped
+  accent ring), `float` (floating-product scene — optional decor orbits the
+  device at alternating depths, with a geometric fallback), and `strata`
+  (layered showcase — slab, ring, device, optional decor, raised headline
+  card). All ship portrait, landscape and RTL compositions.
+- Deterministic art direction: `"template": "auto"` picks a template via
+  `selectComposition()` from declared `app.category`, supplied decorative
+  assets and export orientation; `app.category` is an explicit enum — no
+  free-text inference, no AI dependency. Explicit template ids always win.
+
+### Fixed
+
+- CI now triggers on pushes to `master` (the default branch); it previously
+  only ran for `main`, so the workflow had never executed.
+
 ## [0.5.0] — 2026-10-10
 
 Creative direction overhaul, RTL landscape system, realistic device

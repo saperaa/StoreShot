@@ -52,10 +52,10 @@ Editor autocompletion: add `"$schema": "./node_modules/storeshot-cli/schema.json
 | --- | --- | --- | --- |
 | `$schema` | string | — | JSON Schema path for editor support. |
 | `configVersion` | `1` | `1` | Schema version. Only `1` exists. |
-| `app` | object | required | `name` (rendered as the kicker), optional `tagline` and `story` (kept for editors/translators, not rendered). |
+| `app` | object | required | `name` (rendered as the kicker), optional `tagline` and `story` (kept for editors/translators, not rendered), optional `category` (feeds `"template": "auto"`). |
 | `locales` | string[] | `["en-US"]` | BCP-47 style tags. `ar`, `he`, `fa`, `ur` and more default to RTL automatically. |
 | `direction` | map | `{}` | Per-locale direction overrides (`"ltr"`/`"rtl"`); a language key (`"ar"`) covers regional tags (`"ar-EG"`). |
-| `template` | string \| object | `"gradient"` (alias of `campaign`) | Template id or `{ "id", "settings" }`. |
+| `template` | string \| object | `"gradient"` (alias of `campaign`) | Template id, `{ "id", "settings" }`, or `"auto"` for deterministic art direction (below). |
 | `theme` | object | see below | Design-token inputs. |
 | `fonts` | object | bundled | Per-family font files: `latin`, `arabic`, `display`. |
 | `screenshots` | array | required | ≥ 1 entry; **order defines both output numbering and the sequence position** templates vary against. |
@@ -85,6 +85,19 @@ Each family accepts `regular`, `semibold`, `bold` file paths. Bundled defaults: 
 - `role` (optional) — semantic role in the campaign (`"hero"`, `"feature"`, `"workflow"`, `"trust"`…). Templates surface it in captions; use it to describe your sequence, not to switch templates.
 - `title`, `subtitle` — plain string (all locales) or per-locale map; every configured locale needs an entry (exact tag or primary language).
 - `deviceFrame` (optional) — what the template's `"auto"` device mode resolves to (`true` → the template's framed presentation, `false` → frameless). Override completely with the template's `deviceMode` setting.
+- `decor` (optional) — decorative assets for composition templates: `[{ "id": "tomato", "image": "./decor/tomato.png" }]` (max 16). Transparent PNG or WebP; the template owns position, rotation and depth. Templates must still compose cleanly with zero decor — see `float` and `strata`. Validated like source images (missing/unreadable files fail the build).
+
+### `app.category` and `"template": "auto"`
+
+Setting `"template": "auto"` delegates template selection to deterministic
+art-direction rules: the declared `app.category` (`food`, `shopping`,
+`finance`, `productivity`, `games`, `health`, `education`, `travel`,
+`social`, `other`), whether any screenshot supplies `decor`, and the first
+export's orientation. The chosen template and the rule that fired are
+printed during `generate`. StoreShot never guesses a category from free
+text, and an explicit template id always wins — `"auto"` is an opt-in, not
+a default. The same rules are exported as `selectComposition()` /
+`recommendCompositions()` for embedders.
 
 ### Template settings (v0.2)
 
@@ -97,6 +110,8 @@ All templates: `headlineScale` (0.8–1.25), `deviceScale` (0.8–1.15), `device
 | `campaign` | `band` (bool, default true) |
 | `immersive` | `twin` (bool, default true) |
 | `showcase` | `layers` (bool, default true), `shotScale` instead of `deviceScale` |
+| `tilt` | `tilt` (4–22°, device rotation), `variation` (`auto`/`a`/`b`) |
+| `strata` | `variation` (`auto`/`a`/`b`) |
 
 ### `exports[]` and `output`
 

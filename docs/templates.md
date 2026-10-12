@@ -19,6 +19,9 @@ no plugin system, no build step, fully deterministic.
 | `atelier` | Warm Premium | `front` | `headlineScale`, `deviceScale`, `variation`, `deviceMode` |
 | `aurora` | Vibrant Gradient | `angled` (light-field rim) | `headlineScale`, `deviceScale`, `variation`, `deviceMode` |
 | `linea` | Minimal Product | `front` (plinth) | `headlineScale`, `deviceScale`, `variation`, `deviceMode` |
+| `tilt` | Dynamic Composition | `front` (2D-rotated, bleeding) | `headlineScale`, `deviceScale`, `tilt`, `variation`, `deviceMode` |
+| `float` | Dynamic Composition | `front` + optional decor | `headlineScale`, `deviceScale`, `deviceMode` |
+| `strata` | Dynamic Composition | `angled` (layered slab) | `headlineScale`, `deviceScale`, `variation`, `deviceMode` |
 
 Every family is a distinct design system — typography voice, composition
 rules, background treatment and device presentation — not a palette swap of
@@ -27,7 +30,9 @@ the same app through all six.
 
 Common settings: `headlineScale` (0.8–1.25), `deviceScale` (0.8–1.15),
 `deviceMode` (`"auto" | "bare" | "front" | "angled"`; `auto` follows the
-screenshot's `deviceFrame` flag).
+screenshot's `deviceFrame` flag). `"template": "auto"` delegates selection
+to the deterministic art-direction rules (`app.category` + supplied decor +
+export orientation) — see [configuration](configuration.md).
 
 Pre-v0.2 ids (`minimal`, `gradient`, `device-focus`, `spotlight`) resolve to
 their redesigns (`swiss`, `campaign`, `immersive`, `cinematic`) with a
@@ -36,11 +41,13 @@ deprecation notice.
 ## Architecture layers
 
 ```
-src/design/tokens.ts      theme → design tokens (modes, surfaces, shadows, lines)
-src/design/device.ts      device rendering: bare / front / angled (+ twin, ground)
-src/design/primitives.ts  headline blocks (5 typographic characters), masthead, chips
-src/templates/*.ts        one file per template: composition rules only
-src/render/html.ts        document shell, font stacks, shared component CSS
+src/design/tokens.ts       theme → design tokens (modes, surfaces, shadows, lines)
+src/design/device.ts       device rendering: bare / front / angled (+ twin, ground)
+src/design/primitives.ts   headline blocks (5 typographic characters), masthead, chips
+src/design/composition.ts  z-ordered layers, 2D transforms, decor assets, backgrounds
+src/design/direct.ts       deterministic template selection ("auto")
+src/templates/*.ts         one file per template: composition rules only
+src/render/html.ts         document shell, font stacks, shared component CSS
 ```
 
 Templates should compose these layers, not re-derive them.
@@ -54,6 +61,7 @@ Templates should compose these layers, not re-derive them.
 | `ctx.texts` | `{ title?, subtitle? }` resolved for this locale. |
 | `ctx.theme` | User colors + `surface`/`mode` token inputs — always go through `buildTokens(ctx.theme)`. |
 | `ctx.image` | Screenshot `url`, natural `width`/`height`, `alt`. |
+| `ctx.decor` | Decorative assets for this screenshot: `{ id, url, width, height, alt }[]` — place them with `decorLayer()`; may be empty. |
 | `ctx.deviceFrame` | The screenshot's frame flag — feed it to `resolveDeviceMode(...)` unless your template has a fixed presentation. |
 | `ctx.settings` | User settings — read only through the `SETTINGS` accessors. |
 | `ctx.index`, `ctx.count` | Sequence position — the ONLY sanctioned source of variation. |
@@ -107,6 +115,37 @@ const device = renderDevice({
 slot, layered realistic shadows, optional glare/island/home-indicator/back
 layer/ground shadow. `device.html` is a self-contained block you position
 with absolute/flow layout; `device.width/height` tell you what it measured.
+
+## Layers, transforms and decor
+
+`src/design/composition.ts` carries the layered-composition contract:
+
+```ts
+import { layer, decorLayer, rotatedBounds, fieldBackground, ringLayer } from "../design/composition.js";
+
+// Explicit z-order, px positioning (physical or RTL-mirrored logical
+// edges), 2D rotate/scale, intentional bleed:
+const deviceLayer = layer(device.html, {
+  insetInlineEnd: -w * 0.06, top: h * 0.4, rotate: -13, z: 2, bleed: true,
+});
+
+// rotatedBounds(w, h, deg, scale) = the axis-aligned box the bounds
+// checker measures — use it to decide whether bleed is honest.
+const box = rotatedBounds(device.width, device.height, -13);
+
+// Optional transparent PNG/WebP from the config's `decor` list:
+const accent = ctx.decor.length > 0
+  ? decorLayer(ctx.decor[0]!, { left: 40, top: 60, width: 90, rotate: -8, z: 3 })
+  : ringLayer({ cx: 80, cy: 100, diameter: 120, stroke: 8, color: tokens.accentGlow(0.4), z: 1 });
+```
+
+- `.dev`, `.deco` and `[data-field]` elements are bounds-checked **after**
+  transforms; `data-bleed="true"` (the `bleed` option) marks a crop
+  intentional. Never put text in a bleed layer.
+- Decor renders at natural aspect — rotate and scale the `.deco` wrapper,
+  never the image's own aspect.
+- `fieldBackground(tokens, "solid" | "wash" | "beam")` builds the
+  background; `bandLayer`/`ringLayer` are the geometric treatments.
 
 ## Headlines
 
